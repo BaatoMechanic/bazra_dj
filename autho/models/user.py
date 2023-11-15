@@ -1,7 +1,7 @@
 
 
 from django.db import models
-from django.contrib.auth.models import AbstractUser, AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import  AbstractUser, AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 from autho.models.verification_code import VerificationCode
 
@@ -90,7 +90,7 @@ DATE_TYPE_CHOICES = (
 )
 
 
-class User(AbstractUser, BaseModel):
+class User(AbstractBaseUser, PermissionsMixin, BaseModel):
 
     USERNAME_FIELD = "email"
     name = models.CharField(max_length=255, db_index=True)
@@ -103,6 +103,21 @@ class User(AbstractUser, BaseModel):
 
     is_mobile_verified = models.BooleanField(default=False)
     is_email_verified = models.BooleanField(default=False)
+
+    is_staff = models.BooleanField(
+        ("staff status"),
+        default=False,
+        help_text=("Designates whether the user can log into this admin site."),
+    )
+    is_active = models.BooleanField(
+        ("active"),
+        default=True,
+        help_text=(
+            "Designates whether this user should be treated as active. "
+            "Unselect this instead of deleting accounts."
+        ),
+    )
+
     primary_role = models.CharField(max_length=50, blank=True, null=True, db_index=True)
     roles = models.ManyToManyField("permission.Role", related_name="users")
     dob_type = models.CharField(max_length=2, choices=DATE_TYPE_CHOICES, default="AD")
@@ -111,7 +126,10 @@ class User(AbstractUser, BaseModel):
     verified_on = models.DateTimeField(null=True, blank=True)
 
     objects = UserManager()
-    REQUIRED_FIELDS = []
+
+    class Meta:
+        verbose_name = ("user")
+        verbose_name_plural = ("users")
 
     def gen_verification_code(self):
         if self.is_verified:
