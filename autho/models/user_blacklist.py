@@ -1,9 +1,9 @@
 from django.db import models
 
-from utils.models.mixins import BaseModel
+from utils.mixins.base_model_mixin import BaseModelMixin
 
 
-class UserBlackList(BaseModel):
+class UserBlackList(BaseModelMixin):
 
     email = models.EmailField(blank=True, null=True, unique=True)
     mobile = models.CharField(max_length=16, unique=True)

@@ -3,7 +3,7 @@ from django.db import models
 from shortuuidfield import ShortUUIDField
 
 
-class BaseModel(models.Model):
+class BaseModelMixin(models.Model):
     idx = ShortUUIDField()
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)

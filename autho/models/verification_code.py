@@ -1,14 +1,15 @@
 
 from django.utils import timezone
 from django.db import models
+from utils.helpers import generate_6digit_number
 
-from utils.models.misc import generate_6digit_number
-from utils.models.mixins import BaseModel
 
 from django.conf import settings
 
+from utils.mixins.base_model_mixin import BaseModelMixin
 
-class VerificationCode(BaseModel):
+
+class VerificationCode(BaseModelMixin):
     user = models.OneToOneField(
         "autho.User", on_delete=models.CASCADE, related_name="verification_code")
     code = models.CharField(max_length=6, default=generate_6digit_number())

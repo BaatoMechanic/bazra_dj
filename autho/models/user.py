@@ -1,11 +1,9 @@
-
-
 from django.db import models
-from django.contrib.auth.models import  AbstractUser, AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 from autho.models.verification_code import VerificationCode
+from utils.mixins.base_model_mixin import BaseModelMixin
 
-from utils.models.mixins import BaseModel
 
 from autho.models.user_blacklist import UserBlackList
 
@@ -71,26 +69,24 @@ AUTH_PROVIDER_CHOICES = [
 ]
 
 
-GENDER_MALE = 'male'
-GENDER_FEMALE = 'female'
-GENDER_OTHER = 'other'
+class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
 
-GENDER_CHOCES = [
-    (GENDER_MALE, GENDER_MALE.capitalize()),
-    (GENDER_FEMALE, GENDER_FEMALE.capitalize()),
-    (GENDER_OTHER, GENDER_OTHER.capitalize())]
+    GENDER_MALE = 'male'
+    GENDER_FEMALE = 'female'
+    GENDER_OTHER = 'other'
 
-DATE_TYPE_BS = 'bs'
-DATE_TYPE_AD = 'ad'
+    GENDER_CHOCES = [
+        (GENDER_MALE, GENDER_MALE.capitalize()),
+        (GENDER_FEMALE, GENDER_FEMALE.capitalize()),
+        (GENDER_OTHER, GENDER_OTHER.capitalize())]
 
+    DATE_TYPE_BS = 'bs'
+    DATE_TYPE_AD = 'ad'
 
-DATE_TYPE_CHOICES = (
-    (DATE_TYPE_BS, DATE_TYPE_BS.capitalize()),
-    (DATE_TYPE_AD, DATE_TYPE_AD.capitalize()),
-)
-
-
-class User(AbstractBaseUser, PermissionsMixin, BaseModel):
+    DATE_TYPE_CHOICES = (
+        (DATE_TYPE_BS, DATE_TYPE_BS.capitalize()),
+        (DATE_TYPE_AD, DATE_TYPE_AD.capitalize()),
+    )
 
     USERNAME_FIELD = "email"
     name = models.CharField(max_length=255, db_index=True)
