@@ -7,6 +7,7 @@ import os
 import re
 import itertools
 
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.conf import settings
 from django.db import IntegrityError
@@ -14,9 +15,10 @@ from django.urls import URLPattern, URLResolver
 
 from rest_framework.viewsets import ViewSet
 from typing import Callable, Optional, List, Any, Union, Type, Dict, Set
+from permission import permission_maps
 
 
-from permission.models import Permission
+from permission.models import Permission, Role
 
 
 HTTP_METHODS = ["get", "post", "put", "patch", "delete"]
@@ -500,3 +502,29 @@ def create_permissions() -> None:
 
     Permission.objects.all().delete()
     Permission.objects.bulk_create(permissions)
+
+
+def attach_permissions(role_name, permissions):
+    try:
+        role = Role.objects.get(name=role_name)
+
+    except Role.DoesNotExist:
+        raise Exception(f"Role with the name '{role_name}' could not be found.")
+
+    permissions_objs = []
+
+    for permission in permissions:
+        try:
+
+            permissions_objs.append(Permission.objects.get(
+                name=permission[0], method=permission[1]))
+        except (IndexError, ObjectDoesNotExist) as exp:
+            raise Exception(str(exp))
+    role.permissions.add(*permissions_objs)
+    role.save()
+
+
+def assign_permissions():
+    permission_map_dict = permission_maps.get_permission_map()
+    for role, permissions in permission_map_dict.items():
+        attach_permissions(role, flatten(permissions))
