@@ -1,13 +1,11 @@
 
+import sys
 from django.db import models
 
-from utils.models.mixins import BaseModel
+from utils.mixins.base_model_mixin import BaseModelMixin
 
 
-# Create your models here.
-
-
-class Permission(BaseModel):
+class Permission(BaseModelMixin):
     name = models.CharField(max_length=100)
     url = models.CharField(max_length=255)
     method = models.CharField(max_length=10)
@@ -35,7 +33,7 @@ class Permission(BaseModel):
         return False
 
 
-class Role(BaseModel):
+class Role(BaseModelMixin):
     name = models.CharField(max_length=100)
     parents = models.ManyToManyField(
         "self",
@@ -47,7 +45,7 @@ class Role(BaseModel):
     permissions = models.ManyToManyField(
         Permission,
         blank=True,
-        
+
         related_name="roles",
     )
     is_protected = models.BooleanField(default=False)
