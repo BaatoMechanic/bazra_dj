@@ -46,6 +46,7 @@ NATIVE_APPS = [
     'autho',
     'permission',
     'utils',
+    'vehicle_repair',
 ]
 
 THIRD_PARTY_APPS = [
@@ -158,16 +159,18 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
 
         # 'autho.authentication.CustomJWTAuthentication',
-        'autho.authentication.CustomSimpleJWTAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+        'autho.authentication.CustomSimpleJWTAuthentication'
     ),
 }
 
 SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('BM',),
     "TOKEN_OBTAIN_SERIALIZER": "autho.serializers.LoginSerializer",
-    "TOKEN_OBTAIN_VIEW": "permission.permissions.BazraPermission",
+    # "TOKEN_OBTAIN_VIEW": "permission.permissions.BazraPermission",
 }
 
-JWT_CONF = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-}
+# JWT_CONF = {
+#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+#     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+# }

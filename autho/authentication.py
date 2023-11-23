@@ -1,6 +1,11 @@
-import token
+
+from django.core.exceptions import ValidationError
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from rest_framework import authentication
-from datetime import datetime, timedelta
+from datetime import datetime
+
+from django.core.exceptions import ObjectDoesNotExist
 
 import jwt
 
@@ -16,7 +21,6 @@ from django.contrib.auth.models import update_last_login
 
 # from autho.models import User
 
-from django.contrib.auth.backends import ModelBackend
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -118,7 +122,7 @@ class CustomJWTAuthentication(authentication.BaseAuthentication):
         return jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
 
 
-class CustomSimpleJWTAuthentication(ModelBackend):
+class CustomSimpleJWTAuthentication(JWTAuthentication):
 
     def authenticate(self, request=None, **credentials):
 
@@ -127,21 +131,28 @@ class CustomSimpleJWTAuthentication(ModelBackend):
         user_identifier = credentials.get('user_identifier') or credentials.get('username')
         password = credentials.get('password')
 
+        if user_identifier is None or password is None:
+            return None
+
         user = User.objects.filter(Q(email=user_identifier) | Q(phone=user_identifier), is_obsolete=False).first()
 
         if user is None or not user.check_password(password):
+            # If user is trying to login from admin panel then show the error message inside the form
+            if request.path == '/admin/login/':
+                raise ValidationError("No active account found with the given credentials")
 
-            raise AuthenticationFailed("No active account found with the given credentials")
+            else:
+                raise AuthenticationFailed("No active account found with the given credentials")
 
-        # refresh = RefreshToken.for_user(user)
-
-        # payload = {
-        #     'refresh': str(refresh),
-        #     'access': str(refresh.access_token),
-        # }
         payload = {}
 
         return user, payload
+
+    def get_user(self, id):
+        try:
+            return User.objects.get(id=id)
+        except ObjectDoesNotExist:
+            return None
 
     @classmethod
     def create_tokens(cls, user: User):
