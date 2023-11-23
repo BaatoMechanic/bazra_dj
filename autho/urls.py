@@ -1,8 +1,18 @@
 
 from django.urls import path
-from .views import TokenObtainPairView
+from . import views
+
+from rest_framework_nested import routers
+
+router = routers.DefaultRouter()
+
+router.register("reviews", views.RatingAndReviewViewSet, basename="reviews")
+
 
 urlpatterns = [
-    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-
+    path('create-token/', views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('refresh-token/', views.TokenRefreshView.as_view(), name='token_refresh'),
+    path('verify-token/', views.TokenVerifyView.as_view(), name='token_verify'),
 ]
+
+urlpatterns += router.urls

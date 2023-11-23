@@ -15,19 +15,22 @@ class UserManager(BaseUserManager):
         phone = fields.get('phone')
         password = fields.get('password')
         if not email and not phone:
-            raise Exception("Either of both of 'email and mobile' is required to create an user.")
+            raise ValueError("Either of both of 'email and mobile' is required to create an user.")
 
         if not password:
-            raise Exception("Password is required to create an user.")
+            raise ValueError("Password is required to create an user.")
+        
+        if email:
+            email = super().normalize_email(email)
 
         if phone:
             phone = self.normalize_phone_number(phone)
 
         UserBlackList.exists(phone, email)
 
-        user: User = self.model(**fields)
+        user: User = self.model(email=email, phone=phone, **fields)
         user.set_password(password)
-        user.save()
+        user.save(using=self._db)
         if not donot_send_code:
             try:
                 user.gen_verification_code().send()
@@ -114,8 +117,14 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         ),
     )
 
-    primary_role = models.CharField(max_length=50, blank=True, null=True, db_index=True)
-    roles = models.ManyToManyField("permission.Role", related_name="users")
+    image = models.ImageField(upload_to="users/profile", null=True, blank=True)
+
+    primary_role = models.ForeignKey(
+        "permission.Role", on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        db_index=True)
+    roles = models.ManyToManyField("permission.Role", related_name="users", blank=True)
     dob_type = models.CharField(max_length=2, choices=DATE_TYPE_CHOICES, default="AD")
     dob = models.DateField(null=True, blank=True)
 
@@ -126,6 +135,9 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     class Meta:
         verbose_name = ("user")
         verbose_name_plural = ("users")
+
+    def __str__(self):
+        return self.name
 
     def gen_verification_code(self):
         if self.is_verified:
