@@ -19,7 +19,7 @@ class Permission(BaseModelMixin):
     @classmethod
     def is_permission_granted(cls, name, method, roles):
         '''
-        If the permission is granted to any of the roles then return true else return false 
+        If the permission is granted to any of the roles then return true else return false
         '''
         # Permission name like customer-list, customer-create
         # Method like GET, POST

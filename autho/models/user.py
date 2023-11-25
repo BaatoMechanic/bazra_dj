@@ -19,7 +19,7 @@ class UserManager(BaseUserManager):
 
         if not password:
             raise ValueError("Password is required to create an user.")
-        
+
         if email:
             email = super().normalize_email(email)
 
