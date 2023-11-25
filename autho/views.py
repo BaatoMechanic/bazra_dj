@@ -1,6 +1,6 @@
-
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from autho.models.rating_review import RatingAndReview
+from autho.serializers import RatingAndReviewSerializer
 
 from permission.permissions import BazraPermission
 
@@ -22,5 +22,10 @@ class TokenVerifyView(TokenVerifyView):
 
 
 class RatingAndReviewViewSet(BaseAPIMixin, ModelViewSet):
-    serializer_class = None
     queryset = RatingAndReview.objects.all()
+    serializer_class = RatingAndReviewSerializer
+
+    def get_serializer_context(self):
+        return {
+            "request": self.request
+        }

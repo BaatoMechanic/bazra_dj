@@ -1,18 +1,14 @@
-
 from typing import Any, Dict
 
 from django.contrib.auth.models import update_last_login
-from django.db.models import Q
 
 from rest_framework import serializers
-from rest_framework.exceptions import AuthenticationFailed
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from autho.models import User
-
 from django.contrib import auth
-# from autho.authentication import CustomSimpleJWTAuthentication
+
+from autho.models.rating_review import RatingAndReview
 
 
 class LoginSerializer(serializers.Serializer):
@@ -40,3 +36,24 @@ class LoginSerializer(serializers.Serializer):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
+
+
+class RatingAndReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RatingAndReview
+        fields = ['rating', 'review', 'user', 'review_by']
+
+    def validate(self, attrs):
+
+        review_by = self.context.get('request').user
+        attrs['review_by'] = review_by
+
+        user = attrs.get("user")
+
+        if review_by == user:
+            raise serializers.ValidationError({"user": ["You can't rate yourself."]})
+
+        # if attrs['rating'] < 1 or attrs['rating'] > 5:
+        #     raise serializers.ValidationError({"rating": ["Rating must be between 1 and 5."]})
+
+        return super().validate(attrs)

@@ -1,5 +1,3 @@
-
-import sys
 from django.db import models
 
 from utils.mixins.base_model_mixin import BaseModelMixin
@@ -41,7 +39,7 @@ class Role(BaseModelMixin):
         symmetrical=False,
         related_name="children",
     )
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, blank=True, null=True)
     permissions = models.ManyToManyField(
         Permission,
         blank=True,
