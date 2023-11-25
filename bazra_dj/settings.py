@@ -158,14 +158,14 @@ REST_FRAMEWORK = {
     'COERCE_DECIMAL_TO_STRING': False,
     'DEFAULT_AUTHENTICATION_CLASSES': (
 
-        # 'autho.authentication.CustomJWTAuthentication',
         # 'rest_framework.authentication.BasicAuthentication',
-        'autho.authentication.CustomSimpleJWTAuthentication'
+        'autho.authentication.CustomSimpleJWTAuthentication',
     ),
 }
 
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('BM',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     "TOKEN_OBTAIN_SERIALIZER": "autho.serializers.LoginSerializer",
     # "TOKEN_OBTAIN_VIEW": "permission.permissions.BazraPermission",
 }

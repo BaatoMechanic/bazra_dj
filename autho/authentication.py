@@ -132,6 +132,9 @@ class CustomSimpleJWTAuthentication(JWTAuthentication):
         password = credentials.get('password')
 
         if user_identifier is None or password is None:
+            header = self.get_header(request)
+            if header is not None:
+                return self.get_user_from_token(header)
             return None
 
         user = User.objects.filter(Q(email=user_identifier) | Q(phone=user_identifier), is_obsolete=False).first()
@@ -148,17 +151,27 @@ class CustomSimpleJWTAuthentication(JWTAuthentication):
 
         return user, payload
 
+    def get_user_from_token(self, header):
+        raw_token = super().get_raw_token(header)
+
+        if raw_token is None:
+            return None
+
+        validated_token = super().get_validated_token(raw_token)
+
+        return super().get_user(validated_token), validated_token
+
     def get_user(self, id):
         try:
             return User.objects.get(id=id)
         except ObjectDoesNotExist:
             return None
 
-    @classmethod
-    def create_tokens(cls, user: User):
-        refresh = RefreshToken.for_user(user)
+    # @classmethod
+    # def create_tokens(cls, user: User):
+    #     refresh = RefreshToken.for_user(user)
 
-        return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }
+    #     return {
+    #         'refresh': str(refresh),
+    #         'access': str(refresh.access_token),
+    #     }

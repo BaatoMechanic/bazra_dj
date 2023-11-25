@@ -11,6 +11,8 @@ from django import forms
 
 from django.contrib.auth import get_user_model
 
+from autho import models
+
 User = get_user_model()
 
 
@@ -118,3 +120,9 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(User, UserAdmin)
+
+
+@admin.register(models.RatingAndReview)
+class RatingAndReviewAdmin(admin.ModelAdmin):
+    list_display = ('user', 'review_by', 'rating', 'review')
+    readonly_fields = ('user', 'review_by', 'rating', 'review')

@@ -62,7 +62,8 @@ def verified_has_permission(user: User, name: str, method: str) -> bool:
     Returns:
         bool: True if the permission has been granted, False otherwise
     '''
-    roles: List[Role] = user.roles.all()
+    roles: List[Role] = list(user.roles.all())
+    roles.append(user.primary_role)
     return Permission.is_permission_granted(name=name, method=method, roles=roles)
 
 
