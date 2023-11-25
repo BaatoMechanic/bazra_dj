@@ -19,11 +19,6 @@ from django.contrib.auth import get_user_model
 
 from django.contrib.auth.models import update_last_login
 
-# from autho.models import User
-
-
-from rest_framework_simplejwt.tokens import RefreshToken
-
 User = get_user_model()
 
 
@@ -127,7 +122,8 @@ class CustomSimpleJWTAuthentication(JWTAuthentication):
     def authenticate(self, request=None, **credentials):
 
         # token = request.META.get('HTTP_AUTHORIZATION')
-        # using or beacuse user_identifier can be in username if login from admin panel and user_identifier if login from api endpoints
+        # using or beacuse user_identifier can be in username if login from admin panel and user_identifier
+        # if login from api endpoints
         user_identifier = credentials.get('user_identifier') or credentials.get('username')
         password = credentials.get('password')
 
@@ -166,12 +162,3 @@ class CustomSimpleJWTAuthentication(JWTAuthentication):
             return User.objects.get(id=id)
         except ObjectDoesNotExist:
             return None
-
-    # @classmethod
-    # def create_tokens(cls, user: User):
-    #     refresh = RefreshToken.for_user(user)
-
-    #     return {
-    #         'refresh': str(refresh),
-    #         'access': str(refresh.access_token),
-    #     }

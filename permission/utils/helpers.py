@@ -1,4 +1,4 @@
-from rest_framework.viewsets import ModelViewSet
+
 from django.urls.resolvers import ResolverMatch
 from typing import Union
 from django.urls.resolvers import URLPattern
@@ -10,11 +10,11 @@ import itertools
 from django.core.exceptions import ObjectDoesNotExist
 
 from django.conf import settings
-from django.db import IntegrityError
-from django.urls import URLPattern, URLResolver
+
+from django.urls import URLResolver
 
 from rest_framework.viewsets import ViewSet
-from typing import Callable, Optional, List, Any, Union, Type, Dict, Set
+from typing import Callable, Optional, List, Any, Type, Dict, Set
 from permission import permission_maps
 
 
@@ -90,7 +90,8 @@ def is_django_class_view(url: Any) -> bool:
         bool: True if the URL is a Django class-based view, False otherwise.
     """
     cls: Optional[Callable] = getattr(url.callback, "cls", getattr(url.callback, "view_class", None))
-    return cls is not None and not re.search("WrappedAPIView", str(url.callback)) and any(method in dir(cls) for method in HTTP_METHODS)
+    return cls is not None and not re.search("WrappedAPIView", str(url.callback)) \
+        and any(method in dir(cls) for method in HTTP_METHODS)
 
 
 def is_rest_decorated_view(url: Union[URLPattern, URLResolver]) -> bool:
@@ -341,7 +342,8 @@ def get_rest_non_model_viewset_permission(url: URLPattern) -> List[Dict[str, str
         url (URLPattern): The URL pattern of the viewset action.
 
     Returns:
-        List[Dict[str, str]]: A list of permissions, where each permission is a dictionary with the keys 'method' and 'detail'.
+        List[Dict[str, str]]: A list of permissions, where each permission is a dictionary
+        with the keys 'method' and 'detail'.
     """
     action = get_rest_non_model_viewset_action(url)
     permissions = [
