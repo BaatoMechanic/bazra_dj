@@ -1,11 +1,18 @@
+
 from django.db import models
 
+
+from django.http import HttpRequest
 from utils.mixins.base_model_mixin import BaseModelMixin
 
-from django.contrib.auth import get_user_model
 from vehicle_repair.models.vehicle_category import VehicleCategory
 
 from vehicle_repair.models.vehicle_part import VehiclePart
+
+# from utils.validators import validate_file_size
+
+from django.contrib.auth import get_user_model
+
 User = get_user_model()
 
 
@@ -20,12 +27,29 @@ VEHICLE_REPAIR_STATUS_COMPLETED = "completed"
 VEHICLE_REPAIR_STATUS_CANCELLED = "cancelled"
 
 
+VEHICLE_REPAIR_STATUS_CHOICES = [
+    (VEHICLE_REPAIR_STATUS_PENDING, VEHICLE_REPAIR_STATUS_PENDING.capitalize()),
+    (VEHICLE_REPAIR_STATUS_WAITING_FRO_USER_ACCEPTANCE, VEHICLE_REPAIR_STATUS_WAITING_FRO_USER_ACCEPTANCE.capitalize()),
+    (VEHICLE_REPAIR_STATUS_WAITING_FRO_ADVANCE_PAYMENT, VEHICLE_REPAIR_STATUS_WAITING_FRO_ADVANCE_PAYMENT.capitalize()),
+    (VEHICLE_REPAIR_STATUS_WAITING_FRO_MECHANIC, VEHICLE_REPAIR_STATUS_WAITING_FRO_MECHANIC.capitalize()),
+    (VEHICLE_REPAIR_STATUS_IN_PROGRESS, VEHICLE_REPAIR_STATUS_IN_PROGRESS.capitalize()),
+    (VEHICLE_REPAIR_STATUS_IN_HALT, VEHICLE_REPAIR_STATUS_IN_HALT.capitalize()),
+    (VEHICLE_REPAIR_STATUS_WAITING_COMPLETION_ACCEPTANCE, VEHICLE_REPAIR_STATUS_WAITING_COMPLETION_ACCEPTANCE.capitalize()),
+    (VEHICLE_REPAIR_STATUS_COMPLETED, VEHICLE_REPAIR_STATUS_COMPLETED.capitalize()),
+    (VEHICLE_REPAIR_STATUS_CANCELLED, VEHICLE_REPAIR_STATUS_CANCELLED.capitalize()),
+]
+
+
 class VehicleRepairRequest(BaseModelMixin):
 
-    customer = models.ForeignKey(
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    status = models.CharField(max_length=255, default=VEHICLE_REPAIR_STATUS_PENDING,
+                              choices=VEHICLE_REPAIR_STATUS_CHOICES)
+    user = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name="vehicle_repair_requests"
     )
-    preferred_mechanic = models.OneToOneField(
+    preferred_mechanic = models.ForeignKey(
         User, on_delete=models.SET_NULL, related_name="vehicle_repair_preferred_mechanics", null=True
     )
     assigned_mechanic = models.OneToOneField(
@@ -33,6 +57,50 @@ class VehicleRepairRequest(BaseModelMixin):
     )
     vehicle_type = models.ForeignKey(VehicleCategory, on_delete=models.PROTECT, related_name="vehicle_repair")
     vehicle_part = models.ForeignKey(VehiclePart, on_delete=models.PROTECT, related_name="vehicle_repair")
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-    status = models.CharField(max_length=255)
+
+    def __str__(self) -> str:
+        return f"{self.user} => {self.title}"
+        # return self.idx
+
+    def can_retrieve(self, request: HttpRequest) -> bool:
+        """
+        Check if the current user can retrieve the data.
+
+        Args:
+            request (HttpRequest): The HTTP request object.
+
+        Returns:
+            bool: True if the user can retrieve the data, False otherwise.
+        """
+        request_user: User = request.user
+
+        if request_user.isa("Superuser"):
+            return True
+
+        user: User = self.user
+        assigned_mechanic: User = self.assigned_mechanic
+
+        return request_user == user or request_user == assigned_mechanic
+
+
+class VehicleRepairRequestImage(BaseModelMixin):
+    repair_request = models.ForeignKey(VehicleRepairRequest, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="vehicle_repair_request/images")
+    # image = models.ImageField(upload_to="vehicle_repair_request/images", validators=[validate_file_size])
+
+    def __str__(self) -> str:
+        return self.idx
+
+    def can_retrieve(self, request: HttpRequest) -> bool:
+        return True
+
+
+class VehicleRepairRequestVideo(BaseModelMixin):
+    repair_request = models.ForeignKey(VehicleRepairRequest, on_delete=models.CASCADE, related_name="videos")
+    video = models.ImageField(upload_to="vehicle_repair_request/videos")
+
+    def __str__(self) -> str:
+        return self.idx
+
+    def can_retrieve(self, request: HttpRequest) -> bool:
+        return True

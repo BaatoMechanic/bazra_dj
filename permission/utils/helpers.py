@@ -201,32 +201,46 @@ def get_rest_model_viewset_action(url: URLPattern, action_name: str) -> Optional
     return getattr(cls, action_name, None)
 
 
-def get_rest_non_model_viewset_action(url: Callable) -> Callable:
-    """
-    Returns the action method corresponding to the given URL.
+# def get_rest_non_model_viewset_action(url: Callable) -> Callable:
+#     """
+#     Returns the action method corresponding to the given URL.
 
-    Args:
-        url (Callable): The URL callback function.
+#     Args:
+#         url (Callable): The URL callback function.
 
-    Returns:
-        Callable: The action method corresponding to the URL.
-    """
+#     Returns:
+#         Callable: The action method corresponding to the URL.
+#     """
+#     cls = getattr(url.callback, "cls")
+#     frags = url.name.split("-")
+
+#     def get_action(frags: List[str]) -> Callable:
+#         """
+#         Retrieve the action based on the given fragments.
+
+#         Args:
+#             frags: A list of strings representing the action fragments.
+
+#         Returns:
+#             The action corresponding to the fragments.
+
+#         """
+#         action_name = "_".join(frags[1:])
+#         return getattr(cls, action_name, get_action(frags))
+
+#     return get_action(frags)
+
+def get_rest_non_model_viewset_action(url):
     cls = getattr(url.callback, "cls")
     frags = url.name.split("-")
 
-    def get_action(frags: List[str]) -> Callable:
-        """
-        Retrieve the action based on the given fragments.
-
-        Args:
-            frags: A list of strings representing the action fragments.
-
-        Returns:
-            The action corresponding to the fragments.
-
-        """
-        action_name = "_".join(frags[1:])
-        return getattr(cls, action_name, get_action(frags))
+    def get_action(frags):
+        try:
+            frags.pop(0)
+            action_name = "_".join(frags)
+            return getattr(cls, action_name)
+        except AttributeError:
+            return get_action(frags)
 
     return get_action(frags)
 
@@ -334,25 +348,42 @@ def get_rest_model_viewset_permission(url: Any) -> List[Dict[str, Any]]:
     return permissions
 
 
-def get_rest_non_model_viewset_permission(url: URLPattern) -> List[Dict[str, str]]:
-    """
-    Retrieves the permissions of a non-model viewset action.
+# def get_rest_non_model_viewset_permission(url: URLPattern) -> List[Dict[str, str]]:
+#     """
+#     Retrieves the permissions of a non-model viewset action.
 
-    Args:
-        url (URLPattern): The URL pattern of the viewset action.
+#     Args:
+#         url (URLPattern): The URL pattern of the viewset action.
 
-    Returns:
-        List[Dict[str, str]]: A list of permissions, where each permission is a dictionary
-        with the keys 'method' and 'detail'.
-    """
+#     Returns:
+#         List[Dict[str, str]]: A list of permissions, where each permission is a dictionary
+#         with the keys 'method' and 'detail'.
+#     """
+#     action = get_rest_non_model_viewset_action(url)
+#     permissions = [
+#         {
+#             "method": method,
+#             "detail": remove_special_characters(action.__doc__ or "")
+#         }
+#         for method in list(action.bind_to_methods)
+#     ]
+#     return permissions
+
+def get_rest_non_model_viewset_permission(url):
     action = get_rest_non_model_viewset_action(url)
-    permissions = [
-        {
-            "method": method,
-            "detail": remove_special_characters(action.__doc__ or "")
-        }
-        for method in list(action.bind_to_methods)
-    ]
+    permissions = []
+    try:
+        for method in list(action.bind_to_methods):
+            permissions.append({
+                "method": method,
+                "detail": remove_special_characters(action.__doc__ or "")
+            })
+    except AttributeError:
+        for method in action.mapping:
+            permissions.append({
+                "method": method,
+                "detail": remove_special_characters(action.__doc__ or "")
+            })
     return permissions
 
 

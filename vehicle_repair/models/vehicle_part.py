@@ -12,3 +12,6 @@ class VehiclePart(BaseModelMixin):
     image = models.ImageField(upload_to="vehicle_parts", null=True, blank=True)
     is_multiple = models.BooleanField(default=False)
     position = models.CharField(max_length=255)
+
+    def __str__(self) -> str:
+        return self.name

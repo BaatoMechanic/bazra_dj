@@ -11,6 +11,19 @@ VERIFY_TOKEN_API = [
 ]
 
 
+USER_API = [
+    ("users_info-me", "get"),
+]
+
+
+REGISTER_API = [
+    ("users_management-register", "post"),
+]
+USER_DELETE_API = [
+    ("users_management-delete-user", "delete"),
+]
+
+
 REVIEWS_READ_ONLY_API = [
     ("reviews-list", "get"),
 ]

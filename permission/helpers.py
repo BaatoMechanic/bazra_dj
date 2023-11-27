@@ -1,38 +1,38 @@
 
 
-import sys
+from typing import List
 from django.http import HttpRequest
 from django.urls import resolve
 
 from .models import Permission, Role
 
-from autho.models.user import User
+from autho.models import User
 
 
-from typing import Union, List
-
-
-def has_permission(request: HttpRequest) -> Union[bool, str]:
+def has_permission(request: HttpRequest) -> bool:
     """
-    Determine if the user has permission to access the requested URL.
+    Checks if the user has permission to access the requested URL.
 
     Args:
-        request (HttpRequest): The request object.
+        request (HttpRequest): The HTTP request object.
 
     Returns:
-        Union[bool, str]: True if the user has permission, False otherwise. If the user is not authenticated, a string
-        indicating the reason for the permission denial is returned.
+        bool: True if the user has permission, False otherwise.
     """
-
     user: User = request.user
     url_name: str = resolve(request.path_info).url_name
     method: str = request.method.lower()
-    if user.is_authenticated and not user.is_obsolete:
-        if user.is_verified:
-            return verified_has_permission(user, url_name, method)
-        else:
-            return unverified_has_permission(user, url_name, method)
-    return anonymous_has_permission(url_name, method)
+
+    if not user.is_authenticated or user.is_obsolete:
+        return anonymous_has_permission(url_name, method)
+
+    if user.isa("Superuser"):
+        return True
+
+    if user.is_verified:
+        return verified_has_permission(user, url_name, method)
+
+    return unverified_has_permission(user, url_name, method)
 
 
 def anonymous_has_permission(name: str, method: str) -> bool:
@@ -79,6 +79,5 @@ def unverified_has_permission(user: User, name: str, method: str) -> bool:
     Returns:
         bool: True if the permission has been granted, False otherwise
     '''
-    # For now it works the same as anonymous role
-    # will change if different permissions are added for the unverified role
-    return anonymous_has_permission(name, method)
+    roles: List[Role] = Role.objects.filter(name="Unverified")
+    return Permission.is_permission_granted(name=name, method=method, roles=roles)
