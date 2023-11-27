@@ -1,7 +1,13 @@
+from dataclasses import field
+import re
+import sys
+from typing import Optional
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 from autho.models.verification_code import VerificationCode
+from permission.models import Role
 from utils.mixins.base_model_mixin import BaseModelMixin
 
 
@@ -11,9 +17,9 @@ from autho.models.user_blacklist import UserBlackList
 class UserManager(BaseUserManager):
     def create_user(self,  **fields):
         donot_send_code = fields.pop("donot_send_code", None)
-        email = fields.get('email')
-        phone = fields.get('phone')
-        password = fields.get('password')
+        email = fields.pop('email', None)
+        phone = fields.pop('phone', None)
+        password = fields.pop('password', None)
         if not email and not phone:
             raise ValueError("Either of both of 'email and mobile' is required to create an user.")
 
@@ -139,10 +145,43 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     def __str__(self):
         return self.name
 
-    def gen_verification_code(self):
+    def isa(self, role: str) -> bool:
+        """
+        Check if the user has the given role.
+
+        Args:
+            role: The role to check.
+
+        Returns:
+            True if the user has the given role, False otherwise.
+        """
+        return (
+            self.primary_role is not None and self.primary_role.name == role
+        ) or self.roles.filter(name=role).exists()
+
+    def delete(self) -> None:
+        self.__class__.objects.filter(id=self.id).update(is_active=False, is_obsolete=True)
+
+    def gen_verification_code(self) -> Optional[VerificationCode]:
+        """Generate a verification code for the user.
+
+        Returns:
+            The generated verification code, or None if the user is already verified.
+        """
         if self.is_verified:
             raise Exception("User is already verified.")
         if hasattr(self, 'verification_code'):
             return self.verification_code.update_code()
         verification_code, _ = VerificationCode.objects.get_or_create(user=self)
         return verification_code
+
+    @classmethod
+    def get_user_by_identifier(cls, id):
+        try:
+            if re.match("^\d{10}$", str(id)):
+                return cls.objects.get(phone=id)
+
+            if re.match("^(.+?)@(.+?)\.(.+?)$", id):
+                return cls.objects.get(email=id)
+        except cls.DoesNotExist:
+            return None

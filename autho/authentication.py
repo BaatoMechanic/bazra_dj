@@ -145,7 +145,8 @@ class CustomSimpleJWTAuthentication(JWTAuthentication):
 
         payload = {}
 
-        return user, payload
+        # return user, payload
+        return user
 
     def get_user_from_token(self, header):
         raw_token = super().get_raw_token(header)

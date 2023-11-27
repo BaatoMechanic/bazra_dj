@@ -7,7 +7,7 @@ class Permission(BaseModelMixin):
     name = models.CharField(max_length=100)
     url = models.CharField(max_length=255)
     method = models.CharField(max_length=10)
-    description = models.CharField(max_length=500)
+    description = models.CharField(max_length=1000)
     is_obsolete = models.BooleanField(default=False, db_index=True)
 
     class Meta:

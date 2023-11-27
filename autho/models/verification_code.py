@@ -17,6 +17,9 @@ class VerificationCode(BaseModelMixin):
     tries = models.PositiveIntegerField(default=0)
     expires_on = models.DateTimeField(default=timezone.now() + timezone.timedelta(minutes=settings.OTP_TTL))
 
+    def __str__(self) -> str:
+        return self.idx
+
     def update_code(self):
         self.code = generate_6digit_number()
         self.tries = 0

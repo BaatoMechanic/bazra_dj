@@ -110,6 +110,7 @@ class UserAdmin(BaseUserAdmin):
                     "is_active",
                     "is_staff",
                     "is_superuser",
+                    "is_obsolete",
                     "groups",
                     "user_permissions",
                 ),
@@ -126,3 +127,8 @@ admin.site.register(User, UserAdmin)
 class RatingAndReviewAdmin(admin.ModelAdmin):
     list_display = ('user', 'review_by', 'rating', 'review')
     readonly_fields = ('user', 'review_by', 'rating', 'review')
+
+
+@admin.register(models.MechanicProfile)
+class MechanicAttributeAdmin(admin.ModelAdmin):
+    list_display = ('mechanic', 'vehicle_speciality', 'vehicle_part_speciality')
