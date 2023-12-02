@@ -160,6 +160,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         ) or self.roles.filter(name=role).exists()
 
     def delete(self) -> None:
+
         self.__class__.objects.filter(id=self.id).update(is_active=False, is_obsolete=True)
 
     def gen_verification_code(self) -> Optional[VerificationCode]:
