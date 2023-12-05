@@ -98,7 +98,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {"fields": ("password", "email", "phone")}),
         (("Personal info"), {"fields": ("name", "gender", "dob_type", "dob")}),
-        (None, {"fields": ("auth_provider", )}),
+        (None, {"fields": ("image", "auth_provider", )}),
         (("Roles"), {"fields": ("primary_role", "roles")}),
         (
             ("Permissions"),

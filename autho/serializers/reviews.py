@@ -6,9 +6,10 @@ from rest_framework import serializers
 from autho.models import User
 
 from autho.models.rating_review import RatingAndReview
+from utils.mixins.serializer_mixins import BaseModelSerializerMixin
 
 
-class RatingAndReviewSerializer(serializers.ModelSerializer):
+class RatingAndReviewSerializer(BaseModelSerializerMixin):
     class Meta:
         model = RatingAndReview
         fields = ['rating', 'review', 'user', 'review_by']
