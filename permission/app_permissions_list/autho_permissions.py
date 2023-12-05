@@ -26,6 +26,7 @@ USER_DELETE_API = [
 
 REVIEWS_READ_ONLY_API = [
     ("reviews-list", "get"),
+    ("reviews-mechanic-reviews", "get"),
 ]
 
 

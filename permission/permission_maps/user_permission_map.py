@@ -29,6 +29,7 @@ def get_unverified_permission_map():
         AUTH_API,
         USER_API,
         USER_DELETE_API,
+        REVIEWS_READ_ONLY_API,
     ]
 
 
