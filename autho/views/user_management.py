@@ -4,11 +4,7 @@ import json
 from django.http import HttpRequest
 from rest_framework import status
 from autho.serializers.user_registration import UserRegistrationSerializer
-from permission.permissions import BazraPermission
 
-from rest_framework.renderers import JSONRenderer
-
-from rest_framework.decorators import api_view, renderer_classes, permission_classes
 
 from rest_framework.decorators import action
 from utils.api_response import api_response_error, api_response_success

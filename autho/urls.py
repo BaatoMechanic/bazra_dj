@@ -7,7 +7,7 @@ from rest_framework_nested import routers
 router = routers.DefaultRouter()
 
 router.register("reviews", views.RatingAndReviewViewSet, basename="reviews")
-router.register("users_info", views.UserInfoViewSet, basename="users_info")
+router.register("user_info", views.UserInfoViewSet, basename="user_info")
 router.register('users_management', views.UserManagementViewSet, basename='users_management')
 
 

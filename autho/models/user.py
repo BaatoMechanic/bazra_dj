@@ -5,6 +5,7 @@ from typing import Optional
 
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.http import HttpRequest
 
 from autho.models.verification_code import VerificationCode
 from permission.models import Role
@@ -105,6 +106,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     auth_provider = models.CharField(
         max_length=50, blank=False, null=False, choices=AUTH_PROVIDER_CHOICES, default=AUTH_PROVIDER_EMAIL)
     is_verified = models.BooleanField(default=False, db_index=True)
+    
 
     is_mobile_verified = models.BooleanField(default=False)
     is_email_verified = models.BooleanField(default=False)
@@ -131,6 +133,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         null=True,
         db_index=True)
     roles = models.ManyToManyField("permission.Role", related_name="users", blank=True)
+    additional_attributes = models.JSONField(blank=True)
     dob_type = models.CharField(max_length=2, choices=DATE_TYPE_CHOICES, default="AD")
     dob = models.DateField(null=True, blank=True)
 
@@ -143,7 +146,10 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         verbose_name_plural = ("users")
 
     def __str__(self):
-        return self.name
+        return self.idx
+
+    def can_retrieve(self, request: HttpRequest) -> bool:
+        return True
 
     def isa(self, role: str) -> bool:
         """

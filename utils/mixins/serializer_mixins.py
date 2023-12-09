@@ -9,10 +9,10 @@ class BaseModelSerializerMixin(serializers.ModelSerializer):
 
     class Meta:
 
-        exclude = ("id", "modified_on", "is_obsolete")
+        exclude = ("id", "modified_at", "is_obsolete")
         extra_kwargs = {
-            "created_on": {"read_only": True},
-            "modified_on": {"read_only": True}
+            "created_at": {"read_only": True},
+            "modified_at": {"read_only": True}
         }
 
     def to_representation(self, instance):
