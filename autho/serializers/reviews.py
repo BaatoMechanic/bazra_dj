@@ -1,3 +1,4 @@
+import string
 from typing import Any, Dict
 
 from rest_framework import serializers
@@ -10,9 +11,14 @@ from utils.mixins.serializer_mixins import BaseModelSerializerMixin
 
 
 class RatingAndReviewSerializer(BaseModelSerializerMixin):
+    reviewer = serializers.CharField(source='review_by', read_only=True)
+    reviewed = serializers.CharField(source='user', read_only=True)
+    user = serializers.CharField(write_only=True)
+
     class Meta:
         model = RatingAndReview
-        fields = ['rating', 'review', 'user', 'review_by']
+        # fields = ['idx', 'rating', 'review', 'user', 'review_by']
+        fields = ['idx', 'rating', 'review', 'reviewer', 'reviewed', 'user', 'created_at']
 
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -30,9 +36,11 @@ class RatingAndReviewSerializer(BaseModelSerializerMixin):
         review_by: User = self.context.get('request').user
         attrs['review_by'] = review_by
 
-        user: User = attrs.get("user")
+        userIdx: string = attrs.get("user")
+        user: User = User.objects.get(idx=userIdx)
 
         if review_by == user:
             raise serializers.ValidationError({"user": ["You can't rate yourself."]})
 
+        attrs['user'] = user
         return super().validate(attrs)

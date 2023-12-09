@@ -12,9 +12,13 @@ VERIFY_TOKEN_API = [
 
 
 USER_API = [
-    ("users_info-me", "get"),
+    ("user_info-me", "get"),
 ]
 
+USER_PUBLIC_API = [
+
+    ("user_info-detail", "get"),
+]
 
 REGISTER_API = [
     ("users_management-register", "post"),

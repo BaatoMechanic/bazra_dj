@@ -9,14 +9,17 @@ from rest_framework.response import Response
 
 from utils.mixins.base_api_mixin import BaseAPIMixin
 
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.viewsets import ModelViewSet
 
 
-class UserInfoViewSet(BaseAPIMixin, GenericViewSet):
+class UserInfoViewSet(BaseAPIMixin, ModelViewSet):
     '''
     This file is responsible to perform all the user info logic for the project.
     Any user information logic should be added here.
     '''
+
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
     @action(detail=False, methods=['GET', 'PUT'])
     def me(self, request):

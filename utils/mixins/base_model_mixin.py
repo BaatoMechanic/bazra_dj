@@ -5,8 +5,8 @@ from shortuuidfield import ShortUUIDField
 
 class BaseModelMixin(models.Model):
     idx = ShortUUIDField()
-    created_on = models.DateTimeField(auto_now_add=True)
-    modified_on = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
     is_obsolete = models.BooleanField(default=False, db_index=True)
 
     class Meta:

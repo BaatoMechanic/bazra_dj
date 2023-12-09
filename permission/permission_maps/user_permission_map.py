@@ -6,6 +6,7 @@ from permission.app_permissions_list.autho_permissions import (
     REVIEWS_READ_ONLY_API,
     REVIEWS_WRITE_API,
     USER_API,
+    USER_PUBLIC_API,
     VERIFY_TOKEN_API,
     USER_DELETE_API
 )
@@ -46,6 +47,7 @@ def get_superuser_permission_map():
         VEHICLE_REPAIR_REQUEST_VIDEOS_READ_API,
         VEHICLE_REPAIR_REQUEST_VIDEOS_WRITE_API,
         USER_API,
+        USER_PUBLIC_API,
     ]
 
 
@@ -61,6 +63,7 @@ def get_consumer_permission_map():
         VEHICLE_REPAIR_REQUEST_VIDEOS_READ_API,
         VEHICLE_REPAIR_REQUEST_VIDEOS_WRITE_API,
         USER_API,
+        USER_PUBLIC_API,
         USER_DELETE_API,
     ]
 

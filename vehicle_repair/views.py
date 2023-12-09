@@ -24,7 +24,10 @@ class VehicleRepairRequestImageViewSet(BaseAPIMixin, ModelViewSet):
     serializer_class = VehicleRepairRequestImageSerializer
 
     def get_queryset(self):
-        return VehicleRepairRequestImage.objects.filter(repair_request_id=self.kwargs["repair_request_pk"])
+        repair_request: VehicleRepairRequest = VehicleRepairRequest.objects.get(
+            idx=self.kwargs["repair_request_idx"],
+        )
+        return VehicleRepairRequestImage.objects.filter(repair_request_id=repair_request.id)
 
 
 class VehicleRepairRequestVideoViewSet(BaseAPIMixin, ModelViewSet):
@@ -33,4 +36,7 @@ class VehicleRepairRequestVideoViewSet(BaseAPIMixin, ModelViewSet):
     serializer_class = VehicleRepairRequestVideoSerializer
 
     def get_queryset(self):
-        return VehicleRepairRequestVideo.objects.filter(repair_request_id=self.kwargs["repair_request_pk"])
+        repair_request: VehicleRepairRequest = VehicleRepairRequest.objects.get(
+            idx=self.kwargs["repair_request_idx"],
+        )
+        return VehicleRepairRequestVideo.objects.filter(repair_request_id=repair_request.id)

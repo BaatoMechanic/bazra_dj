@@ -118,9 +118,13 @@ def is_rest_model_viewset(url: URLPattern) -> bool:
     """
 
     cls: Type[Any] = getattr(url.callback, "cls", None)
-    return bool(
+    # return bool(
+    #     set(REST_ACTIONS).intersection(dir(cls)) and cls.queryset.model
+    # )
+    ad = bool(
         set(REST_ACTIONS).intersection(dir(cls)) and cls.queryset.model
     )
+    return ad
 
 
 def is_rest_non_model_viewset(url: ResolverMatch) -> bool:
