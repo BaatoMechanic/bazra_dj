@@ -23,7 +23,7 @@ VEHICLE_REPAIR_STATUS_WAITING_FRO_MECHANIC = "waiting_for_mechanic"
 VEHICLE_REPAIR_STATUS_IN_PROGRESS = "in_progress"
 VEHICLE_REPAIR_STATUS_IN_HALT = "halt"
 VEHICLE_REPAIR_STATUS_WAITING_COMPLETION_ACCEPTANCE = "waiting_for_completion_acceptance"
-VEHICLE_REPAIR_STATUS_COMPLETED = "completed"
+VEHICLE_REPAIR_STATUS_COMPLETED = "complete"
 VEHICLE_REPAIR_STATUS_CANCELLED = "cancelled"
 
 
@@ -50,17 +50,17 @@ class VehicleRepairRequest(BaseModelMixin):
         User, on_delete=models.PROTECT, related_name="vehicle_repair_requests"
     )
     preferred_mechanic = models.ForeignKey(
-        User, on_delete=models.SET_NULL, related_name="vehicle_repair_preferred_mechanics", null=True
+        User, on_delete=models.SET_NULL, related_name="vehicle_repairs_preferred_mechanic", null=True
     )
-    assigned_mechanic = models.OneToOneField(
-        User, on_delete=models.PROTECT, related_name="vehicle_repair_assigned_mechanics", null=True
+    assigned_mechanic = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name="vehicle_repairs_assigned_mechanic", null=True
     )
     vehicle_type = models.ForeignKey(VehicleCategory, on_delete=models.PROTECT, related_name="vehicle_repair")
     vehicle_part = models.ForeignKey(VehiclePart, on_delete=models.PROTECT, related_name="vehicle_repair")
 
     def __str__(self) -> str:
-        return f"{self.user} => {self.title}"
-        # return self.idx
+        # return f"{self.user} => {self.title}"
+        return self.idx
 
     def can_retrieve(self, request: HttpRequest) -> bool:
         """
@@ -81,6 +81,16 @@ class VehicleRepairRequest(BaseModelMixin):
         assigned_mechanic: User = self.assigned_mechanic
 
         return request_user == user or request_user == assigned_mechanic
+
+    def can_partial_update(self, request: HttpRequest) -> bool:
+        request_user: User = request.user
+
+        if request_user.isa("Superuser"):
+            return True
+
+        user: User = self.user
+
+        return request_user == user
 
 
 class VehicleRepairRequestImage(BaseModelMixin):

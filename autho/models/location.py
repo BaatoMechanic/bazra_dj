@@ -8,7 +8,7 @@ User = get_user_model()
 
 
 class UserLocation(BaseModelMixin):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+")
     latitude = models.FloatField()
     longitude = models.FloatField()
     altitude = models.FloatField()

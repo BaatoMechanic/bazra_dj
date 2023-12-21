@@ -5,7 +5,7 @@ from rest_framework.viewsets import ModelViewSet
 from utils.mixins.base_api_mixin import BaseAPIMixin
 from vehicle_repair.models import VehicleRepairRequest
 from vehicle_repair.models.vehicle_repair_request import VehicleRepairRequestImage, VehicleRepairRequestVideo
-from vehicle_repair.serializers import VehicleRepairRequestImageSerializer, VehicleRepairRequestSerializer, VehicleRepairRequestVideoSerializer
+from vehicle_repair.serializers.vehicle_repair_request import VehicleRepairRequestImageSerializer, VehicleRepairRequestSerializer, VehicleRepairRequestVideoSerializer
 # Create your views here.
 
 

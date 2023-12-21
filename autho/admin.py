@@ -132,3 +132,13 @@ class RatingAndReviewAdmin(admin.ModelAdmin):
 @admin.register(models.MechanicProfile)
 class MechanicAttributeAdmin(admin.ModelAdmin):
     list_display = ('mechanic', 'vehicle_speciality', 'vehicle_part_speciality')
+
+
+@admin.register(models.MechanicTip)
+class MechanicTipAdmin(admin.ModelAdmin):
+    list_display = ('mechanic', 'tip',)
+
+
+@admin.register(models.UserLocation)
+class UserLocationAdmin(admin.ModelAdmin):
+    list_display = ('user',)
