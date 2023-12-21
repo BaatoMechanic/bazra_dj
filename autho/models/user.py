@@ -11,6 +11,7 @@ from autho.models.verification_code import VerificationCode
 from permission.models import Role
 from utils.mixins.base_model_mixin import BaseModelMixin
 
+from django.db.models import Sum
 
 from autho.models.user_blacklist import UserBlackList
 
@@ -105,11 +106,11 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     gender = models.CharField(max_length=20, choices=GENDER_CHOCES, default=GENDER_MALE)
     auth_provider = models.CharField(
         max_length=50, blank=False, null=False, choices=AUTH_PROVIDER_CHOICES, default=AUTH_PROVIDER_EMAIL)
-    is_verified = models.BooleanField(default=False, db_index=True)
-    
+    image = models.ImageField(upload_to="users/profile", null=True, blank=True)
 
     is_mobile_verified = models.BooleanField(default=False)
     is_email_verified = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False, db_index=True)
 
     is_staff = models.BooleanField(
         ("staff status"),
@@ -124,8 +125,6 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
             "Unselect this instead of deleting accounts."
         ),
     )
-
-    image = models.ImageField(upload_to="users/profile", null=True, blank=True)
 
     primary_role = models.ForeignKey(
         "permission.Role", on_delete=models.SET_NULL,
@@ -168,6 +167,20 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     def delete(self) -> None:
 
         self.__class__.objects.filter(id=self.id).update(is_active=False, is_obsolete=True)
+
+    @property
+    def ratings(self) -> int:
+        from autho.models.rating_review import RatingAndReview
+
+        # return RatingAndReview.objects.filter(user=self).count()
+        return RatingAndReview.objects.filter(user=self).aggregate(Sum('rating'))['rating__sum']
+
+    # @property
+    # def location(self):
+    #     from autho.models.location import UserLocation
+
+    #     location = UserLocation.objects.filter(user=self).last()
+    #     return location
 
     def gen_verification_code(self) -> Optional[VerificationCode]:
         """Generate a verification code for the user.

@@ -5,13 +5,13 @@ from django.forms import model_to_dict
 from rest_framework import serializers
 from utils.mixins.serializer_mixins import BaseModelSerializerMixin
 
+
 from vehicle_repair.models import VehicleRepairRequest
 
 
 from django.contrib.auth import get_user_model
 
 
-from autho.serializers import SimpleUserSerializer
 from vehicle_repair.models.vehicle_category import VehicleCategory
 from vehicle_repair.models.vehicle_part import VehiclePart
 from vehicle_repair.models.vehicle_repair_request import VehicleRepairRequestImage, VehicleRepairRequestVideo
@@ -25,8 +25,7 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
     vehicle_part = serializers.CharField(source="vehicle_part.idx")
     preferred_mechanic = serializers.CharField(source="preferred_mechanic.idx", required=False)
 
-    status = serializers.ReadOnlyField()
-    assigned_mechanic = serializers.ReadOnlyField()
+    assigned_mechanic = serializers.CharField(required=False)
 
     class Meta:
         model = VehicleRepairRequest
@@ -64,6 +63,18 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
 
     def create(self, validated_data):
         return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        assigned_mechanic_idx = validated_data.pop('assigned_mechanic', None)
+        if assigned_mechanic_idx:
+            assigned_mechanic = User.objects.filter(idx=assigned_mechanic_idx).first()
+            if not assigned_mechanic:
+                raise serializers.ValidationError({"detail": ["Mechanic does not exist."]})
+            if not hasattr(assigned_mechanic, "mechanic_profile"):
+                raise serializers.ValidationError({"detail": ["Not a mechanic user."]})
+            validated_data['assigned_mechanic'] = assigned_mechanic
+
+        return super().update(instance, validated_data)
 
 
 class VehicleRepairRequestImageSerializer(serializers.ModelSerializer):

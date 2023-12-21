@@ -9,6 +9,7 @@ router = routers.DefaultRouter()
 router.register("reviews", views.RatingAndReviewViewSet, basename="reviews")
 router.register("user_info", views.UserInfoViewSet, basename="user_info")
 router.register('users_management', views.UserManagementViewSet, basename='users_management')
+router.register('mechanic_tips', views.MechanicTipViewSet, basename='mechanic_tips')
 
 
 urlpatterns = [
