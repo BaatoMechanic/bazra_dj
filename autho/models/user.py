@@ -108,7 +108,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         max_length=50, blank=False, null=False, choices=AUTH_PROVIDER_CHOICES, default=AUTH_PROVIDER_EMAIL)
     image = models.ImageField(upload_to="users/profile", null=True, blank=True)
 
-    is_mobile_verified = models.BooleanField(default=False)
+    is_phone_verified = models.BooleanField(default=False)
     is_email_verified = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False, db_index=True)
 
@@ -132,7 +132,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         null=True,
         db_index=True)
     roles = models.ManyToManyField("permission.Role", related_name="users", blank=True)
-    additional_attributes = models.JSONField(blank=True)
+    additional_attributes = models.JSONField(default=dict, blank=True, null=True)
     dob_type = models.CharField(max_length=2, choices=DATE_TYPE_CHOICES, default="AD")
     dob = models.DateField(null=True, blank=True)
 

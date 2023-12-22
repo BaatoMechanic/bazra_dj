@@ -6,7 +6,7 @@ from utils.mixins.base_model_mixin import BaseModelMixin
 class UserBlackList(BaseModelMixin):
 
     email = models.EmailField(blank=True, null=True, unique=True)
-    mobile = models.CharField(max_length=16, unique=True)
+    phone = models.CharField(max_length=16, unique=True)
     created_by = models.ForeignKey(
         "autho.User",
         related_name="blacklist_creators",
@@ -24,16 +24,16 @@ class UserBlackList(BaseModelMixin):
     remarks = models.CharField(max_length=150)
 
     @classmethod
-    def exists(cls, email=None, mobile=None):
+    def exists(cls, email=None, phone=None):
         queryset = cls.objects.filter(is_removed=False)
         if email:
             if queryset.filter(email=email).exists():
                 raise Exception("Email address is blacklist")
-        elif mobile:
-            if queryset.filter(mobile=mobile).exists():
-                raise Exception("Mobile number is blacklist")
+        elif phone:
+            if queryset.filter(phone=phone).exists():
+                raise Exception("Phone number is blacklist")
 
         else:
-            raise Exception("Email or mobile is required")
+            raise Exception("Email or phone is required")
 
         return False
