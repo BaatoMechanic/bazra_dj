@@ -12,7 +12,7 @@ class PhoneNumberField(serializers.CharField):
 
         if not re.match(pattern, num):
             raise serializers.ValidationError(
-                "Phone number should be either a valid mobile number (e.g. 98xxxxxxxx) "
+                "Phone number should be either a valid phone number (e.g. 98xxxxxxxx) "
                 "or a valid landline number with district code (e.g. 014484xxx)"
             )
         return num
@@ -43,7 +43,7 @@ class UserIdentifierField(serializers.CharField):
     def to_internal_value(self, identifier):
         if not self.validate_id_for_phone(identifier) and not self.validate_id_for_email(identifier):
             raise serializers.ValidationError(
-                "The identifier should be either a valid mobile number (e.g. 98xxxxxxxx) "
+                "The identifier should be either a valid phone number (e.g. 98xxxxxxxx) "
                 "or a valid email address"
             )
         return identifier

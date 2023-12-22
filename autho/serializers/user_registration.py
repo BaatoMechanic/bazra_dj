@@ -14,7 +14,7 @@ class UserRegistrationSerializer(serializers.Serializer):
     def create(self, validated_data):
         user_identifier = validated_data.pop('user_identifier')
         if not user_identifier:
-            raise ValueError("Either or both of 'email and mobile' is required to create a user.")
+            raise ValueError("Either or both of 'email and phone' is required to create a user.")
 
         user = User.get_user_by_identifier(user_identifier)
         if user is not None:

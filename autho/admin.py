@@ -63,7 +63,7 @@ class UserCreationForm(BaseUserCreationForm):
                 "Either of both of 'email and mobile' is required to create an user."
             )
         # Check if phone is already taken
-        elif phone and User.objects.filter(mobile=phone).exists():
+        elif phone and User.objects.filter(phone=phone).exists():
             raise forms.ValidationError("User with this mobile already exists.")
 
         return phone
@@ -106,7 +106,7 @@ class UserAdmin(BaseUserAdmin):
                 "fields": (
                     "is_verified",
                     "is_email_verified",
-                    "is_mobile_verified",
+                    "is_phone_verified",
                     "is_active",
                     "is_staff",
                     "is_superuser",
