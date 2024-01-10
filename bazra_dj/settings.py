@@ -41,6 +41,7 @@ ALLOWED_HOSTS = [
 
 
 DJANGO_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -59,6 +60,7 @@ NATIVE_APPS = [
 THIRD_PARTY_APPS = [
     'rest_framework',
     'djoser',
+    'django_filters',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + NATIVE_APPS + THIRD_PARTY_APPS
@@ -75,6 +77,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'bazra_dj.urls'
+ROOT_WEBSOCKETCONF = 'bazra_dj.routing'
 
 TEMPLATES = [
     {
@@ -92,7 +95,18 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'bazra_dj.wsgi.application'
+# WSGI_APPLICATION = 'bazra_dj.wsgi.application'
+ASGI_APPLICATION = 'bazra_dj.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        # 'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('redis', 6379)],
+        },
+    },
+}
 
 
 # Database

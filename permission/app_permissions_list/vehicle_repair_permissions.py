@@ -52,6 +52,18 @@ SERVICE_WRITE_API = [
 ]
 
 
+VEHICLE_CATEOGRY_READ_API = [
+    ("vehicle-categories-list", "get"),
+    ("vehicle-categories-detail", "get"),
+]
+
+VEHICLE_CATEOGRY_WRITE_API = [
+    ("vehicle-categories-list", "post"),
+    ("vehicle-categories-detail", "put"),
+    ("vehicle-categories-detail", "patch"),
+]
+
+
 REPAIR_STEP_READ_API = [
     ("repair_request-steps-list", "get"),
     ("repair_request-steps-detail", "get"),
@@ -62,4 +74,9 @@ REPAIR_STEP_WRITE_API = [
     ("repair_request-steps-list", "post"),
     ("repair_request-steps-detail", "put"),
     ("repair_request-steps-detail", "patch"),
+]
+
+
+REPAIR_REQUEST_LOCATION_API = [
+    ("users_location", "any"),
 ]

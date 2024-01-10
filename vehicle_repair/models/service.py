@@ -2,6 +2,7 @@
 from django.db import models
 
 from utils.mixins.base_model_mixin import BaseModelMixin
+from vehicle_repair.models.vehicle_category import VehicleCategory
 from vehicle_repair.models.vehicle_part import VehiclePart
 
 
@@ -25,6 +26,7 @@ SERVICE_TYPE_OPTION_CHOICES = [
 class Service(BaseModelMixin):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=500)
+    vehicles_included = models.ManyToManyField(VehicleCategory, related_name="services")
     parts_included = models.ManyToManyField(VehiclePart, related_name="services")
     type = models.CharField(max_length=50,
                             choices=SERVICE_TYPE_OPTION_CHOICES,

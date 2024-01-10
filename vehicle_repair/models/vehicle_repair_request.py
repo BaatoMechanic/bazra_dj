@@ -1,9 +1,11 @@
 
+from email.policy import default
 from django.db import models
 
 
 from django.http import HttpRequest
 from utils.mixins.base_model_mixin import BaseModelMixin
+from vehicle_repair.models.service import Service
 
 from vehicle_repair.models.vehicle_category import VehicleCategory
 
@@ -56,7 +58,10 @@ class VehicleRepairRequest(BaseModelMixin):
         User, on_delete=models.PROTECT, related_name="vehicle_repairs_assigned_mechanic", null=True
     )
     vehicle_type = models.ForeignKey(VehicleCategory, on_delete=models.PROTECT, related_name="vehicle_repair")
-    vehicle_part = models.ForeignKey(VehiclePart, on_delete=models.PROTECT, related_name="vehicle_repair")
+    service_type = models.ForeignKey(Service, on_delete=models.PROTECT, related_name="vehicle_repair")
+    # vehicle_part = models.ForeignKey(VehiclePart, on_delete=models.PROTECT, related_name="vehicle_repair")
+    # lat, long, location_name and timestamp are most. Accuracy, altitude and other attributes are optional
+    location = models.JSONField(default=dict)
 
     def __str__(self) -> str:
         # return f"{self.user} => {self.title}"
