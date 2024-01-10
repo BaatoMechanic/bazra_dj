@@ -6,6 +6,7 @@ from rest_framework import serializers
 # User = get_user_model()
 
 from autho.models import User
+from autho.models.mechanic_profile import MechanicProfile
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -19,11 +20,15 @@ class UserSerializer(serializers.ModelSerializer):
     def get_additional_attributes(self, instance):
         attrs = {}
         if hasattr(instance, "mechanic_profile"):
-            attrs['vehicle_category'] = instance.mechanic_profile.vehicle_speciality.idx
-            attrs['vehicle_part'] = instance.mechanic_profile.vehicle_part_speciality.idx
-
-            attrs['rating'] = instance.ratings
-
+            profile: MechanicProfile = instance.mechanic_profile
+            if profile.vehicle_speciality:
+                attrs['vehicle_speciality'] = profile.vehicle_speciality.name
+            if profile.service_speciality:
+                attrs['service_speciality'] = profile.service_speciality.name
+            attrs['total_repairs'] = profile.total_repairs
+            attrs['total_reviews'] = profile.total_reviews
+            attrs['description'] = profile.mechanic_description
+            attrs['rating'] = instance.total_rating
         return attrs
 
     def to_representation(self, instance):

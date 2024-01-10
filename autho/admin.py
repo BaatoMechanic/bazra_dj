@@ -131,7 +131,7 @@ class RatingAndReviewAdmin(admin.ModelAdmin):
 
 @admin.register(models.MechanicProfile)
 class MechanicAttributeAdmin(admin.ModelAdmin):
-    list_display = ('mechanic', 'vehicle_speciality', 'vehicle_part_speciality')
+    list_display = ('mechanic', 'vehicle_speciality', 'service_speciality')
 
 
 @admin.register(models.MechanicTip)

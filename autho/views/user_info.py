@@ -17,6 +17,7 @@ from autho.serializers.location import UserLocationSerializer
 from utils.mixins.base_api_mixin import BaseAPIMixin
 
 from rest_framework.viewsets import ModelViewSet
+from vehicle_repair.models.service import Service
 
 from vehicle_repair.models.vehicle_category import VehicleCategory
 from vehicle_repair.models.vehicle_part import VehiclePart
@@ -46,20 +47,20 @@ class UserInfoViewSet(BaseAPIMixin, ModelViewSet):
 
     @action(detail=False, methods=['GET'])
     def recommended_mechanics(self, request):
-        vehicle_speciality_idx = request.data.get('vehicle_category', None)
-        part_speciality_idx = request.data.get('vehicle_part', None)
+        vehicle_speciality_idx = request.query_params.get('vehicle_category_speciality', None)
+        service_speciality_idx = request.query_params.get('service_speciality', None)
 
         vehicle_speciality = None
         if vehicle_speciality_idx:
             vehicle_speciality = VehicleCategory.objects.filter(idx=vehicle_speciality_idx).first()
 
-        part_speciality = None
-        if part_speciality_idx:
-            part_speciality = VehiclePart.objects.filter(idx=part_speciality_idx).first()
+        service_speciality = None
+        if service_speciality_idx:
+            service_speciality = Service.objects.filter(idx=service_speciality_idx).first()
 
         profiles = MechanicProfile.objects.filter(
             vehicle_speciality=vehicle_speciality,
-            vehicle_part_speciality=part_speciality
+            service_speciality=service_speciality
         ).select_related('mechanic')
 
         mechanics = [profile.mechanic for profile in profiles]
@@ -76,4 +77,4 @@ class UserInfoViewSet(BaseAPIMixin, ModelViewSet):
             serializer = UserLocationSerializer(location)
             return Response(serializer.data)
         except User.DoesNotExist:
-            return Response(status=404, data={'detail': "User does not exist"})
+            return Response(status=404, data={'details': "User does not exist"})

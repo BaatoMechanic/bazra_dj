@@ -11,6 +11,7 @@ from autho.models.verification_code import VerificationCode
 from permission.models import Role
 from utils.mixins.base_model_mixin import BaseModelMixin
 
+
 from django.db.models import Sum
 
 from autho.models.user_blacklist import UserBlackList
@@ -181,6 +182,11 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
 
     #     location = UserLocation.objects.filter(user=self).last()
     #     return location
+    @property
+    def total_rating(self):
+        from autho.models import RatingAndReview
+
+        return RatingAndReview.objects.filter(user=self).count()
 
     def gen_verification_code(self) -> Optional[VerificationCode]:
         """Generate a verification code for the user.

@@ -16,6 +16,7 @@ from django.urls import URLResolver
 from rest_framework.viewsets import ViewSet
 from typing import Callable, Optional, List, Any, Type, Dict, Set
 from permission import permission_maps
+from channels.generic.websocket import WebsocketConsumer
 
 
 from permission.models import Permission, Role
@@ -149,10 +150,33 @@ def is_rest_non_model_viewset(url: ResolverMatch) -> bool:
     return hasattr(callback_cls, action)
 
 
+# def is_websocket_consumer(url: URLPattern) -> bool:
+#     return issubclass(url.callback.__wrapped__, WebsocketConsumer)
+
+
+def is_websocket_consumer(url: URLPattern) -> bool:
+    """
+    Check if the given URL pattern corresponds to a websocket consumer.
+
+    Args:
+        url (URLPattern): The URL pattern to check.
+
+    Returns:
+        bool: True if the URL pattern corresponds to a websocket consumer, False otherwise.
+    """
+
+    return not getattr(url.callback, "cls", None) and not getattr(url.callback, "view_class", None) and \
+        getattr(url.callback, "__wrapped__") and issubclass(url.callback.__wrapped__, WebsocketConsumer)
+
+    # return not getattr(url.callback, "cls", None) and not getattr(url.callback, "view_class", None)
+    # return hasattr(url.callback, "__wrapped__") and issubclass(url.callback.__wrapped__, WebsocketConsumer)
+    # return isinstance(url.callback, type) and issubclass(url.callback.__wrapped__, WebsocketConsumer)
+
+
 def get_django_function_view_action(url: URLPattern) -> callable:
     """
     Get the callback function from a Django URLPattern.
-
+u
     Args:
         url (URLPattern): The URLPattern object.
 
@@ -391,6 +415,16 @@ def get_rest_non_model_viewset_permission(url):
     return permissions
 
 
+def get_websocket_consumer_permission(url: str) -> List[Dict[str, str]]:
+    return [
+        {
+            "method": "any",
+            "detail": "Websocket consumer"
+            # "detail": get_detail(get_websocket_consumer_action(url))
+        }
+    ]
+
+
 def get_permission(url: str) -> Dict[str, Callable[[str], str]]:
     """Returns a map of permission name and HTTP method.
 
@@ -402,11 +436,12 @@ def get_permission(url: str) -> Dict[str, Callable[[str], str]]:
     """
 
     permission_map: Dict[Callable[[str], bool], Callable[[str], str]] = {
+        is_websocket_consumer: get_websocket_consumer_permission,
         is_django_function_view: get_django_function_view_permission,
         is_rest_decorated_view: get_rest_decorated_view_permission,
         is_rest_model_viewset: get_rest_model_viewset_permission,
         is_rest_non_model_viewset: get_rest_model_viewset_permission,
-        is_django_class_view: get_django_class_view_permission
+        is_django_class_view: get_django_class_view_permission,
     }
 
     for check_func, get_permission_func in permission_map.items():
@@ -461,6 +496,7 @@ def get_urls_for(app_name: str) -> List[Dict[str, Any]]:
     try:
         module_name = f"{app_name}.urls"
         urlpatterns = importlib.import_module(module_name).urlpatterns
+
     except ImportError:
         return []
     urls = [get_url_meta(url) for url in urlpatterns if get_url_meta(url)]
@@ -500,12 +536,38 @@ def get_apps() -> Set[str]:
     return set(dirs).intersection(installed_apps)
 
 
+def get_websocket_urls() -> List[Dict[str, Any]]:
+    """
+    Get the websocket URLs for the specified app.
+
+    Returns:
+        List[str]: The websocket URLs for the specified app.
+    """
+    websocket_urls_pattern = importlib.import_module(settings.ROOT_WEBSOCKETCONF).ws_patterns
+    websocket_urls = [get_url_meta(url) for url in websocket_urls_pattern if get_url_meta(url)]
+    return websocket_urls
+
+
+def flatten_urls(lst):
+    result = []
+    for item in lst:
+        if isinstance(item, list):
+            result.extend(item)
+        else:
+            result.append(item)
+    return result
+
+
 def get_urls(exclude=[], filtero=""):
     apps = get_apps()
 
     urls = [get_urls_for(app) for app in apps if app not in set(exclude)]
 
-    return [aurl for url in urls for aurl in url if re.search(filtero, aurl['url'])]
+    websocket_urls = list(get_websocket_urls())
+    # urls.extend(websocket_urls)
+    urls = urls + websocket_urls
+
+    return list(filter(lambda aurl: re.search(filtero, aurl['url']), flatten_urls(urls)))
 
 
 def create_permissions() -> None:
