@@ -12,7 +12,7 @@ class BazraPermission(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         try:
-            model = view.queryset.model or view.model
+            model = view.serializer_class.Meta.model or view.queryset.model or view.model
         except AttributeError:
             raise Exception("It seems the view is not associated with any model.\
         Please overwrite this method as per need.")

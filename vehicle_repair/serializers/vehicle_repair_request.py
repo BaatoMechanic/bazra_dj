@@ -1,3 +1,4 @@
+from email.mime import image
 from tkinter import NO
 from typing import Any, Dict
 from django.forms import model_to_dict
@@ -87,10 +88,33 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
 
 
 class VehicleRepairRequestImageSerializer(serializers.ModelSerializer):
+    images = serializers.ListField(child=serializers.ImageField(), required=False, write_only=True)
+    image = serializers.ImageField(required=False)
 
     class Meta:
         model = VehicleRepairRequestImage
-        fields = ["idx", "image"]
+        fields = ["idx", "image", "images"]
+
+    def create(self, validated_data):
+        if self.validated_data.get("image", None):
+            return VehicleRepairRequestImage.objects.create(
+                repair_request=validated_data["repair_request"], image=self.validated_data["image"]
+            )
+        images = [VehicleRepairRequestImage(
+            repair_request=validated_data["repair_request"], image=image
+        ) for image in validated_data['images']]
+        VehicleRepairRequestImage.objects.bulk_create(images)
+
+    def save(self, **kwargs):
+        if not self.validated_data.get("image", None) and not self.validated_data.get("images", None):
+            raise serializers.ValidationError({"detail": "At least one image is required."})
+
+        repair_request_idx = self.context.get("repair_request")
+        try:
+            kwargs["repair_request"] = VehicleRepairRequest.objects.get(idx=repair_request_idx)
+            return super().save(**kwargs)
+        except VehicleRepairRequest.DoesNotExist:
+            raise serializers.ValidationError({"detail": "Repair request does not exist."})
 
 
 class VehicleRepairRequestVideoSerializer(serializers.ModelSerializer):
