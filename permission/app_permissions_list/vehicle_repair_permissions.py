@@ -23,6 +23,7 @@ VEHICLE_REPAIR_REQUEST_IMAGES_WRITE_API = [
     ("repair_request-images-list", "post"),
     ("repair_request-images-detail", "put"),
     ("repair_request-images-detail", "patch"),
+    ("repair_request-images-detail", "delete"),
 ]
 
 

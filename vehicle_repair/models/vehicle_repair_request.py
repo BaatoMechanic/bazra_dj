@@ -97,6 +97,17 @@ class VehicleRepairRequest(BaseModelMixin):
 
         return request_user == user
 
+    def can_update(self, request: HttpRequest) -> bool:
+        return True
+        # request_user: User = request.user
+
+        # if request_user.isa("Superuser"):
+        #     return True
+
+        # user: User = self.user
+
+        # return request_user == user
+
 
 class VehicleRepairRequestImage(BaseModelMixin):
     repair_request = models.ForeignKey(VehicleRepairRequest, on_delete=models.CASCADE, related_name="images")
@@ -108,6 +119,22 @@ class VehicleRepairRequestImage(BaseModelMixin):
 
     def can_retrieve(self, request: HttpRequest) -> bool:
         return True
+
+    def can_update(self, request: HttpRequest) -> bool:
+        return True
+
+    def can_partial_update(self, request: HttpRequest) -> bool:
+        return True
+
+    def can_destroy(self, request: HttpRequest) -> bool:
+        request_user: User = request.user
+
+        if request_user.isa("Superuser"):
+            return True
+
+        user: User = self.repair_request.user
+
+        return request_user == user
 
 
 class VehicleRepairRequestVideo(BaseModelMixin):
