@@ -11,7 +11,7 @@ from vehicle_repair.serializers.vehicle_repair_request import VehicleRepairReque
 
 class VehicleRepairRequestViewSet(BaseAPIMixin, ModelViewSet):
 
-    queryset = VehicleRepairRequest.objects.select_related('user').all()
+    queryset = VehicleRepairRequest.objects.select_related('user').all().order_by('-created_at')
     serializer_class = VehicleRepairRequestSerializer
 
     def get_serializer_context(self) -> Dict[str, Any]:

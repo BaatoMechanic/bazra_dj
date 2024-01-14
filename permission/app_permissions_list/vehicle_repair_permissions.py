@@ -10,6 +10,8 @@ VEHICLE_REPAIR_REQUEST_WRITE_API = [
     ("repair_requests-list", "post"),
     ("repair_requests-detail", "put"),
     ("repair_requests-detail", "patch"),
+    ("repair_requests-detail", "delete"),
+
 ]
 
 
@@ -78,6 +80,7 @@ REPAIR_STEP_WRITE_API = [
 ]
 
 
-REPAIR_REQUEST_LOCATION_API = [
-    ("users_location", "any"),
+REPAIR_REQUEST_WEBSOCKET_API = [
+    ("websocket-repair-request", "any"),
+    ("websocket-mechanic-location", "any"),
 ]

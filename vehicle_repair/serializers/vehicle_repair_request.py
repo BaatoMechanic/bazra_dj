@@ -1,7 +1,4 @@
-from email.mime import image
-from tkinter import NO
-from typing import Any, Dict
-from django.forms import model_to_dict
+from typing import Any, Dict, List
 
 from rest_framework import serializers
 from utils.mixins.serializer_mixins import BaseModelSerializerMixin
@@ -95,18 +92,36 @@ class VehicleRepairRequestImageSerializer(serializers.ModelSerializer):
         model = VehicleRepairRequestImage
         fields = ["idx", "image", "images"]
 
-    def create(self, validated_data):
-        if self.validated_data.get("image", None):
-            return VehicleRepairRequestImage.objects.create(
-                repair_request=validated_data["repair_request"], image=self.validated_data["image"]
+    def create(self, validated_data: Dict[str, Any]) -> List[VehicleRepairRequestImage]:
+        """
+        Create VehicleRepairRequestImage objects with the given validated data.
+
+        Args:
+            validated_data (Dict[str, Any]): The validated data.
+
+        Returns:
+            List[VehicleRepairRequestImage]: The created VehicleRepairRequestImage objects.
+        """
+        images: List[VehicleRepairRequestImage] = []
+
+        if "image" in validated_data:
+            image = VehicleRepairRequestImage(
+                repair_request=validated_data["repair_request"],
+                image=validated_data["image"]
             )
-        images = [VehicleRepairRequestImage(
-            repair_request=validated_data["repair_request"], image=image
-        ) for image in validated_data['images']]
-        VehicleRepairRequestImage.objects.bulk_create(images)
+            images.append(image)
+
+        images.extend([
+            VehicleRepairRequestImage(
+                repair_request=validated_data["repair_request"],
+                image=image
+            ) for image in validated_data['images']
+        ])
+
+        return VehicleRepairRequestImage.objects.bulk_create(images)
 
     def save(self, **kwargs):
-        if not self.validated_data.get("image", None) and not self.validated_data.get("images", None):
+        if not self.validated_data.get("image") and not self.validated_data.get("images"):
             raise serializers.ValidationError({"detail": "At least one image is required."})
 
         repair_request_idx = self.context.get("repair_request")

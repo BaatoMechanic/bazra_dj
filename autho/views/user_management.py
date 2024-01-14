@@ -3,6 +3,7 @@
 import json
 from django.http import HttpRequest
 from rest_framework import status
+from autho.serializers.location import UserLocationSerializer
 from autho.serializers.user_registration import UserRegistrationSerializer
 
 
@@ -65,3 +66,20 @@ class UserManagementViewSet(BaseAPIMixin, GenericViewSet):
         user: User = request.user
         user.delete()
         return api_response_success({"message": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=False, methods=['POST'])
+    def update_location(self, request: HttpRequest) -> Response:
+        """
+        Update a user's location.
+
+        Args:
+            request (Request): The request object.
+
+        Returns:
+            Response: The response object.
+        """
+
+        serializer = UserLocationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+        return api_response_success(serializer.data)
