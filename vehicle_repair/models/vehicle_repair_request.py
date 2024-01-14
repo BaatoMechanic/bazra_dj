@@ -97,16 +97,26 @@ class VehicleRepairRequest(BaseModelMixin):
 
         return request_user == user
 
-    def can_update(self, request: HttpRequest) -> bool:
-        return True
-        # request_user: User = request.user
+    def can_destroy(self, request: HttpRequest) -> bool:
+        request_user: User = request.user
 
-        # if request_user.isa("Superuser"):
-        #     return True
+        if request_user.isa("Superuser"):
+            return True
 
-        # user: User = self.user
+        user: User = self.user
 
-        # return request_user == user
+        return request_user == user
+
+    # def can_update(self, request: HttpRequest) -> bool:
+    #     return True
+    #     # request_user: User = request.user
+
+    #     # if request_user.isa("Superuser"):
+    #     #     return True
+
+    #     # user: User = self.user
+
+    #     # return request_user == user
 
 
 class VehicleRepairRequestImage(BaseModelMixin):

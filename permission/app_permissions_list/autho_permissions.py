@@ -34,6 +34,10 @@ USER_DELETE_API = [
     ("users_management-delete-user", "delete"),
 ]
 
+USER_UPDATE_LOCATION_API = [
+    ("users_management-update-location", "post"),
+]
+
 
 REVIEWS_READ_ONLY_API = [
     ("reviews-list", "get"),

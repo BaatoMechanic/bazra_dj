@@ -70,10 +70,10 @@ class UserInfoViewSet(BaseAPIMixin, ModelViewSet):
 
     @action(detail=False, methods=['GET'])
     def location(self, request):
-        user_idx = request.data.get('idxx')
+        # print(request.user)
+        # user_idx = request.data.get('idxx')
         try:
-            user = User.objects.get(idx=user_idx)
-            location = UserLocation.objects.filter(user=user).last()
+            location = UserLocation.objects.filter(user=request.user).order_by('-created_at').first()
             serializer = UserLocationSerializer(location)
             return Response(serializer.data)
         except User.DoesNotExist:
