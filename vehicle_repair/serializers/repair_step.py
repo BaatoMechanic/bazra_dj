@@ -2,6 +2,9 @@
 from utils.mixins.serializer_mixins import BaseModelSerializerMixin
 from vehicle_repair.models import RepairStep, RepairStepReport
 from vehicle_repair.models.repair_step import RepairStepBillImage
+from rest_framework import serializers
+
+from vehicle_repair.models.vehicle_repair_request import VehicleRepairRequest
 
 
 class RepairStepBillImageSerializer(BaseModelSerializerMixin):
@@ -20,8 +23,23 @@ class RepairStepReportSerializer(BaseModelSerializerMixin):
 
 
 class RepairStepSerializer(BaseModelSerializerMixin):
-    report = RepairStepReportSerializer()
+    report = RepairStepReportSerializer(required=False)
 
     class Meta:
         model = RepairStep
         fields = ["idx", "name", "text_description", "audio_description", "status", "report"]
+
+
+class CreateRepairStepSerializer(BaseModelSerializerMixin):
+    report = RepairStepReportSerializer(required=False)
+    repair_request = serializers.CharField()
+
+    class Meta:
+        model = RepairStep
+        fields = ["idx", "repair_request", "name", "text_description", "audio_description", "status", "report"]
+
+    def create(self, validated_data):
+        repair_request_idx = validated_data.pop('repair_request')
+        repair_request = VehicleRepairRequest.objects.get(idx=repair_request_idx)
+        validated_data['repair_request'] = repair_request
+        return super().create(validated_data)

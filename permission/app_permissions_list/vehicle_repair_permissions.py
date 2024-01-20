@@ -3,6 +3,7 @@
 VEHICLE_REPAIR_REQUEST_READ_API = [
     ("repair_requests-list", "get"),
     ("repair_requests-detail", "get"),
+    ("repair_requests-service-type", "get"),
 ]
 
 
@@ -32,6 +33,7 @@ VEHICLE_REPAIR_REQUEST_IMAGES_WRITE_API = [
 VEHICLE_REPAIR_REQUEST_VIDEOS_READ_API = [
     ("repair_request-videos-list", "get"),
     ("repair_request-videos-detail", "get"),
+
 ]
 
 

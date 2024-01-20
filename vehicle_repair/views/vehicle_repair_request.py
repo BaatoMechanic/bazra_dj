@@ -1,10 +1,15 @@
 from typing import Any, Dict
 
+from django.shortcuts import get_object_or_404
+
+from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.response import Response
 
 from utils.mixins.base_api_mixin import BaseAPIMixin
 from vehicle_repair.models import VehicleRepairRequest
 from vehicle_repair.models.vehicle_repair_request import VehicleRepairRequestImage, VehicleRepairRequestVideo
+from vehicle_repair.serializers.service import ServiceSerializer
 from vehicle_repair.serializers.vehicle_repair_request import VehicleRepairRequestImageSerializer, VehicleRepairRequestSerializer, VehicleRepairRequestVideoSerializer
 # Create your views here.
 
@@ -16,6 +21,12 @@ class VehicleRepairRequestViewSet(BaseAPIMixin, ModelViewSet):
 
     def get_serializer_context(self) -> Dict[str, Any]:
         return {"request": self.request}
+
+    @action(detail=True, methods=['GET'])
+    def service_type(self, request, idx):
+        repair_request = get_object_or_404(VehicleRepairRequest, idx=idx)
+        serializer = ServiceSerializer(repair_request.service_type)
+        return Response(serializer.data)
 
 
 class VehicleRepairRequestImageViewSet(BaseAPIMixin, ModelViewSet):
