@@ -1,26 +1,21 @@
-import string
 from typing import Any, Dict
 
 from rest_framework import serializers
 
-
 from autho.models import User
-
-from autho.models.rating_review import RatingAndReview
+from vehicle_repair.models import RatingAndReview
 from utils.mixins.serializer_mixins import BaseModelSerializerMixin
-from vehicle_repair.models.vehicle_repair_request import VehicleRepairRequest
+from vehicle_repair.models import VehicleRepairRequest
 
 
 class RatingAndReviewSerializer(BaseModelSerializerMixin):
     reviewer = serializers.CharField(source='review_by', read_only=True)
     reviewed = serializers.CharField(source='user', read_only=True)
-    # repair_request = serializers.CharField(source='repair_request', required=False)
     repair_request = serializers.CharField(required=False)
     user = serializers.CharField(write_only=True)
 
     class Meta:
         model = RatingAndReview
-
         fields = ['idx', 'rating', 'review', 'reviewer', 'reviewed', 'user', "repair_request", 'created_at']
 
     def create(self, validated_data):
@@ -51,40 +46,39 @@ class RatingAndReviewSerializer(BaseModelSerializerMixin):
 
         return super().create(validated_data)
 
+    def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Validates the attributes.
 
-def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Validates the attributes.
+        Args:
+            attrs (dict): The attributes to validate.
 
-    Args:
-        attrs (dict): The attributes to validate.
+        Returns:
+            dict: The validated attributes.
 
-    Returns:
-        dict: The validated attributes.
+        Raises:
+            serializers.ValidationError: If the user is rating themselves.
+        """
 
-    Raises:
-        serializers.ValidationError: If the user is rating themselves.
-    """
+        review_by = self.context.get('request').user
+        attrs['review_by'] = review_by
 
-    review_by = self.context.get('request').user
-    attrs['review_by'] = review_by
+        user_idx = attrs.get("user")
+        try:
+            user = User.objects.get(idx=user_idx)
+        except User.DoesNotExist:
+            raise serializers.ValidationError({"user": ["User does not exist."]})
 
-    user_idx = attrs.get("user")
-    try:
-        user = User.objects.get(idx=user_idx)
-    except User.DoesNotExist:
-        raise serializers.ValidationError({"user": ["User does not exist."]})
+        if review_by == user:
+            raise serializers.ValidationError({"user": ["You can't rate yourself."]})
 
-    if review_by == user:
-        raise serializers.ValidationError({"user": ["You can't rate yourself."]})
+        repair_request_idx = attrs.pop("repair_request", None)
+        if repair_request_idx:
+            repair_request = VehicleRepairRequest.objects.filter(idx=repair_request_idx).first()
+            if not repair_request:
+                raise serializers.ValidationError({"repair_request": ["Repair request does not exist."]})
+            attrs['repair_request'] = repair_request
 
-    repair_request_idx = attrs.pop("repair_request", None)
-    if repair_request_idx:
-        repair_request = VehicleRepairRequest.objects.filter(idx=repair_request_idx).first()
-        if not repair_request:
-            raise serializers.ValidationError({"repair_request": ["Repair request does not exist."]})
-        attrs['repair_request'] = repair_request
+        attrs['user'] = user
 
-    attrs['user'] = user
-
-    return super().validate(attrs)
+        return super().validate(attrs)

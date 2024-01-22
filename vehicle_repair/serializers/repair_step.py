@@ -1,10 +1,7 @@
-
-from utils.mixins.serializer_mixins import BaseModelSerializerMixin
-from vehicle_repair.models import RepairStep, RepairStepReport
-from vehicle_repair.models.repair_step import RepairStepBillImage
 from rest_framework import serializers
 
-from vehicle_repair.models.vehicle_repair_request import VehicleRepairRequest
+from utils.mixins.serializer_mixins import BaseModelSerializerMixin
+from vehicle_repair.models import RepairStep, RepairStepReport, RepairStepBillImage, VehicleRepairRequest
 
 
 class RepairStepBillImageSerializer(BaseModelSerializerMixin):

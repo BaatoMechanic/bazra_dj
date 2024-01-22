@@ -1,20 +1,12 @@
-
-from email.policy import default
+from django.contrib.auth import get_user_model
 from django.db import models
-
-
 from django.http import HttpRequest
+
 from utils.mixins.base_model_mixin import BaseModelMixin
 from vehicle_repair.models.service import Service
-
 from vehicle_repair.models.vehicle_category import VehicleCategory
 
-from vehicle_repair.models.vehicle_part import VehiclePart
-
 # from utils.validators import validate_file_size
-
-from django.contrib.auth import get_user_model
-
 User = get_user_model()
 
 
@@ -31,12 +23,15 @@ VEHICLE_REPAIR_STATUS_CANCELLED = "cancelled"
 
 VEHICLE_REPAIR_STATUS_CHOICES = [
     (VEHICLE_REPAIR_STATUS_PENDING, VEHICLE_REPAIR_STATUS_PENDING.capitalize()),
-    (VEHICLE_REPAIR_STATUS_WAITING_FRO_USER_ACCEPTANCE, VEHICLE_REPAIR_STATUS_WAITING_FRO_USER_ACCEPTANCE.capitalize()),
-    (VEHICLE_REPAIR_STATUS_WAITING_FRO_ADVANCE_PAYMENT, VEHICLE_REPAIR_STATUS_WAITING_FRO_ADVANCE_PAYMENT.capitalize()),
+    (VEHICLE_REPAIR_STATUS_WAITING_FRO_USER_ACCEPTANCE,
+     VEHICLE_REPAIR_STATUS_WAITING_FRO_USER_ACCEPTANCE.capitalize()),
+    (VEHICLE_REPAIR_STATUS_WAITING_FRO_ADVANCE_PAYMENT,
+     VEHICLE_REPAIR_STATUS_WAITING_FRO_ADVANCE_PAYMENT.capitalize()),
     (VEHICLE_REPAIR_STATUS_WAITING_FRO_MECHANIC, VEHICLE_REPAIR_STATUS_WAITING_FRO_MECHANIC.capitalize()),
     (VEHICLE_REPAIR_STATUS_IN_PROGRESS, VEHICLE_REPAIR_STATUS_IN_PROGRESS.capitalize()),
     (VEHICLE_REPAIR_STATUS_IN_HALT, VEHICLE_REPAIR_STATUS_IN_HALT.capitalize()),
-    (VEHICLE_REPAIR_STATUS_WAITING_COMPLETION_ACCEPTANCE, VEHICLE_REPAIR_STATUS_WAITING_COMPLETION_ACCEPTANCE.capitalize()),
+    (VEHICLE_REPAIR_STATUS_WAITING_COMPLETION_ACCEPTANCE,
+     VEHICLE_REPAIR_STATUS_WAITING_COMPLETION_ACCEPTANCE.capitalize()),
     (VEHICLE_REPAIR_STATUS_COMPLETED, VEHICLE_REPAIR_STATUS_COMPLETED.capitalize()),
     (VEHICLE_REPAIR_STATUS_CANCELLED, VEHICLE_REPAIR_STATUS_CANCELLED.capitalize()),
 ]

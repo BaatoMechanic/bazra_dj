@@ -1,6 +1,4 @@
-
 from utils.mixins.serializer_mixins import BaseModelSerializerMixin
-from vehicle_repair.models.service import Service
 from vehicle_repair.models.vehicle_category import VehicleCategory
 
 

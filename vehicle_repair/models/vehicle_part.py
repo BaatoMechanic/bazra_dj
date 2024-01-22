@@ -1,8 +1,7 @@
-
 from django.db import models
 
 from utils.mixins.base_model_mixin import BaseModelMixin
-from vehicle_repair.models.vehicle_category import VehicleCategory
+from vehicle_repair.models import VehicleCategory
 
 
 class VehiclePart(BaseModelMixin):

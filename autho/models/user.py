@@ -1,6 +1,5 @@
-from dataclasses import field
 import re
-import sys
+
 from typing import Optional
 
 from django.db import models
@@ -8,7 +7,6 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.http import HttpRequest
 
 from autho.models.verification_code import VerificationCode
-from permission.models import Role
 from utils.mixins.base_model_mixin import BaseModelMixin
 
 
@@ -133,7 +131,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         null=True,
         db_index=True)
     roles = models.ManyToManyField("permission.Role", related_name="users", blank=True)
-    additional_attributes = models.JSONField(default=dict, blank=True, null=True)
+    # additional_attributes = models.JSONField(default=dict, blank=True, null=True)
     dob_type = models.CharField(max_length=2, choices=DATE_TYPE_CHOICES, default="AD")
     dob = models.DateField(null=True, blank=True)
 
@@ -171,7 +169,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
 
     @property
     def ratings(self) -> int:
-        from autho.models.rating_review import RatingAndReview
+        from vehicle_repair.models.rating_review import RatingAndReview
 
         # return RatingAndReview.objects.filter(user=self).count()
         return RatingAndReview.objects.filter(user=self).aggregate(Sum('rating'))['rating__sum']

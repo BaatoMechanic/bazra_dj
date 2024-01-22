@@ -22,10 +22,6 @@ USER_PUBLIC_API = [
 
 ]
 
-MECHANIC_PUBLIC_API = [
-    ("user_info-recommended-mechanics", "get")
-]
-
 
 REGISTER_API = [
     ("users_management-register", "post"),

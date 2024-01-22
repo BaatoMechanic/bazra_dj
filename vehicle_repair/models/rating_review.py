@@ -1,11 +1,9 @@
-
 from django.db import models
-from autho.models.user import User
-
-
 from django.core.validators import MinValueValidator, MaxValueValidator
+
+from autho.models import User
 from utils.mixins.base_model_mixin import BaseModelMixin
-from vehicle_repair.models.vehicle_repair_request import VehicleRepairRequest
+from vehicle_repair.models import VehicleRepairRequest
 
 
 class RatingAndReview(BaseModelMixin):

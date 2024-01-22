@@ -7,6 +7,9 @@ from vehicle_repair.consumers import VehicleRepairRequestConsumer, RepairRequest
 
 ws_patterns = [
     path("repair-request/<idx>", VehicleRepairRequestConsumer.as_asgi(), name="websocket-repair-request"),
-    path("repair-request-mechanic-location/<idx>", RepairRequestMechanicLocationConsumer.as_asgi(), name="websocket-mechanic-location"),
+    path(
+        "repair-request-mechanic-location/<idx>",
+        RepairRequestMechanicLocationConsumer.as_asgi(),
+        name="websocket-mechanic-location"),
 
 ]
