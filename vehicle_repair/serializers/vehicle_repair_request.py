@@ -1,19 +1,16 @@
 from typing import Any, Dict, List
 
-from rest_framework import serializers
-from utils.mixins.serializer_mixins import BaseModelSerializerMixin
-
-
-from vehicle_repair.models import VehicleRepairRequest
-
-
 from django.contrib.auth import get_user_model
-from vehicle_repair.models.service import Service
 
+from rest_framework import serializers
 
-from vehicle_repair.models.vehicle_category import VehicleCategory
-from vehicle_repair.models.vehicle_part import VehiclePart
-from vehicle_repair.models.vehicle_repair_request import VehicleRepairRequestImage, VehicleRepairRequestVideo
+from utils.mixins.serializer_mixins import BaseModelSerializerMixin
+from vehicle_repair.models import (
+    VehicleRepairRequest,
+    Service,
+    VehicleCategory,
+    VehicleRepairRequestImage,
+    VehicleRepairRequestVideo)
 
 User = get_user_model()
 

@@ -2,8 +2,8 @@
 from django.db import models
 
 from utils.mixins.base_model_mixin import BaseModelMixin
-from vehicle_repair.models.vehicle_category import VehicleCategory
-from vehicle_repair.models.vehicle_part import VehiclePart
+from vehicle_repair.models import VehicleCategory
+from vehicle_repair.models import VehiclePart
 
 
 SERVICE_TYPE_OPTION_BODY_REPAIR = "body_repair"

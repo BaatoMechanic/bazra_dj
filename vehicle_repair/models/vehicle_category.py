@@ -1,5 +1,3 @@
-
-
 from django.db import models
 
 from utils.mixins.base_model_mixin import BaseModelMixin

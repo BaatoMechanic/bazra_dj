@@ -1,16 +1,15 @@
 
 from typing import Dict, Any
-from autho.models.rating_review import RatingAndReview
-from autho.serializers import RatingAndReviewSerializer
-
-from utils.mixins.base_api_mixin import BaseAPIMixin
-
-from rest_framework.viewsets import ModelViewSet
-
-from rest_framework.decorators import action
 
 from django.shortcuts import get_object_or_404
+
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
+
 from autho.models import User
+from autho.serializers import RatingAndReviewSerializer
+from vehicle_repair.models import RatingAndReview
+from utils.mixins.base_api_mixin import BaseAPIMixin
 
 
 class RatingAndReviewViewSet(BaseAPIMixin, ModelViewSet):

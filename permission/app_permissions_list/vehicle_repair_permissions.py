@@ -86,3 +86,10 @@ REPAIR_REQUEST_WEBSOCKET_API = [
     ("websocket-repair-request", "any"),
     ("websocket-mechanic-location", "any"),
 ]
+
+
+MECHANIC_API = [
+    ("mechanics-list", "get"),
+    ("mechanics-detail", "get"),
+    ("mechanics-recommended-mechanics", "get"),
+]

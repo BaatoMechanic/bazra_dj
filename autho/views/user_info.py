@@ -5,7 +5,7 @@ from math import exp
 
 from django.http import HttpResponse
 from autho.models.location import UserLocation
-from autho.models.mechanic_profile import MechanicProfile
+from vehicle_repair.models.mechanic import Mechanic
 from autho.serializers import UserSerializer
 from autho.models import User
 
@@ -44,29 +44,6 @@ class UserInfoViewSet(BaseAPIMixin, ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
-
-    @action(detail=False, methods=['GET'])
-    def recommended_mechanics(self, request):
-        vehicle_speciality_idx = request.query_params.get('vehicle_category_speciality', None)
-        service_speciality_idx = request.query_params.get('service_speciality', None)
-
-        vehicle_speciality = None
-        if vehicle_speciality_idx:
-            vehicle_speciality = VehicleCategory.objects.filter(idx=vehicle_speciality_idx).first()
-
-        service_speciality = None
-        if service_speciality_idx:
-            service_speciality = Service.objects.filter(idx=service_speciality_idx).first()
-
-        profiles = MechanicProfile.objects.filter(
-            vehicle_speciality=vehicle_speciality,
-            service_speciality=service_speciality
-        ).select_related('mechanic')
-
-        mechanics = [profile.mechanic for profile in profiles]
-
-        serializer = UserSerializer(mechanics, many=True)
-        return Response(serializer.data)
 
     @action(detail=False, methods=['GET'])
     def location(self, request):

@@ -2,7 +2,9 @@ from django.contrib import admin
 from django.utils.html import format_html
 from vehicle_repair.models import VehicleCategory, VehiclePart, VehicleRepairRequest
 from vehicle_repair.models.repair_step import RepairStep, RepairStepBillImage, RepairStepReport
+from vehicle_repair.models.rating_review import RatingAndReview
 from vehicle_repair.models.service import Service
+from vehicle_repair.models.mechanic import Mechanic
 from vehicle_repair.models.vehicle_repair_request import VehicleRepairRequestImage, VehicleRepairRequestVideo
 
 # Register your models here.
@@ -30,7 +32,7 @@ class VehicleRepairRequestVideoInline(admin.TabularInline):
 
 @admin.register(VehicleRepairRequest)
 class VehicleRepairRequestAdmin(admin.ModelAdmin):
-    list_display = ("idx", "title", "vehicle_type", "service_type", "status")   
+    list_display = ("idx", "title", "vehicle_type", "service_type", "status")
     readonly_fields = ("title", "description", "user", "preferred_mechanic",
                        "vehicle_type", "service_type")
     inlines = [VehicleRepairRequestImageInline, VehicleRepairRequestVideoInline]
@@ -69,3 +71,14 @@ class RepairStepReportAdmin(admin.ModelAdmin):
     model = RepairStepReport
     list_display = ("idx",)
     inlines = [RepairStepBillImageInline,]
+
+
+@admin.register(Mechanic)
+class MechanicAttributeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'vehicle_speciality', 'service_speciality')
+
+
+@admin.register(RatingAndReview)
+class RatingAndReviewAdmin(admin.ModelAdmin):
+    list_display = ('user', 'review_by', 'rating', 'review')
+    readonly_fields = ('user', 'review_by', 'rating', 'review')
