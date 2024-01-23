@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.http import HttpRequest
 
 from utils.mixins.base_model_mixin import BaseModelMixin
 
@@ -10,3 +11,7 @@ class Customer(BaseModelMixin):
 
     def __str__(self) -> str:
         return f"Customer: {self.user.name}"
+
+    def can_retrieve(self, request: HttpRequest) -> bool:
+        # return request.user == self.user
+        return True

@@ -88,6 +88,11 @@ REPAIR_REQUEST_WEBSOCKET_API = [
 ]
 
 
+CUSTOMER_API = [
+    ("customers-detail", "get"),
+]
+
+
 MECHANIC_API = [
     ("mechanics-list", "get"),
     ("mechanics-detail", "get"),
