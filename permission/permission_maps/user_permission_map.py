@@ -13,7 +13,7 @@ from permission.app_permissions_list.autho_permissions import (
     VERIFY_TOKEN_API,
     USER_DELETE_API
 )
-from permission.app_permissions_list.vehicle_repair_permissions import (MECHANIC_API, REPAIR_REQUEST_WEBSOCKET_API,
+from permission.app_permissions_list.vehicle_repair_permissions import (CUSTOMER_API, MECHANIC_API, REPAIR_REQUEST_WEBSOCKET_API,
                                                                         REPAIR_STEP_READ_API,
                                                                         REPAIR_STEP_WRITE_API,
                                                                         SERVICE_READ_API,
@@ -97,6 +97,7 @@ def get_consumer_permission_map():
         REPAIR_STEP_WRITE_API,
         VEHICLE_CATEOGRY_READ_API,
         USER_UPDATE_LOCATION_API,
+        CUSTOMER_API
     ]
 
 

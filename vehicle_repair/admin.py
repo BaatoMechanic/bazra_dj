@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from vehicle_repair.models import VehicleCategory, VehiclePart, VehicleRepairRequest
+from vehicle_repair.models.customer import Customer
 from vehicle_repair.models.repair_step import RepairStep, RepairStepBillImage, RepairStepReport
 from vehicle_repair.models.rating_review import RatingAndReview
 from vehicle_repair.models.service import Service
@@ -71,6 +72,11 @@ class RepairStepReportAdmin(admin.ModelAdmin):
     model = RepairStepReport
     list_display = ("idx",)
     inlines = [RepairStepBillImageInline,]
+
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ('idx', )
 
 
 @admin.register(Mechanic)

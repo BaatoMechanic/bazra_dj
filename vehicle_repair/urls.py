@@ -11,6 +11,7 @@ router.register("services", views.ServiceViewSet, basename="services")
 router.register("vehicle-categories", views.VehicleCategoryViewSet, basename="vehicle-categories")
 
 router.register("mechanics", views.MechanicViewSet, basename="mechanics")
+router.register("customers", views.CustomerViewSet, basename="customers")
 
 
 repair_request_router = routers.NestedDefaultRouter(router, "repair_requests", lookup="repair_request")
