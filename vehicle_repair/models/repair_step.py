@@ -7,7 +7,7 @@ from utils.mixins.base_model_mixin import BaseModelMixin
 
 REPAIR_STEP_STATUS_PENDING = 'pending'
 REPAIR_STEP_STATUS_IN_PROGRESS = 'in_progress'
-REPAIR_STEP_STATUS_COMPLETED = 'completed'
+REPAIR_STEP_STATUS_COMPLETED = 'complete'
 REPAIR_STEP_STATUS_CANCELLED = 'cancelled'
 
 REPAIR_STEP_STATUS_CHOICES = [

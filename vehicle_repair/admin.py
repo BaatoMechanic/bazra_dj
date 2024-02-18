@@ -81,10 +81,10 @@ class CustomerAdmin(admin.ModelAdmin):
 
 @admin.register(Mechanic)
 class MechanicAttributeAdmin(admin.ModelAdmin):
-    list_display = ('user', 'vehicle_speciality', 'service_speciality')
+    list_display = ('idx', 'vehicle_speciality', 'service_speciality')
 
 
 @admin.register(RatingAndReview)
 class RatingAndReviewAdmin(admin.ModelAdmin):
-    list_display = ('user', 'review_by', 'rating', 'review')
+    list_display = ('idx', 'review_by', 'rating', 'review')
     readonly_fields = ('user', 'review_by', 'rating', 'review')

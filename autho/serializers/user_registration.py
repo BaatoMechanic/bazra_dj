@@ -31,5 +31,6 @@ class UserRegistrationSerializer(serializers.Serializer):
 
         user = User.objects.create_user(**validated_data)
         return {
-            "message": "User registered successfully."
+            "detail": "User registered successfully.",
+            "idx": user.idx
         }

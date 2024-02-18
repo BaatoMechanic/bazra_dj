@@ -49,7 +49,7 @@ class UserManagementViewSet(BaseAPIMixin, GenericViewSet):
             response: json = serializer.save()
             return api_response_success(response, status=status.HTTP_201_CREATED)
         except Exception as e:
-            return api_response_error({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return api_response_error({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['DELETE'])
     def delete_user(self, request: HttpRequest) -> Response:
