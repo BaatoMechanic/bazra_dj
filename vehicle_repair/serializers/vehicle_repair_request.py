@@ -11,6 +11,7 @@ from vehicle_repair.models import (
     VehicleCategory,
     VehicleRepairRequestImage,
     VehicleRepairRequestVideo)
+from vehicle_repair.models.mechanic import Mechanic
 
 User = get_user_model()
 
@@ -22,12 +23,12 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
     service_type = serializers.CharField(source="service_type.idx")
     preferred_mechanic = serializers.CharField(source="preferred_mechanic.idx", required=False, allow_null=True)
 
-    assigned_mechanic = serializers.CharField(required=False)
+    assigned_mechanic = serializers.CharField(source="assigned_mechanic.idx", required=False)
 
     class Meta:
         model = VehicleRepairRequest
         fields = ["idx", "title", "description", "user", "vehicle_type",
-                  "service_type", "preferred_mechanic", "assigned_mechanic", "location", "status"]
+                  "service_type", "preferred_mechanic", "assigned_mechanic", "location", "status", "advance_payment_status", "created_at"]
 
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
         user = self.context.get('request').user
@@ -71,11 +72,11 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
     def update(self, instance, validated_data):
         assigned_mechanic_idx = validated_data.pop('assigned_mechanic', None)
         if assigned_mechanic_idx:
-            assigned_mechanic = User.objects.filter(idx=assigned_mechanic_idx).first()
+            assigned_mechanic = Mechanic.objects.filter(idx=assigned_mechanic_idx).first()
             if not assigned_mechanic:
                 raise serializers.ValidationError({"details": ["Mechanic does not exist."]})
-            if not hasattr(assigned_mechanic, "mechanic_profile"):
-                raise serializers.ValidationError({"details": ["Not a mechanic user."]})
+            # if not hasattr(assigned_mechanic, "mechanic_profile"):
+            #     raise serializers.ValidationError({"details": ["Not a mechanic user."]})
             validated_data['assigned_mechanic'] = assigned_mechanic
 
         return super().update(instance, validated_data)

@@ -27,6 +27,21 @@ class VehicleRepairRequestViewSet(BaseAPIMixin, ModelViewSet):
         repair_request = get_object_or_404(VehicleRepairRequest, idx=idx)
         serializer = ServiceSerializer(repair_request.service_type)
         return Response(serializer.data)
+    
+    
+    @action(detail=False, methods=['GET'])
+    def user_recent_repair_requests(self, request):
+        repair_requests = VehicleRepairRequest.objects.filter(user=request.user, status="complete")
+        serializer = VehicleRepairRequestSerializer(repair_requests, many=True)
+        return Response(serializer.data)
+    
+    
+    @action(detail=False, methods=['GET'])
+    def user_active_repair_requests(self, request):
+        repair_requests = VehicleRepairRequest.objects.filter(user=request.user).exclude(status="complete")
+        serializer = VehicleRepairRequestSerializer(repair_requests, many=True)
+        return Response(serializer.data)
+
 
 
 class VehicleRepairRequestImageViewSet(BaseAPIMixin, ModelViewSet):

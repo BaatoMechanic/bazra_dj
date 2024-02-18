@@ -1,11 +1,9 @@
 
 from django.db import models
 from django.http import HttpRequest
-from vehicle_repair.models.rating_review import RatingAndReview
 
 from utils.mixins.base_model_mixin import BaseModelMixin
 
-from .vehicle_repair_request import VehicleRepairRequest
 from django.conf import settings
 
 
@@ -27,8 +25,10 @@ class Mechanic(BaseModelMixin):
 
     @property
     def total_repairs(self):
-        return VehicleRepairRequest.objects.filter(assigned_mechanic=self.mechanic).count()
+        from .vehicle_repair_request import VehicleRepairRequest
+        return VehicleRepairRequest.objects.filter(assigned_mechanic=self).count()
 
     @property
     def total_reviews(self):
-        return RatingAndReview.objects.filter(user=self.mechanic).count()
+        from vehicle_repair.models.rating_review import RatingAndReview
+        return RatingAndReview.objects.filter(user=self.user).count()

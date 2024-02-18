@@ -4,8 +4,10 @@ from channels.exceptions import StopConsumer
 from asgiref.sync import async_to_sync
 from autho.models.location import UserLocation
 from autho.serializers.location import UserLocationSerializer
+from vehicle_repair.models.repair_step import RepairStep
 
 from vehicle_repair.models.vehicle_repair_request import VehicleRepairRequest
+from vehicle_repair.serializers.repair_step import RepairStepSerializer
 from vehicle_repair.serializers.vehicle_repair_request import VehicleRepairRequestSerializer
 
 coordinates = [
@@ -220,9 +222,8 @@ class VehicleRepairRequestConsumer(WebsocketConsumer):
 
         repair_request = VehicleRepairRequest.objects.get(idx=self.room_name)
 
-        self.send(text_data=json.dumps({
-            "repair_request": VehicleRepairRequestSerializer(repair_request).data
-        }))
+        self.send(text_data=json.dumps(VehicleRepairRequestSerializer(repair_request).data
+        ))
 
         # for coordinate in coordinates:
         #     self.send(text_data=json.dumps({
@@ -241,7 +242,42 @@ class VehicleRepairRequestConsumer(WebsocketConsumer):
         raise StopConsumer()
 
     def repair_request_update(self, event):
-        print(event)
+        self.send(text_data=json.dumps(event['value']))
+
+    def notify_location_update(self, event):
+        pass
+        # self.send(text_data=json.dumps(event))
+
+        for coordinate in coordinates:
+            self.send(text_data=json.dumps({
+                'location': coordinate
+            }))
+        # time.sleep(3)
+class RepairStepsConsumer(WebsocketConsumer):
+    def connect(self):
+        self.room_name = self.scope['url_route']['kwargs']['repair_idx']
+        self.room_group_name = 'repair_steps_%s' % self.room_name
+
+        async_to_sync(self.channel_layer.group_add)(
+            self.room_group_name, self.channel_name
+        )
+
+        self.accept()
+
+        repair_steps = RepairStep.objects.filter( repair_request__idx = self.room_name)
+
+        self.send(text_data=json.dumps(RepairStepSerializer(repair_steps, many=True).data))
+
+    def receive(self, text_data=None, bytes_data=None):
+        print(text_data)
+
+    def disconnect(self, close_code):
+        async_to_sync(self.channel_layer.group_discard)(
+            self.room_group_name, self.channel_name
+        )
+        raise StopConsumer()
+
+    def repair_step_update(self, event):
         self.send(text_data=json.dumps(event['value']))
 
     def notify_location_update(self, event):
@@ -269,7 +305,7 @@ class RepairRequestMechanicLocationConsumer(WebsocketConsumer):
         repair_request = VehicleRepairRequest.objects.get(idx=self.room_name)
 
         mechanic_location = UserLocation.objects.filter(
-            user=repair_request.assigned_mechanic).order_by('-created_at').first()
+            user=repair_request.assigned_mechanic.user).order_by('-created_at').first()
 
         location = UserLocationSerializer(mechanic_location).data
         location['latitude'] = coordinates[0][1]

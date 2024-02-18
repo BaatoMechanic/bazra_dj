@@ -3,6 +3,7 @@ from django.db import models
 from django.http import HttpRequest
 
 from utils.mixins.base_model_mixin import BaseModelMixin
+from vehicle_repair.models.mechanic import Mechanic
 from vehicle_repair.models.service import Service
 from vehicle_repair.models.vehicle_category import VehicleCategory
 
@@ -36,6 +37,17 @@ VEHICLE_REPAIR_STATUS_CHOICES = [
     (VEHICLE_REPAIR_STATUS_CANCELLED, VEHICLE_REPAIR_STATUS_CANCELLED.capitalize()),
 ]
 
+ADVANCE_PAYMENT_STATUS_PENDING = "pending"
+ADVANCE_PAYMENT_STATUS_COMPLETE = "complete"
+ADVANCE_PAYMENT_STATUS_PAYMENT_ON_ARRIVAL = "payment_on_arrival"
+
+ADVANCE_PAYMENT_STATUS_CHOICES = [
+    (ADVANCE_PAYMENT_STATUS_PENDING, ADVANCE_PAYMENT_STATUS_PENDING.capitalize()),
+    (ADVANCE_PAYMENT_STATUS_COMPLETE, ADVANCE_PAYMENT_STATUS_COMPLETE.capitalize()),
+    (ADVANCE_PAYMENT_STATUS_PAYMENT_ON_ARRIVAL, ADVANCE_PAYMENT_STATUS_PAYMENT_ON_ARRIVAL.capitalize()),
+
+]
+
 
 class VehicleRepairRequest(BaseModelMixin):
 
@@ -43,14 +55,16 @@ class VehicleRepairRequest(BaseModelMixin):
     description = models.TextField()
     status = models.CharField(max_length=255, default=VEHICLE_REPAIR_STATUS_PENDING,
                               choices=VEHICLE_REPAIR_STATUS_CHOICES)
+    advance_payment_status = models.CharField(max_length=255, default=ADVANCE_PAYMENT_STATUS_PENDING,
+                                              choices=ADVANCE_PAYMENT_STATUS_CHOICES)
     user = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name="vehicle_repair_requests"
     )
     preferred_mechanic = models.ForeignKey(
-        User, on_delete=models.SET_NULL, related_name="vehicle_repairs_preferred_mechanic", null=True
+        Mechanic, on_delete=models.SET_NULL, related_name="vehicle_repairs_preferred_mechanic", null=True
     )
     assigned_mechanic = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name="vehicle_repairs_assigned_mechanic", null=True
+        Mechanic, on_delete=models.PROTECT, related_name="vehicle_repairs_assigned_mechanic", null=True
     )
     vehicle_type = models.ForeignKey(VehicleCategory, on_delete=models.PROTECT, related_name="vehicle_repair")
     service_type = models.ForeignKey(Service, on_delete=models.PROTECT, related_name="vehicle_repair")

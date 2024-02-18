@@ -6,7 +6,19 @@ from vehicle_repair.models import Mechanic
 
 class MechanicSerializer(BaseModelSerializerMixin):
     name = serializers.ReadOnlyField(source="user.name")
+    dob_type = serializers.ReadOnlyField(source="user.dob_type")
+    dob = serializers.ReadOnlyField(source="user.dob")
+    additional_attributes= serializers.SerializerMethodField()
 
     class Meta:
         model = Mechanic
-        fields = ["idx", "name", "vehicle_speciality", "service_speciality", "description"]
+        fields = ["idx", "name", "vehicle_speciality", "service_speciality", "description", "dob_type", "dob", "additional_attributes"]
+
+    def get_additional_attributes(self, obj):
+        return {
+            "is_phone_verified": obj.user.is_phone_verified,
+            "is_email_verified": obj.user.is_email_verified,
+            "is_verified": obj.user.is_verified,
+            "total_repairs": obj.total_repairs,
+            "total_reviews": obj.total_reviews
+        }

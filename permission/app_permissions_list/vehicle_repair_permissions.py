@@ -4,6 +4,8 @@ VEHICLE_REPAIR_REQUEST_READ_API = [
     ("repair_requests-list", "get"),
     ("repair_requests-detail", "get"),
     ("repair_requests-service-type", "get"),
+    ("repair_requests-user-recent-repair-requests", "get"),
+    ("repair_requests-user-active-repair-requests", "get"),
 ]
 
 
@@ -87,9 +89,18 @@ REPAIR_REQUEST_WEBSOCKET_API = [
     ("websocket-mechanic-location", "any"),
 ]
 
+REPAIR_STEP_WEBSOCKET_API = [
+    ("websocket-repair-steps", "any"),
+]
 
+
+CUSTOMER_CREATE_API = [
+    ("customers-list", "post"),
+]
 CUSTOMER_API = [
     ("customers-detail", "get"),
+    ("customers-me", "get"),
+
 ]
 
 

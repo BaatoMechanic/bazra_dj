@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "192.168.1.68",
     "192.168.1.74",
+    "192.168.1.79",
     "192.168.1.81",
 ]
 
@@ -56,6 +57,7 @@ NATIVE_APPS = [
     'permission',
     'utils',
     'vehicle_repair',
+    'gis'
 ]
 
 THIRD_PARTY_APPS = [
@@ -129,6 +131,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'HOST': 'db',
+        # 'HOST': 'localhost',
+        # 'HOST': '127.0.0.1',
         'NAME': 'bazra',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
