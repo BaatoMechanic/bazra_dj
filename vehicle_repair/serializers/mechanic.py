@@ -1,18 +1,20 @@
 from rest_framework import serializers
+from utils.mixins.serializer_field_mixins import BDetailRelatedField
 
-from utils.mixins.serializer_mixins import BaseModelSerializerMixin
+from utils.mixins.serializer_model_mixins import BaseModelSerializerMixin
 from vehicle_repair.models import Mechanic
 
 
 class MechanicSerializer(BaseModelSerializerMixin):
-    name = serializers.ReadOnlyField(source="user.name")
-    dob_type = serializers.ReadOnlyField(source="user.dob_type")
-    dob = serializers.ReadOnlyField(source="user.dob")
-    additional_attributes= serializers.SerializerMethodField()
+    name = BDetailRelatedField(Mechanic, representation="user.name")
+    dob_type = BDetailRelatedField(Mechanic, representation="user.dob_type")
+    dob = BDetailRelatedField(Mechanic, representation="user.dob")
+    additional_attributes = serializers.SerializerMethodField()
 
     class Meta:
         model = Mechanic
-        fields = ["idx", "name", "vehicle_speciality", "service_speciality", "description", "dob_type", "dob", "additional_attributes"]
+        fields = ["idx", "name", "vehicle_speciality", "service_speciality",
+                  "description", "dob_type", "dob", "additional_attributes"]
 
     def get_additional_attributes(self, obj):
         return {

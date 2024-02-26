@@ -1,5 +1,5 @@
 from autho.models.location import UserLocation
-from utils.mixins.serializer_mixins import BaseModelSerializerMixin
+from utils.mixins.serializer_model_mixins import BaseModelSerializerMixin
 
 
 class UserLocationSerializer(BaseModelSerializerMixin):

@@ -1,6 +1,6 @@
 from autho.models import MechanicTip
 from autho.serializers import SimpleUserSerializer
-from utils.mixins.serializer_mixins import BaseModelSerializerMixin
+from utils.mixins.serializer_model_mixins import BaseModelSerializerMixin
 
 
 class MechanicTipSerializer(BaseModelSerializerMixin):

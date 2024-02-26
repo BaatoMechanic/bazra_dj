@@ -1,6 +1,7 @@
 from rest_framework import serializers
+from utils.mixins.serializer_field_mixins import BDetailRelatedField
 
-from utils.mixins.serializer_mixins import BaseModelSerializerMixin
+from utils.mixins.serializer_model_mixins import BaseModelSerializerMixin
 from vehicle_repair.models import Customer
 
 from django.contrib.auth import get_user_model
@@ -10,19 +11,19 @@ User = get_user_model()
 
 class CustomerSerializer(BaseModelSerializerMixin):
     user_idx = serializers.CharField(write_only=True)
-    name = serializers.ReadOnlyField(source="user.name")
-    email = serializers.ReadOnlyField(source="user.email")
-    phone = serializers.ReadOnlyField(source="user.phone")
-    dob_type = serializers.ReadOnlyField(source="user.dob_type")
-    dob = serializers.ReadOnlyField(source="user.dob")
+    name = BDetailRelatedField(Customer, representation="user.name")
+    email = BDetailRelatedField(Customer, representation="user.email")
+    phone = BDetailRelatedField(Customer, representation="user.phone")
+    dob_type = BDetailRelatedField(Customer, representation="user.dob_type")
+    dob = BDetailRelatedField(Customer, representation="user.dob")
     primary_role = serializers.SerializerMethodField()
     roles = serializers.SerializerMethodField()
     additional_attributes = serializers.SerializerMethodField()
 
     class Meta:
         model = Customer
-        fields = fields = ['user_idx', 'idx', 'name', 'email', 'phone', "dob_type",
-                           "dob", "primary_role", "roles", "additional_attributes"]
+        fields = ['user_idx', 'idx', 'name', 'email', 'phone', "dob_type",
+                  "dob", "primary_role", "roles", "additional_attributes"]
 
     def create(self, validated_data):
         user_idx = validated_data.pop('user_idx')
