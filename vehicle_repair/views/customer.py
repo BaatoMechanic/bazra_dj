@@ -14,8 +14,8 @@ class CustomerViewSet(BaseAPIMixin, RetrieveModelMixin, CreateModelMixin, Generi
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
 
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+    # def create(self, request, *args, **kwargs):
+    #     return super().create(request, *args, **kwargs)
 
     @action(detail=False)
     def me(self, request):

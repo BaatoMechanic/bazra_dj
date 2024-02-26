@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from autho.models import User
 from vehicle_repair.models import RatingAndReview
-from utils.mixins.serializer_mixins import BaseModelSerializerMixin
+from utils.mixins.serializer_model_mixins import BaseModelSerializerMixin
 from vehicle_repair.models import VehicleRepairRequest
 
 
