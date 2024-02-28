@@ -18,7 +18,7 @@ class CustomerSerializer(BaseModelSerializerMixin):
     dob = BDetailRelatedField(Customer, representation="user.dob")
     primary_role = serializers.SerializerMethodField()
     roles = serializers.SerializerMethodField()
-    additional_attributes = serializers.SerializerMethodField()
+    additional_attributes = BDetailRelatedField(Customer, representation="get_additional_attributes", is_method=True)
 
     class Meta:
         model = Customer
@@ -37,10 +37,3 @@ class CustomerSerializer(BaseModelSerializerMixin):
 
     def get_roles(self, obj):
         return [role.name for role in obj.user.roles.all()]
-
-    def get_additional_attributes(self, obj):
-        return {
-            "is_phone_verified": obj.user.is_phone_verified,
-            "is_email_verified": obj.user.is_email_verified,
-            "is_verified": obj.user.is_verified
-        }

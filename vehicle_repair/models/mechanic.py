@@ -32,3 +32,10 @@ class Mechanic(BaseModelMixin):
     def total_reviews(self):
         from vehicle_repair.models.rating_review import RatingAndReview
         return RatingAndReview.objects.filter(user=self.user).count()
+
+    def get_additional_attributes(self) -> dict:
+        return {
+            **self.user.get_basic_attributes(),
+            "total_repairs": self.total_repairs,
+            "total_reviews": self.total_reviews
+        }
