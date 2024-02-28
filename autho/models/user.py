@@ -209,3 +209,10 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
                 return cls.objects.get(email=id)
         except cls.DoesNotExist:
             return None
+
+    def get_basic_attributes(self) -> dict:
+        return {
+            "is_phone_verified": self.is_phone_verified,
+            "is_email_verified": self.is_email_verified,
+            "is_verified": self.is_verified,
+        }

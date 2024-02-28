@@ -15,3 +15,6 @@ class Customer(BaseModelMixin):
     def can_retrieve(self, request: HttpRequest) -> bool:
         # return request.user == self.user
         return True
+
+    def get_additional_attributes(self) -> dict:
+        return self.user.get_basic_attributes()
