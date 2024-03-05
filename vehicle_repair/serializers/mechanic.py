@@ -10,11 +10,12 @@ class MechanicSerializer(BaseModelSerializerMixin):
     dob_type = BDetailRelatedField(Mechanic, representation="user.dob_type")
     dob = BDetailRelatedField(Mechanic, representation="user.dob")
     additional_attributes = serializers.SerializerMethodField()
+    roles = BDetailRelatedField(Mechanic, representation="get_roles", is_method=True, source="user")
 
     class Meta:
         model = Mechanic
         fields = ["idx", "name", "vehicle_speciality", "service_speciality",
-                  "description", "dob_type", "dob", "additional_attributes"]
+                  "description", "dob_type", "dob", "roles", "additional_attributes"]
 
     def get_additional_attributes(self, obj):
         return {

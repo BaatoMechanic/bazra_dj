@@ -314,7 +314,6 @@ class RepairRequestMechanicLocationConsumer(WebsocketConsumer):
 
         self.send(text_data=json.dumps({
 
-            # "mechanic_location": UserLocationSerializer(mechanic_location).data
             "mechanic_location": location
         }))
 

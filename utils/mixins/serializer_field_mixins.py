@@ -101,7 +101,10 @@ class BDetailRelatedField(serializers.RelatedField):
         if self.no_source:
             return obj
         if self.is_method:
-            return get_attribute(obj, self.representation_attribute)()
+            try:
+                return get_attribute(obj, self.representation_attribute)()
+            except AttributeError:
+                return getattr(obj, self.representation_attribute)()
         return getattr(obj, self.representation_attribute)
 
     from typing import Any, TypeVar
