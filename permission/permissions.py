@@ -7,7 +7,6 @@ from .helpers import has_permission
 
 class BazraPermission(BasePermission):
     def has_permission(self, request, view):
-
         return has_permission(request)
 
     def has_object_permission(self, request, view, obj):

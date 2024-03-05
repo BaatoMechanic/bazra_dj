@@ -163,6 +163,12 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
             self.primary_role is not None and self.primary_role.name == role
         ) or self.roles.filter(name=role).exists()
 
+    def get_roles(self) -> list:
+        roles = [role.name for role in self.roles.all()]
+        if self.primary_role is not None:
+            roles.append(self.primary_role.name)
+        return roles
+
     def delete(self) -> None:
 
         self.__class__.objects.filter(id=self.id).update(is_active=False, is_obsolete=True)
