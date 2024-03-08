@@ -60,6 +60,7 @@ class VehicleRepairRequest(BaseModelMixin):
     user = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name="vehicle_repair_requests"
     )
+    advance_charge = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     preferred_mechanic = models.ForeignKey(
         Mechanic, on_delete=models.SET_NULL, related_name="vehicle_repairs_preferred_mechanic", null=True
     )

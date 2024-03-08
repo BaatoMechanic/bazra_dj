@@ -15,6 +15,7 @@ class Mechanic(BaseModelMixin):
     service_speciality = models.ForeignKey(
         "vehicle_repair.Service", on_delete=models.SET_NULL, null=True
     )
+    occupied = models.BooleanField(default=False)
     description = models.CharField(max_length=500, null=True, blank=True)
 
     def __str__(self) -> str:
