@@ -10,8 +10,9 @@ from vehicle_repair.models import (
     Service,
     VehicleCategory,
     VehicleRepairRequestImage,
-    VehicleRepairRequestVideo)
-from vehicle_repair.models.mechanic import Mechanic
+    VehicleRepairRequestVideo,
+    Mechanic
+    )
 
 User = get_user_model()
 
@@ -28,7 +29,7 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
     class Meta:
         model = VehicleRepairRequest
         fields = ["idx", "title", "description", "user", "vehicle_type",
-                  "service_type", "preferred_mechanic", "assigned_mechanic", "location", "status", "advance_payment_status", "advance_charge","created_at"]
+                  "service_type", "preferred_mechanic", "assigned_mechanic", "location", "status", "advance_payment_status", "advance_charge", "created_at"]
 
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
         user = self.context.get('request').user
