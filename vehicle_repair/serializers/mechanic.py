@@ -15,7 +15,7 @@ class MechanicSerializer(BaseModelSerializerMixin):
     class Meta:
         model = Mechanic
         fields = ["idx", "name", "vehicle_speciality", "service_speciality",
-                  "description", "dob_type", "dob", "roles", "additional_attributes"]
+                  "description", "dob_type", "dob", "roles", "occupied", "additional_attributes"]
 
     def get_additional_attributes(self, obj):
         return {
