@@ -244,15 +244,7 @@ class VehicleRepairRequestConsumer(WebsocketConsumer):
     def repair_request_update(self, event):
         self.send(text_data=json.dumps(event['value']))
 
-    def notify_location_update(self, event):
-        pass
-        # self.send(text_data=json.dumps(event))
-
-        for coordinate in coordinates:
-            self.send(text_data=json.dumps({
-                'location': coordinate
-            }))
-        # time.sleep(3)
+    
 class RepairStepsConsumer(WebsocketConsumer):
     def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['repair_idx']
@@ -280,15 +272,7 @@ class RepairStepsConsumer(WebsocketConsumer):
     def repair_step_update(self, event):
         self.send(text_data=json.dumps(event['value']))
 
-    def notify_location_update(self, event):
-        pass
-        # self.send(text_data=json.dumps(event))
-
-        for coordinate in coordinates:
-            self.send(text_data=json.dumps({
-                'location': coordinate
-            }))
-        # time.sleep(3)
+    
 
 
 class RepairRequestMechanicLocationConsumer(WebsocketConsumer):
