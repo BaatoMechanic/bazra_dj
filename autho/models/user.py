@@ -132,7 +132,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         db_index=True)
     roles = models.ManyToManyField("permission.Role", related_name="users", blank=True)
     # additional_attributes = models.JSONField(default=dict, blank=True, null=True)
-    dob_type = models.CharField(max_length=2, choices=DATE_TYPE_CHOICES, default="AD")
+    dob_type = models.CharField(max_length=2, choices=DATE_TYPE_CHOICES, default=DATE_TYPE_AD)
     dob = models.DateField(null=True, blank=True)
 
     verified_on = models.DateTimeField(null=True, blank=True)

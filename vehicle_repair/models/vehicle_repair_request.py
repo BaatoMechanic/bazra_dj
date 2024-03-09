@@ -74,8 +74,7 @@ class VehicleRepairRequest(BaseModelMixin):
     location = models.JSONField(default=dict)
 
     def __str__(self) -> str:
-        # return f"{self.user} => {self.title}"
-        return self.idx
+        return self.title
 
     def can_retrieve(self, request: HttpRequest) -> bool:
         """
