@@ -25,11 +25,18 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
     preferred_mechanic = serializers.CharField(source="preferred_mechanic.idx", required=False, allow_null=True)
 
     assigned_mechanic = serializers.CharField(source="assigned_mechanic.idx", required=False)
+    advance_charge = serializers.SerializerMethodField()
 
     class Meta:
         model = VehicleRepairRequest
         fields = ["idx", "title", "description", "user", "vehicle_type",
                   "service_type", "preferred_mechanic", "assigned_mechanic", "location", "status", "advance_payment_status", "advance_charge", "created_at"]
+        
+    
+
+    def get_advance_charge(self, obj):
+        # using method to return advance charge to fix couldn't serialize decimal object error
+        return float(obj.advance_charge) if obj.advance_charge else None
 
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
         user = self.context.get('request').user

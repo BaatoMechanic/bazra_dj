@@ -43,18 +43,16 @@ def get_anonymous_permission_map():
         REPAIR_REQUEST_WEBSOCKET_API,
         REPAIR_STEP_WEBSOCKET_API,
         GIS_API,
-        CUSTOMER_CREATE_API,
     ]
 
 
 def get_unverified_permission_map():
-    return get_general_permission_map() + [
-        AUTH_API,
+    return get_general_permission_map() + get_anonymous_permission_map() + [
         USER_API,
         USER_DELETE_API,
         REVIEWS_READ_ONLY_API,
-        MECHANIC_TIPS_READ_API,
         VEHICLE_REPAIR_REQUEST_READ_API,
+        CUSTOMER_CREATE_API,
     ]
 
 

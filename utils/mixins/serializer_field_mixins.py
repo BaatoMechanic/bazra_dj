@@ -66,8 +66,11 @@ class BDetailRelatedField(serializers.RelatedField):
         - representation: The representation attribute.
         - source: The related object source.
         """
-        if not kwargs.get("read_only"):
+        
+        if kwargs.get("write_only"):
             self.queryset = model.objects.all()
+        else:
+            kwargs["read_only"] = True
         self.lookup = kwargs.pop("lookup", None) or "idx"
         self.is_method = kwargs.pop("is_method", False)
         try:
