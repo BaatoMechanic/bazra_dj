@@ -76,7 +76,10 @@ class RepairStepReportAdmin(admin.ModelAdmin):
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('idx', )
+    list_display = ('idx', "name")
+
+    def name(self, obj):
+        return obj.user.name
 
 
 @admin.register(Mechanic)
