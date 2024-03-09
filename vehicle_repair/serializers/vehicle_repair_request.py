@@ -31,8 +31,6 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
         model = VehicleRepairRequest
         fields = ["idx", "title", "description", "user", "vehicle_type",
                   "service_type", "preferred_mechanic", "assigned_mechanic", "location", "status", "advance_payment_status", "advance_charge", "created_at"]
-        
-    
 
     def get_advance_charge(self, obj):
         # using method to return advance charge to fix couldn't serialize decimal object error
