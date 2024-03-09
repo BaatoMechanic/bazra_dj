@@ -35,7 +35,7 @@ class VehicleRepairRequestVideoInline(admin.TabularInline):
 class VehicleRepairRequestAdmin(admin.ModelAdmin):
     list_display = ("idx", "title", "vehicle_type", "service_type", "status")
     readonly_fields = ("title", "description", "user", "preferred_mechanic",
-                       "vehicle_type", "service_type")
+                       "vehicle_type", "service_type", "location")
     inlines = [VehicleRepairRequestImageInline, VehicleRepairRequestVideoInline]
 
 
