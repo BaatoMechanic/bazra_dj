@@ -7,7 +7,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 
 from utils.mixins.base_api_mixin import BaseAPIMixin
-from vehicle_repair.models import VehicleRepairRequest
+from vehicle_repair.models import VehicleRepairRequest, RatingAndReview
 from vehicle_repair.models.vehicle_repair_request import VehicleRepairRequestImage, VehicleRepairRequestVideo
 from vehicle_repair.serializers.service import ServiceSerializer
 from vehicle_repair.serializers.vehicle_repair_request import VehicleRepairRequestImageSerializer, VehicleRepairRequestSerializer, VehicleRepairRequestVideoSerializer
@@ -39,7 +39,7 @@ class VehicleRepairRequestViewSet(BaseAPIMixin, ModelViewSet):
         repair_requests = VehicleRepairRequest.objects.filter(user=request.user).exclude(status="complete")
         serializer = VehicleRepairRequestSerializer(repair_requests, many=True)
         return Response(serializer.data)
-
+    
 
 class VehicleRepairRequestImageViewSet(BaseAPIMixin, ModelViewSet):
     queryset = VehicleRepairRequestImage.objects.all()

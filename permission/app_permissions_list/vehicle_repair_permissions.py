@@ -31,6 +31,18 @@ VEHICLE_REPAIR_REQUEST_IMAGES_WRITE_API = [
     ("repair_request-images-detail", "delete"),
 ]
 
+VEHICLE_REPAIR_REQUEST_REVIEWS_READ_API = [
+    ("repair_request-reviews-list", "get"),
+    ("repair_request-reviews-detail", "get"),
+
+]
+
+
+VEHICLE_REPAIR_REQUEST_REVIEWS_WRITE_API = [
+    ("repair_request-reviews-list", "post"),
+    ("repair_request-reviews-detail", "put"),
+    ("repair_request-reviews-detail", "patch"),
+]
 
 VEHICLE_REPAIR_REQUEST_VIDEOS_READ_API = [
     ("repair_request-videos-list", "get"),

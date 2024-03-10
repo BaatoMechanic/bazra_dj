@@ -21,7 +21,7 @@ from permission.app_permissions_list.vehicle_repair_permissions import (CUSTOMER
                                                                         VEHICLE_CATEOGRY_WRITE_API,
                                                                         VEHICLE_REPAIR_REQUEST_IMAGES_READ_API,
                                                                         VEHICLE_REPAIR_REQUEST_IMAGES_WRITE_API,
-                                                                        VEHICLE_REPAIR_REQUEST_READ_API,
+                                                                        VEHICLE_REPAIR_REQUEST_READ_API, VEHICLE_REPAIR_REQUEST_REVIEWS_READ_API, VEHICLE_REPAIR_REQUEST_REVIEWS_WRITE_API,
                                                                         VEHICLE_REPAIR_REQUEST_VIDEOS_READ_API,
                                                                         VEHICLE_REPAIR_REQUEST_VIDEOS_WRITE_API,
                                                                         VEHICLE_REPAIR_REQUEST_WRITE_API)
@@ -31,7 +31,8 @@ def get_general_permission_map():
     return [
         MECHANIC_API,
         CUSTOMER_API,
-        SERVICE_READ_API
+        SERVICE_READ_API,
+        VEHICLE_REPAIR_REQUEST_REVIEWS_READ_API
     ]
 
 
@@ -97,6 +98,7 @@ def get_consumer_permission_map():
         REPAIR_STEP_WRITE_API,
         VEHICLE_CATEOGRY_READ_API,
         USER_UPDATE_LOCATION_API,
+        VEHICLE_REPAIR_REQUEST_REVIEWS_WRITE_API
     ]
 
 

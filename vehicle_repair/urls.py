@@ -1,8 +1,6 @@
-
-# from django.urls import path
-from . import views
-
 from rest_framework_nested import routers
+
+from . import views
 
 router = routers.DefaultRouter()
 
@@ -18,6 +16,7 @@ repair_request_router = routers.NestedDefaultRouter(router, "repair_requests", l
 repair_request_router.register("images", views.VehicleRepairRequestImageViewSet, basename="repair_request-images")
 repair_request_router.register("videos", views.VehicleRepairRequestVideoViewSet, basename="repair_request-videos")
 repair_request_router.register("repair_steps", views.RepairStepViewSet, basename="repair_request-steps")
+repair_request_router.register('rating_reviews', views.RatingAndReviewViewSet, basename='repair_request-reviews')
 
 urlpatterns = [
 
