@@ -1,5 +1,3 @@
-
-
 from typing import Optional
 
 from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
@@ -35,7 +33,7 @@ class UserCreationForm(BaseUserCreationForm):
         if not email and not phone:
             self.add_error(
                 "phone",
-                "Either of both of 'email and mobile' is required to create an user."
+                "Either of both of 'email and mobile' is required to create an user.",
             )
         # Check if email is already taken
         elif email and User.objects.filter(email=email).exists():
@@ -60,7 +58,7 @@ class UserCreationForm(BaseUserCreationForm):
         if not email and not phone:
             self.add_error(
                 "email",
-                "Either of both of 'email and mobile' is required to create an user."
+                "Either of both of 'email and mobile' is required to create an user.",
             )
         # Check if phone is already taken
         elif phone and User.objects.filter(phone=phone).exists():
@@ -85,20 +83,31 @@ class UserChangeForm(forms.ModelForm):
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
-    filter_horizontal = ('groups', 'user_permissions', 'roles')
-    ordering = ('email', 'name')
+    filter_horizontal = ("groups", "user_permissions", "roles")
+    ordering = ("email", "name")
     list_display = ("idx", "email", "phone", "name", "is_staff")
     search_fields = ("email", "name")
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('email', 'phone', 'name', 'password1', 'password2'),
-        }),
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("email", "phone", "name", "password1", "password2"),
+            },
+        ),
     )
     fieldsets = (
         (None, {"fields": ("password", "email", "phone")}),
         (("Personal info"), {"fields": ("name", "gender", "dob_type", "dob")}),
-        (None, {"fields": ("image", "auth_provider", )}),
+        (
+            None,
+            {
+                "fields": (
+                    "image",
+                    "auth_provider",
+                )
+            },
+        ),
         (("Roles"), {"fields": ("primary_role", "roles")}),
         (
             ("Permissions"),
@@ -122,11 +131,7 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(User, UserAdmin)
 
-@admin.register(models.MechanicTip)
-class MechanicTipAdmin(admin.ModelAdmin):
-    list_display = ('mechanic', 'tip',)
-
 
 @admin.register(models.UserLocation)
 class UserLocationAdmin(admin.ModelAdmin):
-    list_display = ('user',)
+    list_display = ("user",)
