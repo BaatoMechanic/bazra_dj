@@ -1,4 +1,3 @@
-
 # from django.urls import path
 from .apis import v1
 
@@ -9,6 +8,7 @@ router = routers.DefaultRouter()
 router.register("repair_requests", v1.VehicleRepairRequestViewSet, basename="repair_requests")
 router.register("services", v1.ServiceViewSet, basename="services")
 router.register("vehicle-categories", v1.VehicleCategoryViewSet, basename="vehicle-categories")
+router.register("mechanic_tips", v1.MechanicTipViewSet, basename="mechanic_tips")
 
 router.register("mechanics", v1.MechanicViewSet, basename="mechanics")
 router.register("customers", v1.CustomerViewSet, basename="customers")
