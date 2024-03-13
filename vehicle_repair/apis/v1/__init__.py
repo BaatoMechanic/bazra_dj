@@ -1,3 +1,4 @@
+# flake8: noqa
 from .service import ServiceViewSet
 from .vehicle_repair_request import (
     VehicleRepairRequestViewSet,
