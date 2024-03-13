@@ -1,3 +1,4 @@
+# flake8: noqa
 from .auth import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from .reviews import RatingAndReviewViewSet
 
