@@ -1,21 +1,21 @@
 
 from django.urls import path
-from . import views
+from .apis import v1
 
 from rest_framework_nested import routers
 
 router = routers.DefaultRouter()
 
-router.register("reviews", views.RatingAndReviewViewSet, basename="reviews")
-router.register("user_info", views.UserInfoViewSet, basename="user_info")
-router.register('users_management', views.UserManagementViewSet, basename='users_management')
-router.register('mechanic_tips', views.MechanicTipViewSet, basename='mechanic_tips')
+router.register("reviews", v1.RatingAndReviewViewSet, basename="reviews")
+router.register("user_info", v1.UserInfoViewSet, basename="user_info")
+router.register('users_management', v1.UserManagementViewSet, basename='users_management')
+router.register('mechanic_tips', v1.MechanicTipViewSet, basename='mechanic_tips')
 
 
 urlpatterns = [
-    path('create-token/', views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('refresh-token/', views.TokenRefreshView.as_view(), name='token_refresh'),
-    path('verify-token/', views.TokenVerifyView.as_view(), name='token_verify'),
+    path('create-token/', v1.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('refresh-token/', v1.TokenRefreshView.as_view(), name='token_refresh'),
+    path('verify-token/', v1.TokenVerifyView.as_view(), name='token_verify'),
     # path('register/', views.register_user, name='register'),
 
 ]
