@@ -1,5 +1,4 @@
 # Dockerfile
-
 FROM python:3.10
 
 RUN apt-get update
@@ -11,8 +10,13 @@ RUN apt-get -y update --fix-missing \
     && apt-get -y install postgresql-client \
     && apt-get install -y pre-commit \
     && apt-get -y install fish
-    
 
+# Install pip
+RUN pip install --upgrade pip
+RUN pip install pre-commit
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 ENV PROJECT_DIR /app
@@ -22,29 +26,19 @@ ENV USER app
 RUN useradd -ms /bin/bash ${USER}
 RUN groupadd -f ${USER}
 
-# Create the project directory and set permissions
-RUN mkdir ${PROJECT_DIR}
+# Install requirements via requirements.txt
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
+
 WORKDIR ${PROJECT_DIR}
+
+# Chown all the files to the app user
 RUN chown -R ${USER}:${USER} .
 
-# Switch to root to install system packages
-USER root
-
-# Install pre-commit using the system package manager
-
-# Switch back to the non-root user
 USER ${USER}
 
-# Copy the rest of the application code
-ADD . ${PROJECT_DIR}/
+# Correctly run pre-commit install
+RUN pre-commit install
 
-# Install Python dependencies
-RUN pip install -r requirements.txt
-
-# Install pre-commit hooks
-RUN pip install pre-commit
-#RUN pre-commit install
-
-# Set the default shell
 SHELL ["/bin/zsh"]
 
