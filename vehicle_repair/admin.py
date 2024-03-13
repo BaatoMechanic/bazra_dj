@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from nested_inline.admin import NestedStackedInline, NestedModelAdmin
 from vehicle_repair.models import VehicleCategory, VehiclePart, VehicleRepairRequest
 from vehicle_repair.models.customer import Customer
 from vehicle_repair.models.repair_step import RepairStep, RepairStepBillImage, RepairStepReport
@@ -45,17 +46,11 @@ class ServiceAdmin(admin.ModelAdmin):
     filter_horizontal = ("parts_included", "vehicles_included")
 
 
-class VehicleRepairRequestImageInline(admin.TabularInline):
+class VehicleRepairRequestImageInline(NestedStackedInline):
     model = VehicleRepairRequestImage
     max_num = 1
 
-
-@admin.register(RepairStep)
-class RepairStepAdmin(admin.ModelAdmin):
-    list_display = ("idx", "name", "status")
-
-
-class RepairStepBillImageInline(admin.TabularInline):
+class RepairStepBillImageInline(NestedStackedInline):
     model = RepairStepBillImage
     extra = 0
     readonly_fields = ("thumbnail",)
@@ -65,13 +60,17 @@ class RepairStepBillImageInline(admin.TabularInline):
             return format_html(f'<img src="{instance.image.url}" width="100", object-fit="cover"  />')
         else:
             return ""
-
-
-@admin.register(RepairStepReport)
-class RepairStepReportAdmin(admin.ModelAdmin):
+# @admin.register(RepairStepReport)
+class RepairStepReportAdminInline(NestedStackedInline):
     model = RepairStepReport
-    list_display = ("idx",)
-    inlines = [RepairStepBillImageInline,]
+    extra = 1
+    # list_display = ("idx",)
+    inlines = [RepairStepBillImageInline]
+
+@admin.register(RepairStep)
+class RepairStepAdmin(NestedModelAdmin):
+    list_display = ("idx", "name", "status")
+    inlines = [RepairStepReportAdminInline]
 
 
 @admin.register(Customer)

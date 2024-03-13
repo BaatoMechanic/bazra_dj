@@ -39,4 +39,12 @@ class CreateRepairStepSerializer(BaseModelSerializerMixin):
         repair_request_idx = validated_data.pop('repair_request')
         repair_request = VehicleRepairRequest.objects.get(idx=repair_request_idx)
         validated_data['repair_request'] = repair_request
-        return super().create(validated_data)
+        instance =  super().create(validated_data)
+        try:
+            report = RepairStepReport.objects.get(repair_step=instance)
+        except RepairStepReport.DoesNotExist:
+            instance.report = report
+            instance.save()
+        return instance
+    
+

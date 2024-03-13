@@ -65,6 +65,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'djoser',
     'django_filters',
+    'nested_inline',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + NATIVE_APPS + THIRD_PARTY_APPS
@@ -131,8 +132,8 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': 'db',
-        # 'HOST': 'localhost',
+        # 'HOST': 'db',
+        'HOST': 'localhost',
         # 'HOST': '127.0.0.1',
         'NAME': 'bazra',
         'USER': 'postgres',
