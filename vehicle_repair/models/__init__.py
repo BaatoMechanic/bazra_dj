@@ -1,3 +1,4 @@
+# flake8: noqa
 from .vehicle_category import VehicleCategory
 from .vehicle_part import VehiclePart
 from .vehicle_repair_request import VehicleRepairRequest
@@ -7,3 +8,4 @@ from .vehicle_repair_request import VehicleRepairRequestImage, VehicleRepairRequ
 from .mechanic import Mechanic
 from .customer import Customer
 from .rating_review import RatingAndReview
+from .mechanic_tip import MechanicTip
