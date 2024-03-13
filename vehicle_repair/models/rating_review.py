@@ -1,9 +1,10 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 
 from autho.models import User
 from utils.mixins.base_model_mixin import BaseModelMixin
-from vehicle_repair.models import VehicleRepairRequest
 
 
 class RatingAndReview(BaseModelMixin):
@@ -14,6 +15,8 @@ class RatingAndReview(BaseModelMixin):
     review = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="rating_and_reviews")
     review_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="reviewed_by")
-    repair_request = models.ForeignKey(VehicleRepairRequest,
-                                       on_delete=models.SET_NULL, null=True,
-                                       related_name="review_and_ratings")
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey()
+    reviews = GenericRelation("RatingAndReview")
