@@ -43,7 +43,6 @@ class RepairStep(BaseModelMixin):
 
 
 class RepairStepReport(BaseModelMixin):
-    pass
     repair_step = models.OneToOneField(RepairStep, on_delete=models.PROTECT, related_name="report")
 
     def __str__(self) -> str:
