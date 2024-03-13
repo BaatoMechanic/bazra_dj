@@ -38,7 +38,7 @@ RUN chown -R ${USER}:${USER} .
 USER ${USER}
 
 # Correctly run pre-commit install
-RUN pre-commit install
+#RUN pre-commit install
 
 SHELL ["/bin/zsh"]
 
