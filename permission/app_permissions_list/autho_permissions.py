@@ -9,7 +9,10 @@ VERIFY_TOKEN_API = [
 ]
 
 
-USER_API = [("user_info-me", "get"), ("user_info-location", "get")]
+USER_API = [("user_info-me", "get"), (
+    "user_info-location", "get"),
+    ("user_info-me", "put"),
+    ]
 
 USER_PUBLIC_API = [
     ("user_info-detail", "get"),
