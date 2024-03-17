@@ -1,5 +1,3 @@
-
-
 AUTH_API = [
     ("token_obtain_pair", "post"),
     ("token_refresh", "post"),
@@ -11,15 +9,10 @@ VERIFY_TOKEN_API = [
 ]
 
 
-USER_API = [
-    ("user_info-me", "get"),
-    ("user_info-location", "get")
-]
+USER_API = [("user_info-me", "get"), ("user_info-location", "get")]
 
 USER_PUBLIC_API = [
-
     ("user_info-detail", "get"),
-
 ]
 
 
@@ -32,19 +25,6 @@ USER_DELETE_API = [
 
 USER_UPDATE_LOCATION_API = [
     ("users_management-update-location", "post"),
-]
-
-
-REVIEWS_READ_ONLY_API = [
-    ("reviews-list", "get"),
-    ("reviews-mechanic-reviews", "get"),
-]
-
-
-REVIEWS_WRITE_API = [
-    ("reviews-list", "post"),
-    ("reviews-detail", "put"),
-    ("reviews-detail", "patch"),
 ]
 
 
