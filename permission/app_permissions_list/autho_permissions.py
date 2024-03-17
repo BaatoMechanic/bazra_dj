@@ -27,6 +27,9 @@ USER_UPDATE_LOCATION_API = [
     ("users_management-update-location", "post"),
 ]
 
+USER_CHANGE_PASSWORD_API = [
+    ("users_management-change-password", "post"),
+]
 
 MECHANIC_TIPS_READ_API = [
     ("mechanic_tips-list", "get"),
