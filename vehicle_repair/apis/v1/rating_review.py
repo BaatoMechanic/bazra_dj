@@ -1,36 +1,3 @@
-# # from rest_framework.viewsets import ModelViewSet
-# from rest_framework.viewsets import GenericViewSet
-# from rest_framework.mixins import (
-#     CreateModelMixin,
-#     UpdateModelMixin,
-#     RetrieveModelMixin,
-#     DestroyModelMixin,
-# )
-# from utils.mixins.base_api_mixin import BaseAPIMixin
-# from vehicle_repair.models import RatingAndReview, VehicleRepairRequest
-# from vehicle_repair.serializers import RatingAndReviewSerializer
-
-
-# class RatingAndReviewViewSet(BaseAPIMixin, ModelViewSet):
-# class RatingAndReviewViewSet(
-#     BaseAPIMixin,
-#     RetrieveModelMixin,
-#     CreateModelMixin,
-#     UpdateModelMixin,
-#     DestroyModelMixin,
-#     GenericViewSet,
-# ):
-#     serializer_class = RatingAndReviewSerializer
-#     queryset = RatingAndReview.objects.all()
-
-#     # def get_queryset(self):
-
-#     #     repair_request: VehicleRepairRequest = VehicleRepairRequest.objects.get(
-#     #         idx=self.kwargs["repair_request_idx"],
-#     #     )
-#     #     return RatingAndReview.objects.filter(content_object=repair_request)
-
-
 from typing import Dict, Any
 
 from django.shortcuts import get_object_or_404
