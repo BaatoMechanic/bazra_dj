@@ -9,6 +9,7 @@ router.register("repair_requests", v1.VehicleRepairRequestViewSet, basename="rep
 router.register("services", v1.ServiceViewSet, basename="services")
 router.register("vehicle-categories", v1.VehicleCategoryViewSet, basename="vehicle-categories")
 router.register("mechanic_tips", v1.MechanicTipViewSet, basename="mechanic_tips")
+router.register("reviews", v1.RatingAndReviewViewSet, basename="reviews")
 
 router.register("mechanics", v1.MechanicViewSet, basename="mechanics")
 router.register("customers", v1.CustomerViewSet, basename="customers")
