@@ -4,6 +4,7 @@ from permission.app_permissions_list.autho_permissions import (
     MECHANIC_TIPS_WRITE_API,
     REGISTER_API,
     USER_API,
+    USER_CHANGE_PASSWORD_API,
     USER_PUBLIC_API,
     USER_UPDATE_LOCATION_API,
     VERIFY_TOKEN_API,
@@ -62,6 +63,7 @@ def get_unverified_permission_map():
             USER_DELETE_API,
             VEHICLE_REPAIR_REQUEST_READ_API,
             CUSTOMER_CREATE_API,
+            USER_CHANGE_PASSWORD_API,
         ]
     )
 
@@ -104,6 +106,7 @@ def get_consumer_permission_map():
         VEHICLE_CATEOGRY_READ_API,
         USER_UPDATE_LOCATION_API,
         VEHICLE_REPAIR_REQUEST_REVIEWS_WRITE_API,
+        USER_CHANGE_PASSWORD_API,
     ]
 
 
