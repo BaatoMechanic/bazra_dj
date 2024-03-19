@@ -1,11 +1,4 @@
-
-
-import json
-from math import exp
-
-from django.http import HttpResponse
 from autho.models.location import UserLocation
-from vehicle_repair.models.mechanic import Mechanic
 from autho.serializers import UserSerializer
 from autho.models import User
 
@@ -17,10 +10,6 @@ from autho.serializers.location import UserLocationSerializer
 from utils.mixins.base_api_mixin import BaseAPIMixin
 
 from rest_framework.viewsets import ModelViewSet
-from vehicle_repair.models.service import Service
-
-from vehicle_repair.models.vehicle_category import VehicleCategory
-from vehicle_repair.models.vehicle_part import VehiclePart
 
 
 class UserInfoViewSet(BaseAPIMixin, ModelViewSet):
@@ -32,15 +21,15 @@ class UserInfoViewSet(BaseAPIMixin, ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    @action(detail=False, methods=['GET', 'PUT'])
+    @action(detail=False, methods=['GET', 'PATCH'])
     def me(self, request):
         user = User.objects.get(
             id=request.user.id)
         if request.method == 'GET':
             serializer = UserSerializer(user)
             return Response(serializer.data)
-        elif request.method == 'PUT':
-            serializer = UserSerializer(user, data=request.data)
+        elif request.method == 'PATCH':
+            serializer = UserSerializer(user, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
