@@ -61,7 +61,7 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
             vehicle_type = VehicleCategory.objects.filter(idx=vehicle_idx).first()
             if not vehicle_type:
                 raise serializers.ValidationError(
-                    {"details": ["Vehicle type does not exist."]}
+                    {"detail": ["Vehicle type does not exist."]}
                 )
             attrs["vehicle_type"] = vehicle_type
 
@@ -77,7 +77,7 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
             service = Service.objects.filter(idx=service_idx).first()
             if not service:
                 raise serializers.ValidationError(
-                    {"details": ["Service type does not exist."]}
+                    {"detail": ["Service type does not exist."]}
                 )
             attrs["service_type"] = service
 
@@ -86,11 +86,11 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
             preferred_mehanic = User.objects.filter(idx=preferred_mehanic_idx).first()
             if not preferred_mehanic:
                 raise serializers.ValidationError(
-                    {"details": ["Preferred mechanic does not exist."]}
+                    {"detail": ["Preferred mechanic does not exist."]}
                 )
             if not hasattr(preferred_mehanic, "mechanic_profile"):
                 raise serializers.ValidationError(
-                    {"details": ["Invalid preferred mechanic."]}
+                    {"detail": ["Invalid preferred mechanic."]}
                 )
             attrs["preferred_mechanic"] = preferred_mehanic
 
@@ -101,7 +101,7 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
         user_mobile_number = user.phone
         if not user_mobile_number:
             raise serializers.ValidationError(
-                {"details": ["User mobile number is required."]}
+                {"detail": ["User mobile number is required."]}
             )
         return super().create(validated_data)
 
@@ -113,7 +113,7 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
             ).first()
             if not assigned_mechanic:
                 raise serializers.ValidationError(
-                    {"details": ["Mechanic does not exist."]}
+                    {"detail": ["Mechanic does not exist."]}
                 )
             # if not hasattr(assigned_mechanic, "mechanic_profile"):
             #     raise serializers.ValidationError({"details": ["Not a mechanic user."]})
