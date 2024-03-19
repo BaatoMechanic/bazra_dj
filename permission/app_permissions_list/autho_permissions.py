@@ -11,7 +11,7 @@ VERIFY_TOKEN_API = [
 
 USER_API = [("user_info-me", "get"), (
     "user_info-location", "get"),
-    ("user_info-me", "put"),
+    ("user_info-me", "patch"),
     ]
 
 USER_PUBLIC_API = [
