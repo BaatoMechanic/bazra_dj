@@ -190,8 +190,10 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
             roles.append(self.primary_role.name)
         return roles
 
-    def add_roles(self, new_roles) -> list:
-        self.roles.add(new_roles)
+    def add_roles(self, roles) -> list:
+        if not isinstance(roles, models.query.QuerySet) and not isinstance(roles, list):
+            roles = [roles]
+        self.roles.add(*roles)
 
     def delete(self) -> None:
         self.__class__.objects.filter(id=self.id).update(
