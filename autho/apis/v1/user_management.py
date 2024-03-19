@@ -106,16 +106,16 @@ class UserManagementViewSet(BaseAPIMixin, GenericViewSet):
             new_password = request.data.get("new_password")
             if not new_password:
                 return api_response_error(
-                    {"message": "New password cannot be empty."},
+                    {"detail": "New password cannot be empty."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             user.set_password(new_password)
             user.save()
             return api_response_success(
-                {"message": "Password updated successfully."}, status=status.HTTP_200_OK
+                {"detail": "Password updated successfully."}, status=status.HTTP_200_OK
             )
         else:
             return api_response_error(
-                {"message": "Old password is incorrect."},
+                {"detail": "Old password is incorrect."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
