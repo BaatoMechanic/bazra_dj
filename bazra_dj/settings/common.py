@@ -27,6 +27,7 @@ SECRET_KEY = "django-insecure-_a)-4oxe)#%1*@=jl$d7t0v-vp4np(sio&q$k41uhn$%ld(7!d
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+STAGING = True
 
 ALLOWED_HOSTS = [
     "192.168.1.86",
@@ -206,6 +207,12 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     "TOKEN_OBTAIN_SERIALIZER": "autho.serializers.LoginSerializer",
     # "TOKEN_OBTAIN_VIEW": "permission.permissions.BazraPermission",
+}
+
+
+RECOVERY_CODE = {
+    "MAX_RETRIES": 5,
+    "MAX_SENDS": 5,
 }
 
 
