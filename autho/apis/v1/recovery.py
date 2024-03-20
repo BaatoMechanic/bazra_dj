@@ -10,7 +10,7 @@ from utils.mixins.base_model_mixin import BaseModelMixin
 class AccountRecoveryViewSet(BaseModelMixin, GenericViewSet):
 
     @action(detail=False, methods=["POST"])
-    def send_otp(self, request):
+    def send_otp(self, request, *args, **kwargs):
         serializer = SendRecoveryCodeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -21,3 +21,16 @@ class AccountRecoveryViewSet(BaseModelMixin, GenericViewSet):
         code.send()
 
         return api_response_success({"detail": "OTP sent successfully."})
+
+    @action(detail=False, methods=["POST"])
+    def resend(self, request):
+        recovery_idx = request.data.get("idx")
+        try:
+            code = RecoveryCode.objects.get(idx=recovery_idx)
+
+        except RecoveryCode.DoesNotExist:
+
+            return api_response_success({"detail": "Resend the Otp again."})
+
+        code.update_code()
+        return api_response_success({"detail": "Resend sent successfully."})
