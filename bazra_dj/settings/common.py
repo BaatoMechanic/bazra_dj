@@ -187,8 +187,6 @@ APPEND_SLASH = True
 
 
 # Bazra settings constants
-OTP_TTL = 5
-
 
 AUTH_USER_MODEL = "autho.User"
 
@@ -213,6 +211,7 @@ SIMPLE_JWT = {
 RECOVERY_CODE = {
     "MAX_RETRIES": 5,
     "MAX_SENDS": 5,
+    "OTP_TTL": 2
 }
 
 

@@ -1,22 +1,22 @@
+import datetime
 import logging
 
-from datetime import timezone
+from django.utils import timezone
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.db import models
 
 from autho.exceptions import RecoveryCodeLockedException
+from utils.helpers import generate_6digit_number
 from utils.mixins.base_exception_mixin import BMException
 from utils.mixins.base_model_mixin import BaseModelMixin
 
-User = get_user_model()
 logger = logging.getLogger(__name__)
 
 
 class RecoveryCode(BaseModelMixin):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="recovery_code"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="recovery_code"
     )
     code = models.CharField(max_length=6)
     expired_on = models.DateTimeField(null=True)
@@ -85,6 +85,21 @@ class RecoveryCode(BaseModelMixin):
             self.mark_inactive()
         self.save(update_fields=["sents", "is_active"])
 
+    @classmethod
+    def generate_recovery_code(cls, user) -> "RecoveryCode":
+        recovery_code, _ = cls.objects.get_or_create(user=user)
+        recovery_code.update_code()
+        return recovery_code
+
+    def update_code(self):
+        self.code = generate_6digit_number()
+        self.tries = 0
+        self.sents = 0
+        self.expired_on = timezone.now() + datetime.timedelta(
+            minutes=settings.RECOVERY_CODE["CODE_TTL"]
+        )
+        self.save()
+
     def send(self) -> None:
         """
         Sends a recovery code to the user's phone or email.
@@ -110,7 +125,7 @@ class RecoveryCode(BaseModelMixin):
         elif self.email:
             self.email_code()
         else:
-            raise BMException("User does not have phone or email")  # type: ignore
+            raise BMException("User does not have phone or email")
 
     def sms_code(self):
         pass
@@ -118,9 +133,9 @@ class RecoveryCode(BaseModelMixin):
     def email_code(self):
         from django.core.mail import send_mail
 
-        subject = "Autho Recovery Code"
-        message = f"Your Autho Recovery Code is: {self.code}"
-        from_email = settings.DEFAULT_FROM_EMAIL
-        recipient_list = [self.email]
+        subject = "Password recovery code"
+        message = f"Your password recovery code is: {self.code}"
+        from_email = settings.EMAIL_HOST_USER
+        recipient_list = [self.user.email]
 
         send_mail(subject, message, from_email, recipient_list)
