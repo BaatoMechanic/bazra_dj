@@ -2,6 +2,7 @@ from permission.app_permissions_list.autho_permissions import (
     AUTH_API,
     MECHANIC_TIPS_READ_API,
     MECHANIC_TIPS_WRITE_API,
+    RECOVERY_API,
     REGISTER_API,
     USER_API,
     USER_CHANGE_PASSWORD_API,
@@ -36,6 +37,7 @@ from permission.app_permissions_list.vehicle_repair_permissions import (
 
 def get_general_permission_map():
     return [
+        RECOVERY_API,
         MECHANIC_API,
         CUSTOMER_API,
         SERVICE_READ_API,

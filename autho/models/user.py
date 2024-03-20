@@ -10,6 +10,7 @@ from django.contrib.auth.models import (
 )
 from django.http import HttpRequest
 
+from autho.models.recovery_code import RecoveryCode
 from autho.models.verification_code import VerificationCode
 from utils.mixins.base_model_mixin import BaseModelMixin
 
@@ -226,6 +227,11 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
             return self.verification_code.update_code()
         verification_code, _ = VerificationCode.objects.get_or_create(user=self)
         return verification_code
+
+    def gen_recovery_code(self) -> Optional[RecoveryCode]:
+        if hasattr(self, "recovery_code"):
+            return self.recovery_code.update_code()
+        return RecoveryCode.generate_recovery_code()
 
     @classmethod
     def get_user_by_identifier(cls, id):
