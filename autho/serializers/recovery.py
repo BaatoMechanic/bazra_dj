@@ -12,3 +12,18 @@ class SendRecoveryCodeSerializer(serializers.Serializer):
         if user is None:
             raise serializers.ValidationError("User not found")
         return user
+
+
+class VerfiyOtpSerializer(serializers.Serializer):
+    opt = serializers.CharField(max_length=6)
+    new_password = serializers.CharField()
+
+    def validate_otp(self, value):
+        if value.isdigit() and len(value) != 6:
+            raise serializers.ValidationError("Invalid OTP")
+        return value
+
+    def validate_new_password(self, value):
+        if len(value) < 8:
+            raise serializers.ValidationError("Password must be at least 8 characters")
+        return value
