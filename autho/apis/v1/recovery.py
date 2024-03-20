@@ -1,5 +1,5 @@
 from rest_framework.decorators import action
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.generics import GenericAPIView
 
 from autho.models.recovery_code import RecoveryCode
 from autho.serializers.recovery import SendRecoveryCodeSerializer
@@ -7,7 +7,7 @@ from utils.api_response import api_response_success
 from utils.mixins.base_model_mixin import BaseModelMixin
 
 
-class AccountRecoveryViewSet(BaseModelMixin, GenericViewSet):
+class AccountRecoveryViewSet(BaseModelMixin, GenericAPIView):
 
     @action(detail=False, methods=["POST"])
     def send_otp(self, request, *args, **kwargs):
