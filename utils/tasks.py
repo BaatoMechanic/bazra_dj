@@ -36,7 +36,7 @@ def send_email(
             from_email = settings.EMAIL_HOST_USER
 
         message = BaseEmailMessage(
-            template_name="templates/email/account_recovery.html",
+            template_name="email/account_recovery.html",
             context={
                 "user_name": "Krishna",
                 "recovery_link": "http://jk.jk",
