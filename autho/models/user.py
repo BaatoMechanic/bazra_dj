@@ -231,7 +231,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     def gen_recovery_code(self) -> Optional[RecoveryCode]:
         if hasattr(self, "recovery_code"):
             return self.recovery_code.update_code()
-        return RecoveryCode.generate_recovery_code()
+        return RecoveryCode.generate_recovery_code(self)
 
     @classmethod
     def get_user_by_identifier(cls, id):

@@ -17,19 +17,20 @@ DATABASES = {
 
 
 # For smtp4dev
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = "192.168.52.86"
-# EMAIL_HOST_USER = None
-# EMAIL_HOST_PASSWORD = None
-# EMAIL_PORT = "26"
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = "192.168.1.79"
+EMAIL_HOST_USER = None
+EMAIL_HOST_PASSWORD = None
+EMAIL_PORT = "26"
 
 # For gmail
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = "your email"
-EMAIL_HOST_PASSWORD = "password"
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = "smtp.gmail.com"
+# EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = False
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = "your google id"
+# EMAIL_HOST_PASSWORD = "your password"
 
 
 # ========================================================================================

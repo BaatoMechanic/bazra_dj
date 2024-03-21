@@ -1,21 +1,21 @@
 import datetime
 import logging
 
-from django.utils import timezone
-
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 from autho.exceptions import RecoveryCodeLockedException
 from utils.helpers import generate_6digit_number
 from utils.mixins.base_exception_mixin import BMException
 from utils.mixins.base_model_mixin import BaseModelMixin
+from utils.tasks import send_email
 
 logger = logging.getLogger(__name__)
 
 
 class RecoveryCode(BaseModelMixin):
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="recovery_code"
     )
     code = models.CharField(max_length=6)
@@ -81,7 +81,7 @@ class RecoveryCode(BaseModelMixin):
             None
         """
         self.sents += 1
-        if self.sents > self.max_sends:
+        if self.sents > settings.RECOVERY_CODE["MAX_SENDS"]:
             self.mark_inactive()
         self.save(update_fields=["sents", "is_active"])
 
@@ -96,9 +96,10 @@ class RecoveryCode(BaseModelMixin):
         self.tries = 0
         self.sents = 0
         self.expired_on = timezone.now() + datetime.timedelta(
-            minutes=settings.RECOVERY_CODE["CODE_TTL"]
+            minutes=settings.RECOVERY_CODE["OTP_TTL"]
         )
         self.save()
+        return self
 
     def send(self) -> None:
         """
@@ -120,22 +121,21 @@ class RecoveryCode(BaseModelMixin):
         if self.sents > settings.RECOVERY_CODE["MAX_SENDS"]:
             self.mark_inactive()
 
-        if self.phone:
-            self.sms_code()
-        elif self.email:
-            self.email_code()
-        else:
+        if not self.user.phone and not self.user.email:
             raise BMException("User does not have phone or email")
+        if self.user.phone:
+            self.sms_code()
+        if self.user.email:
+            self.email_code()
 
     def sms_code(self):
         pass
 
     def email_code(self):
-        from django.core.mail import send_mail
 
         subject = "Password recovery code"
         message = f"Your password recovery code is: {self.code}"
         from_email = settings.EMAIL_HOST_USER
         recipient_list = [self.user.email]
 
-        send_mail(subject, message, from_email, recipient_list)
+        send_email(subject, message, recipient_list, from_email=from_email)

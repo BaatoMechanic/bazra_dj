@@ -213,6 +213,8 @@ RECOVERY_CODE = {
     "OTP_TTL": 2
 }
 
+CELERY_BROKER_URL = "redis://redis:6379/1"
+
 
 try:
     from bazra_dj.settings.local_settings import *  # noqa: F403, F401
