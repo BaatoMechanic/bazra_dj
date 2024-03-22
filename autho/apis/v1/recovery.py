@@ -2,7 +2,8 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import GenericViewSet
 
 from autho.exceptions import InvalidRecoveryCodeError, RecoveryCodeLockedException
-from autho.models import User, RecoveryCode
+from autho.models import User
+from autho.models.recovery_code import RecoveryCode
 from autho.serializers.recovery import (
     SendRecoveryCodeSerializer,
     VerfiyRecoveryOtpCodeSerializer,

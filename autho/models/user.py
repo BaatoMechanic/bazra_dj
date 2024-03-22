@@ -1,7 +1,5 @@
 import re
 
-from typing import Optional
-
 from django.db import models
 from django.db.models import Sum
 from django.contrib.auth.models import (
@@ -12,12 +10,13 @@ from django.contrib.auth.models import (
 from django.http import HttpRequest
 
 from autho.exceptions import InvalidRecoveryCodeError
-from autho.models import RecoveryCode, VerificationCode, UserBlackList
 from utils.mixins.base_model_mixin import BaseModelMixin
 
 
 class UserManager(BaseUserManager):
     def create_user(self, **fields):
+        from autho.models import UserBlackList
+
         donot_send_code = fields.pop("donot_send_code", None)
         email = fields.pop("email", None)
         phone = fields.pop("phone", None)
@@ -214,12 +213,14 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
 
         return RatingAndReview.objects.filter(user=self).count()
 
-    def gen_verification_code(self) -> Optional[VerificationCode]:
+    def gen_verification_code(self):
         """Generate a verification code for the user.
 
         Returns:
             The generated verification code, or None if the user is already verified.
         """
+        from .verification_code import VerificationCode
+
         if self.is_verified:
             raise Exception("User is already verified.")
         if hasattr(self, "verification_code"):
@@ -227,7 +228,9 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         verification_code, _ = VerificationCode.objects.get_or_create(user=self)
         return verification_code
 
-    def gen_recovery_code(self) -> Optional[RecoveryCode]:
+    def gen_recovery_code(self):
+        from .recovery_code import RecoveryCode
+
         if hasattr(self, "recovery_code"):
             return self.recovery_code.update_code()
         return RecoveryCode.generate_recovery_code(self)
@@ -245,7 +248,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
             user.recovery_code.delete()
             return user
         else:
-            user.recovery_code.inc_tries()
+            user.recovery_code.increment_retries()
             raise InvalidRecoveryCodeError
 
     @classmethod
