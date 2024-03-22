@@ -186,8 +186,6 @@ APPEND_SLASH = True
 
 
 # Bazra settings constants
-OTP_TTL = 5
-
 
 AUTH_USER_MODEL = "autho.User"
 
@@ -207,6 +205,15 @@ SIMPLE_JWT = {
     "TOKEN_OBTAIN_SERIALIZER": "autho.serializers.LoginSerializer",
     # "TOKEN_OBTAIN_VIEW": "permission.permissions.BazraPermission",
 }
+
+
+RECOVERY_CODE = {
+    "MAX_RETRIES": 5,
+    "MAX_SENDS": 5,
+    "OTP_TTL": 2
+}
+
+CELERY_BROKER_URL = "redis://redis:6379/1"
 
 
 try:

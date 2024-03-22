@@ -9,10 +9,18 @@ VERIFY_TOKEN_API = [
 ]
 
 
-USER_API = [("user_info-me", "get"), (
-    "user_info-location", "get"),
+RECOVERY_API = [
+    ("account_recovery-send-otp", "post"),
+    ("account_recovery-resend", "post"),
+    ("account_recovery-verify-otp", "post"),
+]
+
+
+USER_API = [
+    ("user_info-me", "get"),
+    ("user_info-location", "get"),
     ("user_info-me", "patch"),
-    ]
+]
 
 USER_PUBLIC_API = [
     ("user_info-detail", "get"),

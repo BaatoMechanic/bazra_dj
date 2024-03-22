@@ -1,8 +1,7 @@
 import re
 
-from typing import Optional
-
 from django.db import models
+from django.db.models import Sum
 from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin,
@@ -10,17 +9,14 @@ from django.contrib.auth.models import (
 )
 from django.http import HttpRequest
 
-from autho.models.verification_code import VerificationCode
+from autho.exceptions import InvalidRecoveryCodeError
 from utils.mixins.base_model_mixin import BaseModelMixin
-
-
-from django.db.models import Sum
-
-from autho.models.user_blacklist import UserBlackList
 
 
 class UserManager(BaseUserManager):
     def create_user(self, **fields):
+        from autho.models import UserBlackList
+
         donot_send_code = fields.pop("donot_send_code", None)
         email = fields.pop("email", None)
         phone = fields.pop("phone", None)
@@ -214,18 +210,43 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
 
         return RatingAndReview.objects.filter(user=self).count()
 
-    def gen_verification_code(self) -> Optional[VerificationCode]:
+    def gen_verification_code(self):
         """Generate a verification code for the user.
 
         Returns:
             The generated verification code, or None if the user is already verified.
         """
+        from .verification_code import VerificationCode
+
         if self.is_verified:
             raise Exception("User is already verified.")
         if hasattr(self, "verification_code"):
             return self.verification_code.update_code()
         verification_code, _ = VerificationCode.objects.get_or_create(user=self)
         return verification_code
+
+    def gen_recovery_code(self):
+        from .recovery_code import RecoveryCode
+
+        if hasattr(self, "recovery_code"):
+            return self.recovery_code.update_code()
+        return RecoveryCode.generate_recovery_code(self)
+
+    @classmethod
+    def verify_recovery_code(cls, id, code, verification_token=None):
+        user = cls.get_user_by_identifier(id)
+        if not user:
+            raise InvalidRecoveryCodeError
+
+        if not hasattr(user, "recovery_code"):
+            raise InvalidRecoveryCodeError
+
+        if user.recovery_code.equals(code, verification_token):
+            user.recovery_code.delete()
+            return user
+        else:
+            user.recovery_code.increment_retries()
+            raise InvalidRecoveryCodeError
 
     @classmethod
     def get_user_by_identifier(cls, id):
