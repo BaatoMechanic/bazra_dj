@@ -14,14 +14,8 @@ class SendRecoveryCodeSerializer(serializers.Serializer):
         return user
 
 
-class VerfiyOtpSerializer(serializers.Serializer):
-    opt = serializers.CharField(max_length=6)
+class VerfiyRecoveryOtpCodeSerializer(serializers.Serializer):
     new_password = serializers.CharField()
-
-    def validate_otp(self, value):
-        if value.isdigit() and len(value) != 6:
-            raise serializers.ValidationError("Invalid OTP")
-        return value
 
     def validate_new_password(self, value):
         if len(value) < 8:

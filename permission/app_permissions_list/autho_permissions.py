@@ -11,6 +11,8 @@ VERIFY_TOKEN_API = [
 
 RECOVERY_API = [
     ("account_recovery-send-otp", "post"),
+    ("account_recovery-resend", "post"),
+    ("account_recovery-verify-otp", "post"),
 ]
 
 

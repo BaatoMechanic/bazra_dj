@@ -3,6 +3,7 @@ import re
 from typing import Optional
 
 from django.db import models
+from django.db.models import Sum
 from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin,
@@ -10,14 +11,9 @@ from django.contrib.auth.models import (
 )
 from django.http import HttpRequest
 
-from autho.models.recovery_code import RecoveryCode
-from autho.models.verification_code import VerificationCode
+from autho.exceptions import InvalidRecoveryCodeError
+from autho.models import RecoveryCode, VerificationCode, UserBlackList
 from utils.mixins.base_model_mixin import BaseModelMixin
-
-
-from django.db.models import Sum
-
-from autho.models.user_blacklist import UserBlackList
 
 
 class UserManager(BaseUserManager):
@@ -232,6 +228,22 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         if hasattr(self, "recovery_code"):
             return self.recovery_code.update_code()
         return RecoveryCode.generate_recovery_code(self)
+
+    @classmethod
+    def verify_recovery_code(cls, id, code, verification_token=None):
+        user = cls.get_user_by_identifier(id)
+        if not user:
+            raise InvalidRecoveryCodeError
+
+        if not hasattr(user, "recovery_code"):
+            raise InvalidRecoveryCodeError
+
+        if user.recovery_code.equals(code, verification_token):
+            user.recovery_code.delete()
+            return user
+        else:
+            user.recovery_code.inc_tries()
+            raise InvalidRecoveryCodeError
 
     @classmethod
     def get_user_by_identifier(cls, id):
