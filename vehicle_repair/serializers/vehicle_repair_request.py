@@ -11,8 +11,8 @@ from vehicle_repair.models import (
     VehicleCategory,
     VehicleRepairRequestImage,
     VehicleRepairRequestVideo,
-    Mechanic
-    )
+    Mechanic,
+)
 
 User = get_user_model()
 
@@ -22,29 +22,47 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
     vehicle_type = serializers.CharField(source="vehicle_type.idx")
     # vehicle_part = serializers.CharField(source="vehicle_part.idx")
     service_type = serializers.CharField(source="service_type.idx")
-    preferred_mechanic = serializers.CharField(source="preferred_mechanic.idx", required=False, allow_null=True)
-
-    assigned_mechanic = serializers.CharField(source="assigned_mechanic.idx", required=False)
+    preferred_mechanic = serializers.CharField(
+        source="preferred_mechanic.idx", required=False, allow_null=True
+    )
+    assigned_mechanic = serializers.CharField(
+        source="assigned_mechanic.idx", required=False
+    )
     advance_charge = serializers.SerializerMethodField()
 
     class Meta:
         model = VehicleRepairRequest
-        fields = ["idx", "title", "description", "user", "vehicle_type",
-                  "service_type", "preferred_mechanic", "assigned_mechanic", "location", "status", "advance_payment_status", "advance_charge", "created_at"]
+        fields = [
+            "idx",
+            "title",
+            "description",
+            "user",
+            "vehicle_type",
+            "service_type",
+            "preferred_mechanic",
+            "assigned_mechanic",
+            "location",
+            "status",
+            "advance_payment_status",
+            "advance_charge",
+            "created_at",
+        ]
 
     def get_advance_charge(self, obj):
         # using method to return advance charge to fix couldn't serialize decimal object error
         return float(obj.advance_charge) if obj.advance_charge else None
 
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
-        user = self.context.get('request').user
+        user = self.context.get("request").user
         attrs["user"] = user
 
-        vehicle_idx = attrs.pop("vehicle_type", {}).get('idx')
+        vehicle_idx = attrs.pop("vehicle_type", {}).get("idx")
         if vehicle_idx:
             vehicle_type = VehicleCategory.objects.filter(idx=vehicle_idx).first()
             if not vehicle_type:
-                raise serializers.ValidationError({"details": ["Vehicle type does not exist."]})
+                raise serializers.ValidationError(
+                    {"detail": "Vehicle type does not exist."}
+                )
             attrs["vehicle_type"] = vehicle_type
 
         # vehicle_part_idx = attrs.pop("vehicle_part", {}).get('idx')
@@ -54,42 +72,60 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
         #         raise serializers.ValidationError({"details": ["Vehicle part does not exist."]})
         #     attrs["vehicle_part"] = vehicle_part
 
-        service_idx = attrs.pop("service_type", {}).get('idx')
+        service_idx = attrs.pop("service_type", {}).get("idx")
         if service_idx:
             service = Service.objects.filter(idx=service_idx).first()
             if not service:
-                raise serializers.ValidationError({"details": ["Service type does not exist."]})
+                raise serializers.ValidationError(
+                    {"detail": "Service type does not exist."}
+                )
             attrs["service_type"] = service
 
-        preferred_mehanic_idx = attrs.pop("preferred_mechanic", {}).get('idx')
+        preferred_mehanic_idx = attrs.pop("preferred_mechanic", {}).get("idx")
         if preferred_mehanic_idx:
             preferred_mehanic = User.objects.filter(idx=preferred_mehanic_idx).first()
             if not preferred_mehanic:
-                raise serializers.ValidationError({"details": ["Preferred mechanic does not exist."]})
+                raise serializers.ValidationError(
+                    {"detail": "Preferred mechanic does not exist."}
+                )
             if not hasattr(preferred_mehanic, "mechanic_profile"):
-                raise serializers.ValidationError({"details": ["Invalid preferred mechanic."]})
-            attrs['preferred_mechanic'] = preferred_mehanic
+                raise serializers.ValidationError(
+                    {"detail": ["Invalid preferred mechanic."]}
+                )
+            attrs["preferred_mechanic"] = preferred_mehanic
 
         return super().validate(attrs)
 
     def create(self, validated_data):
+        user = self.context.get("request").user
+        user_mobile_number = user.phone
+        if not user_mobile_number:
+            raise serializers.ValidationError(
+                {"detail": "User mobile number is required."}
+            )
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
-        assigned_mechanic_idx = validated_data.pop('assigned_mechanic', None)
+        assigned_mechanic_idx = validated_data.pop("assigned_mechanic", None)
         if assigned_mechanic_idx:
-            assigned_mechanic = Mechanic.objects.filter(idx=assigned_mechanic_idx).first()
+            assigned_mechanic = Mechanic.objects.filter(
+                idx=assigned_mechanic_idx
+            ).first()
             if not assigned_mechanic:
-                raise serializers.ValidationError({"details": ["Mechanic does not exist."]})
+                raise serializers.ValidationError(
+                    {"detail": "Mechanic does not exist."}
+                )
             # if not hasattr(assigned_mechanic, "mechanic_profile"):
             #     raise serializers.ValidationError({"details": ["Not a mechanic user."]})
-            validated_data['assigned_mechanic'] = assigned_mechanic
+            validated_data["assigned_mechanic"] = assigned_mechanic
 
         return super().update(instance, validated_data)
 
 
 class VehicleRepairRequestImageSerializer(serializers.ModelSerializer):
-    images = serializers.ListField(child=serializers.ImageField(), required=False, write_only=True)
+    images = serializers.ListField(
+        child=serializers.ImageField(), required=False, write_only=True
+    )
     image = serializers.ImageField(required=False)
 
     class Meta:
@@ -111,29 +147,39 @@ class VehicleRepairRequestImageSerializer(serializers.ModelSerializer):
         if "image" in validated_data:
             image = VehicleRepairRequestImage(
                 repair_request=validated_data["repair_request"],
-                image=validated_data["image"]
+                image=validated_data["image"],
             )
             images.append(image)
 
-        images.extend([
-            VehicleRepairRequestImage(
-                repair_request=validated_data["repair_request"],
-                image=image
-            ) for image in validated_data['images']
-        ])
+        images.extend(
+            [
+                VehicleRepairRequestImage(
+                    repair_request=validated_data["repair_request"], image=image
+                )
+                for image in validated_data["images"]
+            ]
+        )
 
         return VehicleRepairRequestImage.objects.bulk_create(images)
 
     def save(self, **kwargs):
-        if not self.validated_data.get("image") and not self.validated_data.get("images"):
-            raise serializers.ValidationError({"detail": "At least one image is required."})
+        if not self.validated_data.get("image") and not self.validated_data.get(
+            "images"
+        ):
+            raise serializers.ValidationError(
+                {"detail": "At least one image is required."}
+            )
 
         repair_request_idx = self.context.get("repair_request")
         try:
-            kwargs["repair_request"] = VehicleRepairRequest.objects.get(idx=repair_request_idx)
+            kwargs["repair_request"] = VehicleRepairRequest.objects.get(
+                idx=repair_request_idx
+            )
             return super().save(**kwargs)
         except VehicleRepairRequest.DoesNotExist:
-            raise serializers.ValidationError({"detail": "Repair request does not exist."})
+            raise serializers.ValidationError(
+                {"detail": "Repair request does not exist."}
+            )
 
 
 class VehicleRepairRequestVideoSerializer(serializers.ModelSerializer):

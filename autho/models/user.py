@@ -186,8 +186,12 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
             roles.append(self.primary_role.name)
         return roles
 
-    def delete(self) -> None:
+    def add_roles(self, roles) -> list:
+        if not isinstance(roles, models.query.QuerySet) and not isinstance(roles, list):
+            roles = [roles]
+        self.roles.add(*roles)
 
+    def delete(self) -> None:
         self.__class__.objects.filter(id=self.id).update(
             is_active=False, is_obsolete=True
         )
@@ -196,17 +200,10 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     def ratings(self) -> int:
         from vehicle_repair.models.rating_review import RatingAndReview
 
-        # return RatingAndReview.objects.filter(user=self).count()
         return RatingAndReview.objects.filter(user=self).aggregate(Sum("rating"))[
             "rating__sum"
         ]
 
-    # @property
-    # def location(self):
-    #     from autho.models.location import UserLocation
-
-    #     location = UserLocation.objects.filter(user=self).last()
-    #     return location
     @property
     def total_rating(self):
         from autho.models import RatingAndReview
