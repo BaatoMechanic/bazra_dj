@@ -24,6 +24,7 @@ drf-nested-routers==0.93.4
 hyperlink==21.0.0
 idna==3.4
 incremental==22.10.0
+ipython==8.22.2 
 Markdown==3.5.1
 msgpack==1.0.7
 oauthlib==3.2.2

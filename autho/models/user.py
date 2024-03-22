@@ -3,7 +3,11 @@ import re
 from typing import Optional
 
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    PermissionsMixin,
+    BaseUserManager,
+)
 from django.http import HttpRequest
 
 from autho.models.verification_code import VerificationCode
@@ -16,13 +20,15 @@ from autho.models.user_blacklist import UserBlackList
 
 
 class UserManager(BaseUserManager):
-    def create_user(self,  **fields):
+    def create_user(self, **fields):
         donot_send_code = fields.pop("donot_send_code", None)
-        email = fields.pop('email', None)
-        phone = fields.pop('phone', None)
-        password = fields.pop('password', None)
+        email = fields.pop("email", None)
+        phone = fields.pop("phone", None)
+        password = fields.pop("password", None)
         if not email and not phone:
-            raise ValueError("Either of both of 'email and mobile' is required to create an user.")
+            raise ValueError(
+                "Either of both of 'email and mobile' is required to create an user."
+            )
 
         if not password:
             raise ValueError("Password is required to create an user.")
@@ -48,11 +54,11 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, email=None, phone=None, password=None, **extra_fields):
 
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('email', email)
-        extra_fields.setdefault('phone', phone)
-        extra_fields.setdefault('password', password)
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("email", email)
+        extra_fields.setdefault("phone", phone)
+        extra_fields.setdefault("password", password)
         return self.create_user(**extra_fields)
 
     @staticmethod
@@ -61,15 +67,20 @@ class UserManager(BaseUserManager):
         Normalize the phone number by removing any special characters or formatting.
         """
 
-        normalized_phone_number = phone_number.replace(' ', '').replace(
-            '-', '').replace('(', '').replace(')', '').replace('+', '')
+        normalized_phone_number = (
+            phone_number.replace(" ", "")
+            .replace("-", "")
+            .replace("(", "")
+            .replace(")", "")
+            .replace("+", "")
+        )
         return normalized_phone_number
 
 
-AUTH_PROVIDER_EMAIL = 'email'
-AUTH_PROVIDER_MOBILE = 'mobile'
-AUTH_PROVIDER_GOOGLE = 'google'
-AUTH_PROVIDER_FACEBOOK = 'facebook'
+AUTH_PROVIDER_EMAIL = "email"
+AUTH_PROVIDER_MOBILE = "mobile"
+AUTH_PROVIDER_GOOGLE = "google"
+AUTH_PROVIDER_FACEBOOK = "facebook"
 
 AUTH_PROVIDER_CHOICES = [
     (AUTH_PROVIDER_EMAIL, AUTH_PROVIDER_EMAIL.capitalize()),
@@ -81,17 +92,18 @@ AUTH_PROVIDER_CHOICES = [
 
 class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
 
-    GENDER_MALE = 'male'
-    GENDER_FEMALE = 'female'
-    GENDER_OTHER = 'other'
+    GENDER_MALE = "male"
+    GENDER_FEMALE = "female"
+    GENDER_OTHER = "other"
 
     GENDER_CHOCES = [
         (GENDER_MALE, GENDER_MALE.capitalize()),
         (GENDER_FEMALE, GENDER_FEMALE.capitalize()),
-        (GENDER_OTHER, GENDER_OTHER.capitalize())]
+        (GENDER_OTHER, GENDER_OTHER.capitalize()),
+    ]
 
-    DATE_TYPE_BS = 'bs'
-    DATE_TYPE_AD = 'ad'
+    DATE_TYPE_BS = "bs"
+    DATE_TYPE_AD = "ad"
 
     DATE_TYPE_CHOICES = (
         (DATE_TYPE_BS, DATE_TYPE_BS.capitalize()),
@@ -104,7 +116,12 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     phone = models.CharField(max_length=16, blank=True, null=True, unique=True)
     gender = models.CharField(max_length=20, choices=GENDER_CHOCES, default=GENDER_MALE)
     auth_provider = models.CharField(
-        max_length=50, blank=False, null=False, choices=AUTH_PROVIDER_CHOICES, default=AUTH_PROVIDER_EMAIL)
+        max_length=50,
+        blank=False,
+        null=False,
+        choices=AUTH_PROVIDER_CHOICES,
+        default=AUTH_PROVIDER_EMAIL,
+    )
     image = models.ImageField(upload_to="users/profile", null=True, blank=True)
 
     is_phone_verified = models.BooleanField(default=False)
@@ -126,13 +143,17 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     )
 
     primary_role = models.ForeignKey(
-        "permission.Role", on_delete=models.SET_NULL,
+        "permission.Role",
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        db_index=True)
+        db_index=True,
+    )
     roles = models.ManyToManyField("permission.Role", related_name="users", blank=True)
     # additional_attributes = models.JSONField(default=dict, blank=True, null=True)
-    dob_type = models.CharField(max_length=2, choices=DATE_TYPE_CHOICES, default="AD")
+    dob_type = models.CharField(
+        max_length=2, choices=DATE_TYPE_CHOICES, default=DATE_TYPE_AD
+    )
     dob = models.DateField(null=True, blank=True)
 
     verified_on = models.DateTimeField(null=True, blank=True)
@@ -140,8 +161,8 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     objects = UserManager()
 
     class Meta:
-        verbose_name = ("user")
-        verbose_name_plural = ("users")
+        verbose_name = "user"
+        verbose_name_plural = "users"
 
     def __str__(self):
         return self.idx
@@ -169,23 +190,24 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
             roles.append(self.primary_role.name)
         return roles
 
-    def delete(self) -> None:
+    def add_roles(self, roles) -> list:
+        if not isinstance(roles, models.query.QuerySet) and not isinstance(roles, list):
+            roles = [roles]
+        self.roles.add(*roles)
 
-        self.__class__.objects.filter(id=self.id).update(is_active=False, is_obsolete=True)
+    def delete(self) -> None:
+        self.__class__.objects.filter(id=self.id).update(
+            is_active=False, is_obsolete=True
+        )
 
     @property
     def ratings(self) -> int:
         from vehicle_repair.models.rating_review import RatingAndReview
 
-        # return RatingAndReview.objects.filter(user=self).count()
-        return RatingAndReview.objects.filter(user=self).aggregate(Sum('rating'))['rating__sum']
+        return RatingAndReview.objects.filter(user=self).aggregate(Sum("rating"))[
+            "rating__sum"
+        ]
 
-    # @property
-    # def location(self):
-    #     from autho.models.location import UserLocation
-
-    #     location = UserLocation.objects.filter(user=self).last()
-    #     return location
     @property
     def total_rating(self):
         from autho.models import RatingAndReview
@@ -200,7 +222,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         """
         if self.is_verified:
             raise Exception("User is already verified.")
-        if hasattr(self, 'verification_code'):
+        if hasattr(self, "verification_code"):
             return self.verification_code.update_code()
         verification_code, _ = VerificationCode.objects.get_or_create(user=self)
         return verification_code
@@ -208,10 +230,10 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     @classmethod
     def get_user_by_identifier(cls, id):
         try:
-            if re.match("^\d{10}$", str(id)):
+            if re.match(r"^\d{10}$", str(id)):
                 return cls.objects.get(phone=id)
 
-            if re.match("^(.+?)@(.+?)\.(.+?)$", id):
+            if re.match(r"^(.+?)@(.+?)\.(.+?)$", id):
                 return cls.objects.get(email=id)
         except cls.DoesNotExist:
             return None

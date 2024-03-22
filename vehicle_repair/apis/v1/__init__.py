@@ -1,4 +1,4 @@
-from vehicle_repair.views.vehicle_category import VehicleCategoryViewSet
+# flake8: noqa
 from .service import ServiceViewSet
 from .vehicle_repair_request import (
     VehicleRepairRequestViewSet,
@@ -9,3 +9,6 @@ from .vehicle_repair_request import (
 from .repair_step import RepairStepViewSet
 from .mechanic import MechanicViewSet
 from .customer import CustomerViewSet
+from .vehicle_category import VehicleCategoryViewSet
+from .mechanic_tip import MechanicTipViewSet
+from .rating_review import RatingAndReviewViewSet
