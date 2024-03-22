@@ -22,6 +22,8 @@ def send_email(
     remove_file=True,
     from_email=None,
     html_data=None,
+    template=None,
+    template_context=None,
 ):
 
     if settings.STAGING:
@@ -36,12 +38,8 @@ def send_email(
             from_email = settings.EMAIL_HOST_USER
 
         message = BaseEmailMessage(
-            template_name="email/account_recovery.html",
-            context={
-                "user_name": "Krishna",
-                "recovery_link": "http://jk.jk",
-                "recovery_code": "7897",
-            },
+            template_name=template,
+            context=template_context,
         )
 
         message.send(email)

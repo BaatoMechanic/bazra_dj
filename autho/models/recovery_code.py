@@ -3,55 +3,29 @@ import logging
 
 from django.conf import settings
 from django.db import models
+from django.http import HttpRequest
 from django.utils import timezone
 
-from autho.exceptions import RecoveryCodeLockedException
-from utils.helpers import generate_6digit_number
+from autho.exceptions import InvalidRecoveryCodeError, RecoveryCodeLockedException
+from autho.models.base_models import BaseOTPCode
+from utils.helpers import generate_6digit_number, generate_random_string
 from utils.mixins.base_exception_mixin import BMException
-from utils.mixins.base_model_mixin import BaseModelMixin
 from utils.tasks import send_email
 
 logger = logging.getLogger(__name__)
 
 
-class RecoveryCode(BaseModelMixin):
+class RecoveryCode(BaseOTPCode):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="recovery_code"
     )
-    code = models.CharField(max_length=6)
-    expired_on = models.DateTimeField(null=True)
-    locked_at = models.DateTimeField(null=True)
-    retries = models.PositiveSmallIntegerField(default=0)
-    sents = models.PositiveSmallIntegerField(default=0)
-    is_active = models.BooleanField(default=True)
+
+    def can_verify_otp(self, request: HttpRequest):
+        return True
 
     def lock(self):
-        self.update(locked_at=timezone.now())
+        super().lock()
         raise RecoveryCodeLockedException
-
-    def mark_inactive(self) -> None:
-        """
-        Marks the RecoveryCode instance as inactive.
-
-        Args:
-            None
-
-        Returns:
-            None
-        """
-        self.update(is_active=False)
-
-    def mark_active(self) -> None:
-        """
-        Marks the RecoveryCode instance as active.
-
-        Args:
-            None
-
-        Returns:
-            None
-        """
-        self.update(is_active=True)
 
     def increment_retries(self) -> None:
         """
@@ -93,6 +67,7 @@ class RecoveryCode(BaseModelMixin):
 
     def update_code(self):
         self.code = generate_6digit_number()
+        self.token = generate_random_string(64)
         self.tries = 0
         self.sents = 0
         self.expired_on = timezone.now() + datetime.timedelta(
@@ -100,6 +75,15 @@ class RecoveryCode(BaseModelMixin):
         )
         self.save()
         return self
+
+    def equals(self, code, token=None):
+        if not self.is_active:
+            raise InvalidRecoveryCodeError
+        if settings.STAGING:
+            return str(code) == "987654"
+        if token:
+            return self.code == code and self.token == token
+        return self.code == code
 
     def send(self) -> None:
         """
@@ -137,5 +121,19 @@ class RecoveryCode(BaseModelMixin):
         message = f"Your password recovery code is: {self.code}"
         from_email = settings.EMAIL_HOST_USER
         recipient_list = [self.user.email]
+        template_name: str = "email/account_recovery.html"
+        context = {
+            "user_name": self.user.name,
+            # "recovery_link": f"http://localhost:8000/autho/account_recovery/
+            # verify_otp_email/?token={self.token}&user={self.user.id}",
+            "recovery_code": self.code,
+        }
 
-        send_email(subject, message, recipient_list, from_email=from_email)
+        send_email(
+            subject,
+            message,
+            recipient_list,
+            from_email=from_email,
+            template=template_name,
+            template_context=context,
+        )
