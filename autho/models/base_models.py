@@ -50,7 +50,7 @@ class BaseOTPCode(BaseModelMixin):
         self.update(is_active=True)
 
     def increment_retries(self) -> None:
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def increment_sents(self) -> None:
-        raise NotImplementedError
+        raise NotImplementedError()
