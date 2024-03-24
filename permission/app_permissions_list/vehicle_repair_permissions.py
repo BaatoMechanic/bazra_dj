@@ -110,6 +110,7 @@ CUSTOMER_CREATE_API = [
 CUSTOMER_API = [
     ("customers-detail", "get"),
     ("customers-me", "get"),
+    ("customers-customer-by-useridx", "get"),
 
 ]
 

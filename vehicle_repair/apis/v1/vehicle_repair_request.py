@@ -34,6 +34,10 @@ class VehicleRepairRequestViewSet(BaseAPIMixin, ModelViewSet):
     def get_serializer_context(self) -> Dict[str, Any]:
         return {"request": self.request}
 
+    def list(self, request, *args, **kwargs):
+        self.queryset = self.queryset.filter(user=request.user)
+        return super().list(request, *args, **kwargs)
+
     @action(detail=True, methods=["GET"])
     def service_type(self, request, idx):
         repair_request = get_object_or_404(VehicleRepairRequest, idx=idx)

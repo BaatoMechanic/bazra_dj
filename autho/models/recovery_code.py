@@ -80,7 +80,7 @@ class RecoveryCode(BaseOTPCode):
         if not self.is_active:
             raise InvalidRecoveryCodeError
         if settings.STAGING:
-            return str(code) == "987654"
+            return True
         if token:
             return self.code == code and self.token == token
         return self.code == code

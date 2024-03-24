@@ -1,5 +1,7 @@
 from rest_framework.decorators import action
 from rest_framework.viewsets import GenericViewSet
+from django.conf import settings
+from rest_framework import status
 
 from autho.exceptions import InvalidRecoveryCodeError, RecoveryCodeLockedException
 from autho.models import User
@@ -16,13 +18,13 @@ class AccountRecoveryViewSet(BaseAPIMixin, GenericViewSet):
     queryset = RecoveryCode.objects.all()
 
     def get_serializer_class(self):
-        if self.action == "send_otp":
+        if self.action == "send_otp_uid":
             return SendRecoveryCodeSerializer
         if self.action == "verify_otp":
             return VerfiyRecoveryOtpCodeSerializer
 
     @action(detail=False, methods=["POST"])
-    def send_otp(self, request, *args, **kwargs):
+    def send_otp_uid(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -40,6 +42,28 @@ class AccountRecoveryViewSet(BaseAPIMixin, GenericViewSet):
         )
 
     @action(detail=False, methods=["POST"])
+    def send_otp_password(self, request, *args, **kwargs):
+        user: User = request.user
+        is_correct = user.check_password(request.data.get("old_password"))
+        if is_correct:
+            code: RecoveryCode = user.gen_recovery_code()
+            code.send()
+
+            return api_response_success(
+                {
+                    "recovery": {
+                        "idx": code.idx,
+                    },
+                    "message": "Please check your mobile and email for otp code ",
+                }
+            )
+        else:
+            return api_response_error(
+                {"detail": "Old password is incorrect."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    @action(detail=False, methods=["POST"])
     def resend(self, request, *args, **kwargs):
         recovery_idx = request.data.get("idx")
         try:
@@ -51,6 +75,17 @@ class AccountRecoveryViewSet(BaseAPIMixin, GenericViewSet):
 
         code.update_code()
         return api_response_success({"detail": "Resend sent successfully."})
+
+    @action(detail=False, methods=["POST"])
+    def check_otp(self, request, *args, **kwargs):
+        if settings.STAGING:
+            return api_response_success({"detail": "Valid otp"})
+        code = RecoveryCode.objects.filter(idx=request.data.get("otp")).first()
+
+        if code and code.code == request.data.get("code"):
+            return api_response_success({"detail": "Valid otp"})
+
+        return api_response_error({"detail": "Invalid otp"})
 
     @action(detail=True, methods=["POST"])
     def verify_otp(self, request, *args, **kwargs):
