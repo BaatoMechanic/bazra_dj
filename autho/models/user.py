@@ -196,6 +196,11 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
             is_active=False, is_obsolete=True
         )
 
+    def get_image_url(self):
+        if self.image:
+            return self.image.url
+        return None
+
     @property
     def ratings(self) -> int:
         from vehicle_repair.models.rating_review import RatingAndReview

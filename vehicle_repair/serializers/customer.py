@@ -16,7 +16,7 @@ class CustomerSerializer(BaseModelSerializerMixin):
     phone = BDetailRelatedField(Customer, representation="user.phone")
     dob_type = BDetailRelatedField(Customer, representation="user.dob_type")
     dob = BDetailRelatedField(Customer, representation="user.dob")
-    image = BDetailRelatedField(Customer, representation="user.image.url")
+    image = BDetailRelatedField(Customer, representation="user.get_image_url")
     primary_role = serializers.SerializerMethodField()
     roles = BDetailRelatedField(Customer, representation="get_roles", is_method=True, source="user")
     additional_attributes = BDetailRelatedField(Customer, representation="get_additional_attributes", is_method=True)

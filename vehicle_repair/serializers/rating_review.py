@@ -33,7 +33,8 @@ class VehicleRepairReviewSerializer(BaseModelSerializerMixin):
         ]
 
     def get_repair_request(self, obj):
-        return obj.content_object.idx
+        request = VehicleRepairRequest.objects.get(id=obj.object_id)
+        return request.idx
 
     def create(self, validated_data):
         reviewer = self.context.get("request").user
