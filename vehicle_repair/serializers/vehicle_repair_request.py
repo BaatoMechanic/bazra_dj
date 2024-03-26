@@ -29,6 +29,7 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
         source="assigned_mechanic.idx", required=False
     )
     advance_charge = serializers.SerializerMethodField()
+    service_charge = serializers.SerializerMethodField()
 
     class Meta:
         model = VehicleRepairRequest
@@ -45,12 +46,17 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
             "status",
             "advance_payment_status",
             "advance_charge",
+            "service_charge",
             "created_at",
         ]
 
     def get_advance_charge(self, obj):
         # using method to return advance charge to fix couldn't serialize decimal object error
         return float(obj.advance_charge) if obj.advance_charge else None
+
+    def get_service_charge(self, obj):
+        # using method to return advance charge to fix couldn't serialize decimal object error
+        return float(obj.service_charge) if obj.service_charge else None
 
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
         user = self.context.get("request").user
