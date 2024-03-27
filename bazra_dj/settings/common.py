@@ -55,7 +55,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-NATIVE_APPS = ["autho", "permission", "utils", "vehicle_repair", "gis"]
+NATIVE_APPS = ["autho", "social_auth", "permission", "utils", "vehicle_repair", "gis"]
 
 THIRD_PARTY_APPS = [
     "rest_framework",

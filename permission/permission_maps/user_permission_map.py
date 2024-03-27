@@ -12,6 +12,7 @@ from permission.app_permissions_list.autho_permissions import (
     USER_DELETE_API,
 )
 from permission.app_permissions_list.gis_permissions import GIS_API
+from permission.app_permissions_list.social_auth_permissions import SOCIAL_AUTH_API
 from permission.app_permissions_list.vehicle_repair_permissions import (
     CUSTOMER_API,
     CUSTOMER_CREATE_API,
@@ -42,6 +43,7 @@ def get_general_permission_map():
         CUSTOMER_API,
         SERVICE_READ_API,
         VEHICLE_REPAIR_REQUEST_REVIEWS_READ_API,
+        SOCIAL_AUTH_API,
     ]
 
 
