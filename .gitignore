@@ -4,6 +4,8 @@ media/
 migrations/
 .vscode
 
+
 .venv
 .env
 local_settings.py
+baato-mechanic-firebase-*
