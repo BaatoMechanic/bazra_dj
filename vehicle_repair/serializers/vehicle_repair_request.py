@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from utils.mixins.serializer_model_mixins import BaseModelSerializerMixin
+from utils.tasks import send_notification
 from vehicle_repair.models import (
     VehicleRepairRequest,
     Service,
@@ -109,7 +110,13 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
             raise serializers.ValidationError(
                 {"detail": "User mobile number is required."}
             )
-        return super().create(validated_data)
+        instance = super().create(validated_data)
+        send_notification.delay(
+            user.id,
+            "Repair request sent successfully",
+            "Your vehicle repair request has been sent. You'll be notified sortly",
+        )
+        return instance
 
     def update(self, instance, validated_data):
         assigned_mechanic_idx = validated_data.pop("assigned_mechanic", None)
