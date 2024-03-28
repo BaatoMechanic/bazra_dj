@@ -13,10 +13,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from datetime import timedelta
 import os
 from pathlib import Path
-
+from firebase_admin import initialize_app
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -61,6 +61,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "djoser",
     "django_filters",
+    "fcm_django",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + NATIVE_APPS + THIRD_PARTY_APPS
@@ -211,10 +212,29 @@ SIMPLE_JWT = {
 RECOVERY_CODE = {
     "MAX_RETRIES": 5,
     "MAX_SENDS": 5,
-    "OTP_TTL": 2
+    "OTP_TTL": 2,
 }
 
 CELERY_BROKER_URL = "redis://redis:6379/1"
+
+FIREBASE_APP = initialize_app()
+
+FCM_DJANGO_SETTINGS = {
+    # default: _('FCM Django')
+    "APP_VERBOSE_NAME": "BM",
+    # true if you want to have only one active device per registered user at a time
+    # default: False
+    "ONE_DEVICE_PER_USER": True,
+    # devices to which notifications cannot be sent,
+    # are deleted upon receiving error response from FCM
+    # default: False
+    "DELETE_INACTIVE_DEVICES": True,
+    # Transform create of an existing Device (based on registration id) into
+    # an update. See the section
+    # "Update of device with duplicate registration ID" for more details.
+    # default: False
+    "UPDATE_ON_DUPLICATE_REG_ID": True,
+}
 
 
 try:

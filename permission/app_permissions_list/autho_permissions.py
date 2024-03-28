@@ -16,7 +16,9 @@ RECOVERY_API = [
     ("account_recovery-verify-otp", "post"),
     ("account_recovery-check-otp", "post"),
 ]
-
+FCM_DEVICE_REGISTER_API = [
+    ("fcmdevice-list", "post"),
+]
 
 USER_API = [
     ("user_info-me", "get"),

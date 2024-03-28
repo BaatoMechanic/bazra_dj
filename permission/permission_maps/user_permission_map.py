@@ -1,5 +1,6 @@
 from permission.app_permissions_list.autho_permissions import (
     AUTH_API,
+    FCM_DEVICE_REGISTER_API,
     MECHANIC_TIPS_READ_API,
     MECHANIC_TIPS_WRITE_API,
     RECOVERY_API,
@@ -76,6 +77,7 @@ def get_unverified_permission_map():
             REPAIR_STEP_READ_API,
             REPAIR_STEP_WRITE_API,
             VEHICLE_REPAIR_REQUEST_REVIEWS_WRITE_API,
+            FCM_DEVICE_REGISTER_API
         ]
     )
 
