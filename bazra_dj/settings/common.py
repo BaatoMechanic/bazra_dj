@@ -10,10 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from datetime import timedelta
 import os
+
+from datetime import timedelta
+from dotenv import load_dotenv
 from pathlib import Path
+
 from firebase_admin import initialize_app
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -55,7 +60,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-NATIVE_APPS = ["autho", "permission", "utils", "vehicle_repair", "gis"]
+NATIVE_APPS = ["autho", "social_auth", "permission", "utils", "vehicle_repair", "gis"]
 
 THIRD_PARTY_APPS = [
     "rest_framework",

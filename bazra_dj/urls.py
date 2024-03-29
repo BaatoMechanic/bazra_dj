@@ -25,6 +25,7 @@ urlpatterns = [
     path('autho/', include('autho.urls')),
     path('vehicle-repair/', include('vehicle_repair.urls')),
     path('gis/', include('gis.urls')),
+    path('social-auth/', include('social_auth.urls')),
 ]
 
 
