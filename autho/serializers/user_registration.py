@@ -8,7 +8,7 @@ from autho.models import User
 
 class UserRegistrationSerializer(serializers.Serializer):
     user_identifier = UserIdentifierField()
-    password = PasswordField()
+    password = PasswordField(required=False)
     name = serializers.CharField()
 
     def create(self, validated_data):
@@ -29,7 +29,7 @@ class UserRegistrationSerializer(serializers.Serializer):
             validated_data['phone'] = user_identifier
             validated_data.pop('email', None)  # Remove email field if present
 
-        user = User.objects.create_user(**validated_data)
+        user = User.objects.create_user(set_unusable_password=True, **validated_data)
         return {
             "detail": "User registered successfully.",
             "idx": user.idx

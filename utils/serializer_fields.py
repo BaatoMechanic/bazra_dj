@@ -20,6 +20,9 @@ class PhoneNumberField(serializers.CharField):
 
 class PasswordField(serializers.CharField):
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def to_internal_value(self, password):
         if len(password) < 8:
             raise serializers.ValidationError("The password should at least be 8 characters long.")

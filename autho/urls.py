@@ -10,7 +10,14 @@ router.register("user_info", v1.UserInfoViewSet, basename="user_info")
 router.register(
     "users_management", v1.UserManagementViewSet, basename="users_management"
 )
-router.register("account_recovery", v1.AccountRecoveryViewSet, basename="account_recovery")
+router.register(
+    "account_recovery", v1.AccountRecoveryViewSet, basename="account_recovery"
+)
+router.register(
+    "account_verification",
+    v1.AccountVerificationViewSet,
+    basename="account_verification"
+)
 
 
 urlpatterns = [

@@ -214,6 +214,13 @@ RECOVERY_CODE = {
     "OTP_TTL": 2
 }
 
+VERIFICATION_CODE = {
+    "MAX_RETRIES": 5,
+    "MAX_SENDS": 5,
+    "OTP_TTL": 2
+}
+
+
 CELERY_BROKER_URL = "redis://redis:6379/1"
 
 
