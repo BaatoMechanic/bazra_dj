@@ -1,19 +1,17 @@
-from time import sleep
 import traceback
 
 from django.conf import settings
 from django.core.mail import BadHeaderError, mail_admins
-from celery.utils.log import get_task_logger
 from django.contrib.auth import get_user_model
+
+from celery.utils.log import get_task_logger
 from celery import shared_task
 from templated_mail.mail import BaseEmailMessage
 
 from firebase_admin.messaging import Message, Notification
 from fcm_django.models import FCMDevice
 
-
 logger = get_task_logger(__name__)
-
 
 User = get_user_model()
 
@@ -79,7 +77,6 @@ def custom_mail_admins(subject, message):
 def send_notification(user_id, title, body, image=None, **kwargs) -> bool:
     try:
         user = User.objects.get(id=user_id)
-        sleep(4)
         user_device = FCMDevice.objects.get(user=user, active=True)
         user_device.send_message(
             Message(
