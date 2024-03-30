@@ -25,6 +25,10 @@ VERIFICATION_API = [
     ("account_verification-check-otp", "post"),
 ]
 
+FCM_DEVICE_REGISTER_API = [
+    ("fcmdevice-list", "post"),
+]
+
 
 USER_API = [    ("user_info-me", "get"),
     ("user_info-location", "get"),

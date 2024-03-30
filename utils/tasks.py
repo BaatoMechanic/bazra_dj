@@ -1,13 +1,21 @@
+from time import sleep
 import traceback
 
 from django.conf import settings
 from django.core.mail import BadHeaderError, mail_admins
 from celery.utils.log import get_task_logger
-
+from django.contrib.auth import get_user_model
 from celery import shared_task
 from templated_mail.mail import BaseEmailMessage
 
+from firebase_admin.messaging import Message, Notification
+from fcm_django.models import FCMDevice
+
+
 logger = get_task_logger(__name__)
+
+
+User = get_user_model()
 
 
 @shared_task
@@ -64,4 +72,26 @@ def custom_mail_admins(subject, message):
         mail_admins(subject, message, fail_silently=True)
     except Exception as exp:
         logger.error(f"Mail admin exception: {str(exp)}- {subject}")
+    return True
+
+
+@shared_task
+def send_notification(user_id, title, body, image=None, **kwargs) -> bool:
+    try:
+        user = User.objects.get(id=user_id)
+        sleep(4)
+        user_device = FCMDevice.objects.get(user=user, active=True)
+        user_device.send_message(
+            Message(
+                notification=Notification(
+                    title=title,
+                    body=body,
+                    image=image,
+                ),
+                data=kwargs,
+            )
+        )
+    except FCMDevice.DoesNotExist:
+        logger.error("No device found")
+        return False
     return True

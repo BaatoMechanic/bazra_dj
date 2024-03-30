@@ -1,5 +1,6 @@
 from permission.app_permissions_list.autho_permissions import (
     AUTH_API,
+    FCM_DEVICE_REGISTER_API,
     MECHANIC_TIPS_READ_API,
     MECHANIC_TIPS_WRITE_API,
     RECOVERY_API,
@@ -13,6 +14,7 @@ from permission.app_permissions_list.autho_permissions import (
     USER_DELETE_API,
 )
 from permission.app_permissions_list.gis_permissions import GIS_API
+from permission.app_permissions_list.social_auth_permissions import SOCIAL_AUTH_API
 from permission.app_permissions_list.vehicle_repair_permissions import (
     CUSTOMER_API,
     CUSTOMER_CREATE_API,
@@ -44,6 +46,7 @@ def get_general_permission_map():
         CUSTOMER_API,
         SERVICE_READ_API,
         VEHICLE_REPAIR_REQUEST_REVIEWS_READ_API,
+        SOCIAL_AUTH_API,
     ]
 
 
@@ -78,6 +81,7 @@ def get_unverified_permission_map():
             REPAIR_STEP_READ_API,
             REPAIR_STEP_WRITE_API,
             VEHICLE_REPAIR_REQUEST_REVIEWS_WRITE_API,
+            FCM_DEVICE_REGISTER_API
         ]
     )
 

@@ -2,7 +2,7 @@ from django.urls import path
 from .apis import v1
 
 from rest_framework_nested import routers
-
+from fcm_django.api.rest_framework import FCMDeviceAuthorizedViewSet
 router = routers.DefaultRouter()
 
 
@@ -18,6 +18,8 @@ router.register(
     v1.AccountVerificationViewSet,
     basename="account_verification"
 )
+router.register("account_recovery", v1.AccountRecoveryViewSet, basename="account_recovery")
+router.register('devices', FCMDeviceAuthorizedViewSet)
 
 
 urlpatterns = [
