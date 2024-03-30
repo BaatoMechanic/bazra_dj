@@ -53,6 +53,10 @@ def register_social_user(
     customer, _ = Customer.objects.get_or_create(user=user)
     serializer = CustomerSerializer(customer)
 
+    # send_notification.delay(
+    #     user.id, "New Login", "New login has been detected", image=user.image.url
+    # )
+
     return {
         "user": serializer.data,
         "tokens": {
