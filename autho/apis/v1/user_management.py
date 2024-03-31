@@ -1,4 +1,3 @@
-import json
 from django.http import HttpRequest
 from rest_framework import status
 from autho.serializers.location import UserLocationSerializer
@@ -46,8 +45,18 @@ class UserManagementViewSet(BaseAPIMixin, GenericViewSet):
         )
         try:
             serializer.is_valid(raise_exception=True)
-            response: json = serializer.save()
-            return api_response_success(response, status=status.HTTP_201_CREATED)
+            user: User = serializer.save()
+            code = user.gen_verification_code()
+            code.send()
+            return api_response_success(
+                {
+                    "verification": {
+                        "idx": code.idx,
+                    },
+                    "message": "Please check your mobile and email for otp code ",
+                },
+                status=status.HTTP_201_CREATED,
+            )
         except Exception as e:
             return api_response_error(
                 {"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST

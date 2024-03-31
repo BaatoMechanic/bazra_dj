@@ -15,6 +15,7 @@ class CustomerSerializer(BaseModelSerializerMixin):
     email = BDetailRelatedField(Customer, representation="user.email")
     phone = BDetailRelatedField(Customer, representation="user.phone")
     dob_type = BDetailRelatedField(Customer, representation="user.dob_type")
+    auth_provider = BDetailRelatedField(Customer, representation="user.auth_provider")
     dob = BDetailRelatedField(Customer, representation="user.dob")
     image = BDetailRelatedField(Customer, representation="user.get_image_url")
     primary_role = serializers.SerializerMethodField()
@@ -24,7 +25,7 @@ class CustomerSerializer(BaseModelSerializerMixin):
     class Meta:
         model = Customer
         fields = ['user_idx', 'idx', 'name', 'email', 'phone', "dob_type",
-                  "dob", "primary_role", "image", "roles", "additional_attributes"]
+                  "dob", "primary_role", "auth_provider", "image", "roles", "additional_attributes"]
 
     def create(self, validated_data):
         user_idx = validated_data.pop('user_idx')

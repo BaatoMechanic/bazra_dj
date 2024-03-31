@@ -19,7 +19,6 @@ RECOVERY_API = [
 
 VERIFICATION_API = [
     ("account_verification-send-otp-uid", "post"),
-    ("account_verification-send-otp-password", "post"),
     ("account_verification-resend", "post"),
     ("account_verification-verify-otp", "post"),
     ("account_verification-check-otp", "post"),
@@ -30,7 +29,8 @@ FCM_DEVICE_REGISTER_API = [
 ]
 
 
-USER_API = [    ("user_info-me", "get"),
+USER_API = [
+    ("user_info-me", "get"),
     ("user_info-location", "get"),
     ("user_info-me", "patch"),
 ]

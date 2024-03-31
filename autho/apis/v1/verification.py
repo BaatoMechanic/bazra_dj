@@ -89,6 +89,7 @@ class AccountVerificationViewSet(BaseAPIMixin, GenericViewSet):
 
         new_password = serializer.validated_data.get("new_password")
         user.set_password(new_password)
+        user.is_verified = True
         user.save()
 
         return api_response_success({"detail": "Verification successful."})

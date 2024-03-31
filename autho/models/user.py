@@ -74,14 +74,12 @@ class UserManager(BaseUserManager):
         return normalized_phone_number
 
 
-AUTH_PROVIDER_EMAIL = "email"
-AUTH_PROVIDER_MOBILE = "mobile"
+AUTH_PROVIDER_BAZRA = "bazra"
 AUTH_PROVIDER_GOOGLE = "google"
 AUTH_PROVIDER_FACEBOOK = "facebook"
 
 AUTH_PROVIDER_CHOICES = [
-    (AUTH_PROVIDER_EMAIL, AUTH_PROVIDER_EMAIL.capitalize()),
-    (AUTH_PROVIDER_MOBILE, AUTH_PROVIDER_MOBILE.capitalize()),
+    (AUTH_PROVIDER_BAZRA, AUTH_PROVIDER_BAZRA.capitalize()),
     (AUTH_PROVIDER_GOOGLE, AUTH_PROVIDER_GOOGLE.capitalize()),
     (AUTH_PROVIDER_FACEBOOK, AUTH_PROVIDER_FACEBOOK.capitalize()),
 ]
@@ -117,7 +115,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         blank=False,
         null=False,
         choices=AUTH_PROVIDER_CHOICES,
-        default=AUTH_PROVIDER_EMAIL,
+        default=AUTH_PROVIDER_BAZRA,
     )
     image = models.ImageField(upload_to="users/profile", null=True, blank=True)
 
