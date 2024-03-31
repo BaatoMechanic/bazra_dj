@@ -1,0 +1,23 @@
+{% block subject %}Account Verification Code{% endblock %} {% block text_body %} Hi
+{{ user_name }}, Please follow the link below to reset the password: {{
+recovery_link }} You can also copy and paste the code below: {{ verification_code }}
+Baato Mechanic never calls to ask for OTP. Do NOT SHARE. If anyone asks, please
+report it at 9868957429. Regards, Baato Mechanic Pvt. Ltd Phone: +977 9868957429
+Address: Kathmandu, Nepal {% endblock %} {% block html_body %}
+<p>Hi {{ user_name }},</p>
+<br />
+<!-- <p>Please follow the link below to reset the password:</p> -->
+<!-- <p><a href="{{ recovery_link }}">{{ verification_link }}</a></p> -->
+<!-- <p>You can also copy and paste the code below:</p> -->
+<p>Please use the code below to reset your password:</p>
+<p>{{ verification_code }}</p>
+<p>
+  Baato Mechanic never calls to ask for OTP. Do NOT SHARE. If anyone asks,
+  please report it at 9868957429
+</p>
+<br />
+<p>Regards,</p>
+<p>Baato Mechanic Pvt. Ltd</p>
+<p>Phone: +977 9868957429</p>
+<p>Address: Kathmandu, Nepal</p>
+{% endblock %}

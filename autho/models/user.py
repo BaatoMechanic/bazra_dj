@@ -9,12 +9,12 @@ from django.contrib.auth.models import (
 )
 from django.http import HttpRequest
 
-from autho.exceptions import InvalidRecoveryCodeError
+from autho.exceptions import InvalidRecoveryCodeError, InvalidVerificationCodeError
 from utils.mixins.base_model_mixin import BaseModelMixin
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, **fields):
+    def create_user(self, set_unusable_password=False, **fields):
         from autho.models import UserBlackList
 
         donot_send_code = fields.pop("donot_send_code", None)
@@ -26,7 +26,7 @@ class UserManager(BaseUserManager):
                 "Either of both of 'email and mobile' is required to create an user."
             )
 
-        if not password:
+        if not password and not set_unusable_password:
             raise ValueError("Password is required to create an user.")
 
         if email:
@@ -38,6 +38,7 @@ class UserManager(BaseUserManager):
         UserBlackList.exists(phone, email)
 
         user: User = self.model(email=email, phone=phone, **fields)
+
         user.set_password(password)
         user.save(using=self._db)
         if not donot_send_code:
@@ -73,14 +74,12 @@ class UserManager(BaseUserManager):
         return normalized_phone_number
 
 
-AUTH_PROVIDER_EMAIL = "email"
-AUTH_PROVIDER_MOBILE = "mobile"
+AUTH_PROVIDER_BAZRA = "bazra"
 AUTH_PROVIDER_GOOGLE = "google"
 AUTH_PROVIDER_FACEBOOK = "facebook"
 
 AUTH_PROVIDER_CHOICES = [
-    (AUTH_PROVIDER_EMAIL, AUTH_PROVIDER_EMAIL.capitalize()),
-    (AUTH_PROVIDER_MOBILE, AUTH_PROVIDER_MOBILE.capitalize()),
+    (AUTH_PROVIDER_BAZRA, AUTH_PROVIDER_BAZRA.capitalize()),
     (AUTH_PROVIDER_GOOGLE, AUTH_PROVIDER_GOOGLE.capitalize()),
     (AUTH_PROVIDER_FACEBOOK, AUTH_PROVIDER_FACEBOOK.capitalize()),
 ]
@@ -116,7 +115,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         blank=False,
         null=False,
         choices=AUTH_PROVIDER_CHOICES,
-        default=AUTH_PROVIDER_EMAIL,
+        default=AUTH_PROVIDER_BAZRA,
     )
     image = models.ImageField(upload_to="users/profile", null=True, blank=True)
 
@@ -252,6 +251,22 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         else:
             user.recovery_code.increment_retries()
             raise InvalidRecoveryCodeError
+
+    @classmethod
+    def verify_verification_code(cls, id, code, verification_token=None):
+        user = cls.get_user_by_identifier(id)
+        if not user:
+            raise InvalidVerificationCodeError
+
+        if not hasattr(user, "verification_code"):
+            raise InvalidVerificationCodeError
+
+        if user.verification_code.equals(code, verification_token):
+            user.verification_code.delete()
+            return user
+        else:
+            user.verificstion_code.increment_retries()
+            raise InvalidVerificationCodeError
 
     @classmethod
     def get_user_by_identifier(cls, id):

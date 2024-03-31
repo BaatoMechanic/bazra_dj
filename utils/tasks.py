@@ -38,7 +38,7 @@ def send_email(
             f"[Enqueue email] Subject: {subject},\nMessage: {message},\n"
             f"Emails: {email}\ncc: {cc}, bcc{bcc}"
         )
-        return None
+        # return None
     try:
         if not from_email:
             from_email = settings.EMAIL_HOST_USER
