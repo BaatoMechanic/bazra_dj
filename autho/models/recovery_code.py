@@ -6,7 +6,7 @@ from django.db import models
 from django.http import HttpRequest
 from django.utils import timezone
 
-from autho.exceptions import InvalidRecoveryCodeError, RecoveryCodeLockedException
+from autho.exceptions import InvalidRecoveryCodeError, RecoveryCodeLockedError
 from autho.models.base_models import BaseOTPCode
 from utils.helpers import generate_6digit_number, generate_random_string
 from utils.mixins.base_exception_mixin import BMException
@@ -25,7 +25,7 @@ class RecoveryCode(BaseOTPCode):
 
     def lock(self):
         super().lock()
-        raise RecoveryCodeLockedException
+        raise RecoveryCodeLockedError
 
     def increment_retries(self) -> None:
         """
