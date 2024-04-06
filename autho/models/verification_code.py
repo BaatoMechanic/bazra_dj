@@ -6,7 +6,7 @@ from django.db import models
 
 from autho.exceptions import (
     InvalidVerificationCodeError,
-    VerificationCodeLockedException,
+    VerificationCodeLockedError,
 )
 from autho.models.base_models import BaseOTPCode
 from utils.helpers import generate_6digit_number, generate_random_string
@@ -15,7 +15,6 @@ from utils.helpers import generate_6digit_number, generate_random_string
 from django.conf import settings
 
 from utils.mixins.base_exception_mixin import BMException
-from utils.mixins.base_model_mixin import BaseModelMixin
 from utils.tasks import send_email
 
 
@@ -29,13 +28,17 @@ class VerificationCode(BaseOTPCode):
         on_delete=models.CASCADE,
         related_name="verification_code",
     )
+    meta = models.JSONField(default=dict)
 
     def can_verify_otp(self, request: HttpRequest):
         return True
 
+    def can_verify_account_otp(self, request: HttpRequest):
+        return True
+
     def lock(self):
         super().lock()
-        raise VerificationCodeLockedException
+        raise VerificationCodeLockedError
 
     def increment_retries(self) -> None:
         """
@@ -52,6 +55,7 @@ class VerificationCode(BaseOTPCode):
         if self.retries > settings.VERIFICATION_CODE["MAX_RETRIES"]:
             self.lock()
             self.save(update_fields=["retries"])
+            raise VerificationCodeLockedError()
 
     def increment_sents(self) -> None:
         """

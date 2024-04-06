@@ -3,7 +3,7 @@ from rest_framework.viewsets import GenericViewSet
 from django.conf import settings
 from rest_framework import status
 
-from autho.exceptions import InvalidRecoveryCodeError, RecoveryCodeLockedException
+from autho.exceptions import InvalidRecoveryCodeError, RecoveryCodeLockedError
 from autho.models import User
 from autho.models.recovery_code import RecoveryCode
 from autho.serializers.recovery import (
@@ -97,7 +97,7 @@ class AccountRecoveryViewSet(BaseAPIMixin, GenericViewSet):
             )
         except InvalidRecoveryCodeError as exp:
             return api_response_error({"detail": exp.message})
-        except RecoveryCodeLockedException as exp:
+        except RecoveryCodeLockedError as exp:
             return api_response_error({"detail": exp.message})
 
         serializer = self.get_serializer(data=request.data)

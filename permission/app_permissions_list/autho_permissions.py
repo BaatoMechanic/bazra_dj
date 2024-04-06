@@ -21,6 +21,7 @@ VERIFICATION_API = [
     ("account_verification-send-otp-uid", "post"),
     ("account_verification-resend", "post"),
     ("account_verification-verify-otp", "post"),
+    ("account_verification-verify-account-otp", "post"),
     ("account_verification-check-otp", "post"),
 ]
 
@@ -45,6 +46,10 @@ REGISTER_API = [
 ]
 USER_DELETE_API = [
     ("users_management-delete-user", "delete"),
+]
+IDENTIFIER_VERIFICATION_TOKEN_API = [
+    ("users_management-identifier-verification-token", "post"),
+    ("users_management-verify-identifier", "post"),
 ]
 
 USER_UPDATE_LOCATION_API = [

@@ -9,7 +9,8 @@ from django.contrib.auth.models import (
 )
 from django.http import HttpRequest
 
-from autho.exceptions import InvalidRecoveryCodeError, InvalidVerificationCodeError
+from autho.exceptions import InvalidRecoveryCodeError, InvalidVerificationCodeError, UserAlreadyVerifiedError
+from utils.helpers import normalize_phone_number
 from utils.mixins.base_model_mixin import BaseModelMixin
 
 
@@ -33,7 +34,7 @@ class UserManager(BaseUserManager):
             email = super().normalize_email(email)
 
         if phone:
-            phone = self.normalize_phone_number(phone)
+            phone = normalize_phone_number(phone)
 
         UserBlackList.exists(phone, email)
 
@@ -57,21 +58,6 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("phone", phone)
         extra_fields.setdefault("password", password)
         return self.create_user(**extra_fields)
-
-    @staticmethod
-    def normalize_phone_number(phone_number):
-        """
-        Normalize the phone number by removing any special characters or formatting.
-        """
-
-        normalized_phone_number = (
-            phone_number.replace(" ", "")
-            .replace("-", "")
-            .replace("(", "")
-            .replace(")", "")
-            .replace("+", "")
-        )
-        return normalized_phone_number
 
 
 AUTH_PROVIDER_BAZRA = "bazra"
@@ -152,6 +138,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     dob = models.DateField(null=True, blank=True)
 
     verified_on = models.DateTimeField(null=True, blank=True)
+    meta = models.JSONField(default=dict, blank=True, null=True)
 
     objects = UserManager()
 
@@ -214,7 +201,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
 
         return RatingAndReview.objects.filter(user=self).count()
 
-    def gen_verification_code(self):
+    def gen_verification_code(self, is_account_verification=False):
         """Generate a verification code for the user.
 
         Returns:
@@ -222,8 +209,8 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         """
         from .verification_code import VerificationCode
 
-        if self.is_verified:
-            raise Exception("User is already verified.")
+        if is_account_verification and self.is_verified:
+            raise UserAlreadyVerifiedError()
         if hasattr(self, "verification_code"):
             return self.verification_code.update_code()
         verification_code, _ = VerificationCode.objects.get_or_create(user=self)

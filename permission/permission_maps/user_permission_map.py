@@ -1,6 +1,7 @@
 from permission.app_permissions_list.autho_permissions import (
     AUTH_API,
     FCM_DEVICE_REGISTER_API,
+    IDENTIFIER_VERIFICATION_TOKEN_API,
     MECHANIC_TIPS_READ_API,
     MECHANIC_TIPS_WRITE_API,
     RECOVERY_API,
@@ -44,6 +45,7 @@ def get_general_permission_map():
         VERIFICATION_API,
         MECHANIC_API,
         CUSTOMER_API,
+        CUSTOMER_CREATE_API,
         SERVICE_READ_API,
         VEHICLE_REPAIR_REQUEST_REVIEWS_READ_API,
         SOCIAL_AUTH_API,
@@ -69,7 +71,6 @@ def get_unverified_permission_map():
             USER_API,
             USER_DELETE_API,
             VEHICLE_REPAIR_REQUEST_READ_API,
-            CUSTOMER_CREATE_API,
             USER_CHANGE_PASSWORD_API,
             VEHICLE_CATEOGRY_READ_API,
             VEHICLE_REPAIR_REQUEST_READ_API,
@@ -81,7 +82,7 @@ def get_unverified_permission_map():
             REPAIR_STEP_READ_API,
             REPAIR_STEP_WRITE_API,
             VEHICLE_REPAIR_REQUEST_REVIEWS_WRITE_API,
-            FCM_DEVICE_REGISTER_API
+            FCM_DEVICE_REGISTER_API,
         ]
     )
 
@@ -103,6 +104,7 @@ def get_superuser_permission_map():
         MECHANIC_TIPS_WRITE_API,
         VEHICLE_CATEOGRY_READ_API,
         VEHICLE_CATEOGRY_WRITE_API,
+        IDENTIFIER_VERIFICATION_TOKEN_API,
     ]
 
 
@@ -125,6 +127,7 @@ def get_consumer_permission_map():
         USER_UPDATE_LOCATION_API,
         VEHICLE_REPAIR_REQUEST_REVIEWS_WRITE_API,
         USER_CHANGE_PASSWORD_API,
+        IDENTIFIER_VERIFICATION_TOKEN_API,
     ]
 
 
