@@ -1,7 +1,6 @@
 import re
 
 from django.db import models
-from django.db.models import Sum
 from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin,
@@ -199,20 +198,6 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         if self.image:
             return self.image.url
         return None
-
-    @property
-    def ratings(self) -> int:
-        from vehicle_repair.models.rating_review import RatingAndReview
-
-        return RatingAndReview.objects.filter(user=self).aggregate(Sum("rating"))[
-            "rating__sum"
-        ]
-
-    @property
-    def total_rating(self):
-        from autho.models import RatingAndReview
-
-        return RatingAndReview.objects.filter(user=self).count()
 
     def gen_verification_code(self):
         """Generate a verification code for the user.
