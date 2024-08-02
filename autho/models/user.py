@@ -9,7 +9,11 @@ from django.contrib.auth.models import (
 )
 from django.http import HttpRequest
 
-from autho.exceptions import InvalidRecoveryCodeError, InvalidVerificationCodeError, UserAlreadyVerifiedError
+from autho.exceptions import (
+    InvalidRecoveryCodeError,
+    InvalidVerificationCodeError,
+    UserAlreadyVerifiedError,
+)
 from utils.helpers import normalize_phone_number
 from utils.mixins.base_model_mixin import BaseModelMixin
 
@@ -152,19 +156,23 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     def can_retrieve(self, request: HttpRequest) -> bool:
         return True
 
-    def isa(self, role: str) -> bool:
+    def isa(self, role: str | list[str]) -> bool:
         """
         Check if the user has the given role.
 
         Args:
-            role: The role to check.
+            role: The role to check. It can be a string or a list of strings.
 
         Returns:
             True if the user has the given role, False otherwise.
         """
+
+        if not isinstance(role, list):
+            role = [role]
+
         return (
-            self.primary_role is not None and self.primary_role.name == role
-        ) or self.roles.filter(name=role).exists()
+            self.primary_role is not None and self.primary_role.name in role
+        ) or self.roles.filter(name__in=role).exists()
 
     def get_roles(self) -> list:
         roles = [role.name for role in self.roles.all()]

@@ -2,6 +2,7 @@ VEHICLE_REPAIR_REQUEST_READ_API = [
     ("repair_requests-list", "get"),
     ("repair_requests-detail", "get"),
     ("repair_requests-service-type", "get"),
+    ("repair_requests-user-repair-requests", "get"),
     ("repair_requests-user-recent-repair-requests", "get"),
     ("repair_requests-user-active-repair-requests", "get"),
 ]
@@ -10,9 +11,11 @@ VEHICLE_REPAIR_REQUEST_READ_API = [
 VEHICLE_REPAIR_REQUEST_WRITE_API = [
     ("repair_requests-list", "post"),
     ("repair_requests-detail", "put"),
-    ("repair_requests-detail", "patch"),
     ("repair_requests-detail", "delete"),
+]
 
+VEHICLE_REPAIR_REQUEST_PATCH_API = [
+    ("repair_requests-detail", "patch"),
 ]
 
 
@@ -93,6 +96,17 @@ REPAIR_STEP_WRITE_API = [
     ("repair_request-steps-detail", "patch"),
 ]
 
+REPAIR_STEP_REPORT_READ_API = [
+    ("repair_step-reports-list", "get"),
+    ("repair_step-reports-detail", "get"),
+]
+
+REPAIR_STEP_REPORT_WRITE_API = [
+    ("repair_step-reports-list", "post"),
+    ("repair_step-reports-detail", "put"),
+    ("repair_step-reports-detail", "patch"),
+    ("repair_step-reports-detail", "delete"),
+]
 
 REPAIR_REQUEST_WEBSOCKET_API = [
     ("websocket-repair-request", "any"),
@@ -118,5 +132,6 @@ CUSTOMER_API = [
 MECHANIC_API = [
     ("mechanics-list", "get"),
     ("mechanics-detail", "get"),
+    ("mechanics-me", "get"),
     ("mechanics-recommended-mechanics", "get"),
 ]

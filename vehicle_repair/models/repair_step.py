@@ -1,4 +1,3 @@
-
 from django.db import models
 from django.http import HttpRequest
 
@@ -35,6 +34,9 @@ class RepairStep(BaseModelMixin):
 
         if request.user == self.repair_request.user:
             return True
+
+        if request.user.isa("Mechanic"):
+            return request.user.mechanic_profile == self.repair_request.assigned_mechanic
 
         return False
 

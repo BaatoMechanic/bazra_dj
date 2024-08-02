@@ -1,8 +1,6 @@
 import re
 from rest_framework import serializers
 
-from rest_framework.fields import get_attribute, is_simple_callable
-
 
 class PhoneNumberField(serializers.CharField):
 

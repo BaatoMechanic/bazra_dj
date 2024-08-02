@@ -62,7 +62,7 @@ def send_email(
 
 
 @shared_task(queue="utils")
-def custom_mail_admins(subject, message):
+def custom_mail_admins(subject: str, message: str) -> bool:
     """
     Send email to the admins, possibly being called by calling delay function
     """

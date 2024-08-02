@@ -1,6 +1,7 @@
 from typing import Any, Dict
 
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
@@ -9,6 +10,7 @@ from rest_framework.response import Response
 from utils.mixins.base_api_mixin import BaseAPIMixin
 from vehicle_repair.models import VehicleRepairRequest
 from vehicle_repair.models.vehicle_repair_request import (
+    VEHICLE_REPAIR_STATUS_WAITING_COMPLETION_ACCEPTANCE,
     VehicleRepairRequestImage,
     VehicleRepairRequestVideo,
 )
@@ -19,14 +21,16 @@ from vehicle_repair.serializers.vehicle_repair_request import (
     VehicleRepairRequestVideoSerializer,
 )
 
-# Create your views here.
-
 
 class VehicleRepairRequestViewSet(BaseAPIMixin, ModelViewSet):
 
     queryset = (
-        VehicleRepairRequest.objects.select_related("user")
-        .all()
+        VehicleRepairRequest.objects.prefetch_related("images")
+        .select_related("user")
+        .filter(
+            ~Q(status=VEHICLE_REPAIR_STATUS_WAITING_COMPLETION_ACCEPTANCE),
+            is_obsolete=False,
+        )
         .order_by("-created_at")
     )
     serializer_class = VehicleRepairRequestSerializer
@@ -34,15 +38,16 @@ class VehicleRepairRequestViewSet(BaseAPIMixin, ModelViewSet):
     def get_serializer_context(self) -> Dict[str, Any]:
         return {"request": self.request}
 
-    def list(self, request, *args, **kwargs):
-        self.queryset = self.queryset.filter(user=request.user)
-        return super().list(request, *args, **kwargs)
-
     @action(detail=True, methods=["GET"])
     def service_type(self, request, idx):
         repair_request = get_object_or_404(VehicleRepairRequest, idx=idx)
-        serializer = ServiceSerializer(repair_request.service_type)
+        serializer = ServiceSerializer(repair_request.service)
         return Response(serializer.data)
+
+    @action(detail=True, methods=["GET"])
+    def user_repair_requests(self, request, *args, **kwargs):
+        self.queryset = self.queryset.filter(user=request.user)
+        return super().list(request, *args, **kwargs)
 
     @action(detail=False, methods=["GET"])
     def user_recent_repair_requests(self, request):
@@ -89,3 +94,6 @@ class VehicleRepairRequestVideoViewSet(BaseAPIMixin, ModelViewSet):
         return VehicleRepairRequestVideo.objects.filter(
             repair_request_id=repair_request.id
         )
+
+    def get_serializer_context(self):
+        return {"repair_request": self.kwargs["repair_request_idx"]}

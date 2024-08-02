@@ -1,8 +1,10 @@
-from typing import Any, Dict
+from typing import Any, Dict, TypeVar
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.query import QuerySet
 
 from rest_framework import serializers
 from rest_framework.fields import get_attribute, is_simple_callable
-from django.core.exceptions import ObjectDoesNotExist
 
 
 class IDXOnlyObject(object):
@@ -28,9 +30,9 @@ class BPrimaryRelatedField(serializers.PrimaryKeyRelatedField):
         try:
             return self.get_queryset().get(idx=data)
         except ObjectDoesNotExist:
-            self.fail('does_not_exist', pk_value=data)
+            self.fail("does_not_exist", pk_value=data)
         except (TypeError, ValueError):
-            self.fail('incorrect_type', data_type=type(data).__name__)
+            self.fail("incorrect_type", data_type=type(data).__name__)
 
         return super().to_internal_value(data)
 
@@ -48,12 +50,16 @@ class BPrimaryRelatedField(serializers.PrimaryKeyRelatedField):
                 pass
 
 
-class BDetailRelatedField(serializers.RelatedField):
+class DetailRelatedField(serializers.RelatedField):
     """
     A custom related field for representing detailed related data.
     """
 
-    def __init__(self, model: Any, **kwargs: Dict[str, Any]) -> None:
+    ModelType = TypeVar("ModelType")
+
+    def __init__(
+        self, model: ModelType | None = None, **kwargs: Dict[str, Any]
+    ) -> None:
         """
         Initializes the BDetailRelatedField.
         Args:
@@ -66,9 +72,16 @@ class BDetailRelatedField(serializers.RelatedField):
         - representation: The representation attribute.
         - source: The related object source.
         """
-        
         if kwargs.get("write_only"):
-            self.queryset = model.objects.all()
+            if not model:
+                # set tempoaray queryset to avoid getting no queryset error during super().__init__. Queryset will
+                # be set during binding in bind() method below
+                # I did this because field has not been initialized yet and we don't have the parent access here
+                self.queryset = QuerySet()
+                self.is_queryset_set = False
+            else:
+                self.queryset = model.objects.all()
+                self.is_queryset_set = True
         else:
             kwargs["read_only"] = True
         self.lookup = kwargs.pop("lookup", None) or "idx"
@@ -91,6 +104,13 @@ class BDetailRelatedField(serializers.RelatedField):
             raise Exception("Please provide the representation attribute")
         super().__init__(**kwargs)
 
+    def bind(self, field_name, parent):
+        super().bind(field_name, parent)
+        if self.write_only and not self.is_queryset_set:
+            model = parent.Meta.model
+            if not self.read_only:
+                self.queryset = model.objects.all()
+
     def to_representation(self, obj: Any) -> Any:
         """
         Returns the serialized representation of the object.
@@ -109,10 +129,6 @@ class BDetailRelatedField(serializers.RelatedField):
             except AttributeError:
                 return getattr(obj, self.representation_attribute)()
         return getattr(obj, self.representation_attribute)
-
-    from typing import Any, TypeVar
-
-    ModelType = TypeVar('ModelType')
 
     def to_internal_value(self, data: Any) -> ModelType:
         """

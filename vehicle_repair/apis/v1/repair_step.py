@@ -1,19 +1,35 @@
-
 from rest_framework.viewsets import ModelViewSet
 
 from utils.mixins.base_api_mixin import BaseAPIMixin
 from vehicle_repair.models import RepairStep
-from vehicle_repair.serializers.repair_step import CreateRepairStepSerializer, RepairStepSerializer
-
-# Create your views here.
+from vehicle_repair.models.repair_step import RepairStepReport
+from vehicle_repair.serializers.repair_step import (
+    CreateRepairStepReportSerializer,
+    RepairStepReportSerializer,
+    RepairStepSerializer,
+)
 
 
 class RepairStepViewSet(BaseAPIMixin, ModelViewSet):
 
-    queryset = RepairStep.objects.all()
+    queryset = RepairStep.objects.all().order_by("created_at")
     serializer_class = RepairStepSerializer
+
+    def get_serializer_context(self):
+        return {"repair_request_idx": self.kwargs["repair_request_idx"]}
+
+
+class RepairStepReportViewSet(BaseAPIMixin, ModelViewSet):
+    queryset = RepairStepReport.objects.all().order_by("created_at")
+    serializer_class = RepairStepReportSerializer
 
     def get_serializer_class(self):
         if self.request.method == "POST":
-            return CreateRepairStepSerializer
+            return CreateRepairStepReportSerializer
         return super().get_serializer_class()
+
+    def get_serializer_context(self):
+        return {
+            "repair_request_idx": self.kwargs["repair_request_idx"],
+            "repair_step_idx": self.kwargs["repair_step_idx"]
+        }
