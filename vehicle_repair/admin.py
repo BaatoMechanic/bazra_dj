@@ -12,7 +12,7 @@ class VehicleCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(models.VehiclePart)
 class VehiclePartAdmin(admin.ModelAdmin):
-    list_display = ("idx", "name", "vehicle_type", "position", "is_multiple")
+    list_display = ("idx", "name", "vehicle_category", "position", "is_multiple")
 
 
 class VehicleRepairRequestImageInline(admin.TabularInline):
@@ -35,14 +35,14 @@ class VehicleRepairRequestVideoInline(admin.TabularInline):
 
 @admin.register(models.VehicleRepairRequest)
 class VehicleRepairRequestAdmin(admin.ModelAdmin):
-    list_display = ("idx", "title", "vehicle_type", "service_type", "status")
+    list_display = ("idx", "title", "vehicle_category", "service", "status")
     readonly_fields = (
         "title",
         "description",
         "user",
         "preferred_mechanic",
-        "vehicle_type",
-        "service_type",
+        "vehicle_category",
+        "service",
         "location",
     )
     inlines = [VehicleRepairRequestImageInline, VehicleRepairRequestVideoInline]

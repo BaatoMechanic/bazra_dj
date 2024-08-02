@@ -1,5 +1,7 @@
 from django.db import models
 
+from rest_framework.request import Request
+
 from utils.mixins.base_model_mixin import BaseModelMixin
 from vehicle_repair.models import VehicleCategory
 from vehicle_repair.models import VehiclePart
@@ -42,3 +44,6 @@ class Service(BaseModelMixin):
 
     def __str__(self) -> str:
         return self.name
+
+    def can_retrieve(self, request: Request) -> bool:
+        return True

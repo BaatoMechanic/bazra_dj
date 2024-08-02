@@ -20,8 +20,9 @@ repair_request_router.register("images", v1.VehicleRepairRequestImageViewSet, ba
 repair_request_router.register("videos", v1.VehicleRepairRequestVideoViewSet, basename="repair_request-videos")
 repair_request_router.register("repair_steps", v1.RepairStepViewSet, basename="repair_request-steps")
 
-urlpatterns = [
+report_step_router = routers.NestedDefaultRouter(repair_request_router, "repair_steps", lookup="repair_step")
+report_step_router.register("reports", v1.RepairStepReportViewSet, basename="repair_step-reports")
 
-]
+urlpatterns = []
 
-urlpatterns += router.urls + repair_request_router.urls
+urlpatterns += router.urls + repair_request_router.urls + report_step_router.urls

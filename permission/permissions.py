@@ -1,5 +1,5 @@
 from rest_framework.permissions import BasePermission
-
+from rest_framework.request import Request
 from .helpers import has_permission
 
 
@@ -7,7 +7,7 @@ class BazraPermission(BasePermission):
     def has_permission(self, request, view):
         return has_permission(request)
 
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request: Request, view, obj):
         try:
             model = (
                 (view.serializer_class.Meta.model if view.serializer_class else None)

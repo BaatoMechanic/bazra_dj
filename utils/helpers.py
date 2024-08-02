@@ -3,11 +3,13 @@ import random
 import string
 
 
-def generate_6digit_number():
+def generate_6digit_number() -> int:
     return random.randint(100000, 999999)
 
 
-def generate_random_string(size=6, chars=string.ascii_uppercase + string.digits):
+def generate_random_string(
+    size: int = 6, chars: str = string.ascii_uppercase + string.digits
+) -> str:
     return "".join(random.choice(chars) for x in range(size))
 
 
@@ -24,7 +26,7 @@ def check_identifier_is_email(identifier: str) -> bool:
     return re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", identifier) is not None
 
 
-def normalize_email(cls, email):
+def normalize_email(email: str) -> str:
     """
     Normalize the email address by lowercasing the domain part of it.
     """
@@ -38,7 +40,7 @@ def normalize_email(cls, email):
     return email
 
 
-def normalize_phone_number(phone_number):
+def normalize_phone_number(phone_number: int) -> int:
     """
     Normalize the phone number by removing any special characters or formatting.
     """

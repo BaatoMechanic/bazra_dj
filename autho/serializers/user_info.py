@@ -13,13 +13,24 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["idx", "name", "email", "phone", "image", "primary_role", "roles"]
+        fields = [
+            "idx",
+            "name",
+            "email",
+            "phone",
+            "gender",
+            "dob_type",
+            "image",
+            "primary_role",
+            "roles",
+            "auth_provider",
+        ]
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         if instance.primary_role is not None:
-            representation["primary_role"] = instance.primary_role.name
-        representation["roles"] = [role.name for role in instance.roles.all()]
+            representation["primary_role"] = instance.primary_role.name.lower()
+        representation["roles"] = [role.name.lower() for role in instance.roles.all()]
 
         return representation
 

@@ -6,7 +6,7 @@ from .vehicle_repair_request import (
     VehicleRepairRequestVideoViewSet,
 )
 
-from .repair_step import RepairStepViewSet
+from .repair_step import RepairStepViewSet, RepairStepReportViewSet
 from .mechanic import MechanicViewSet
 from .customer import CustomerViewSet
 from .vehicle_category import VehicleCategoryViewSet

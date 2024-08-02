@@ -1,19 +1,18 @@
 from rest_framework import serializers
-from utils.mixins.serializer_field_mixins import BDetailRelatedField
-
+from utils.mixins.serializer_field_mixins import DetailRelatedField
 from utils.mixins.serializer_model_mixins import BaseModelSerializerMixin
 from vehicle_repair.models import Mechanic
 
 
 class MechanicSerializer(BaseModelSerializerMixin):
-    name = BDetailRelatedField(Mechanic, representation="user.name")
-    dob_type = BDetailRelatedField(Mechanic, representation="user.dob_type")
-    dob = BDetailRelatedField(Mechanic, representation="user.dob")
+    name = DetailRelatedField(representation="user.name")
+    dob_type = DetailRelatedField(representation="user.dob_type")
+    dob = DetailRelatedField(representation="user.dob")
     additional_attributes = serializers.SerializerMethodField()
-    roles = BDetailRelatedField(
-        Mechanic, representation="get_roles", is_method=True, source="user"
+    roles = DetailRelatedField(
+        representation="get_roles", is_method=True, source="user"
     )
-    image = BDetailRelatedField(Mechanic, representation="user.image.url")
+    image = DetailRelatedField(representation="user.image.url")
 
     class Meta:
         model = Mechanic

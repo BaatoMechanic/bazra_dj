@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from utils.mixins.serializer_field_mixins import BDetailRelatedField
-
+from utils.mixins.serializer_field_mixins import DetailRelatedField
 from utils.mixins.serializer_model_mixins import BaseModelSerializerMixin
 from vehicle_repair.models import Customer
 
@@ -11,26 +10,22 @@ User = get_user_model()
 
 class CustomerSerializer(BaseModelSerializerMixin):
     user_idx = serializers.CharField(write_only=True)
-    name = BDetailRelatedField(Customer, representation="user.name")
-    email = BDetailRelatedField(Customer, representation="user.email")
-    phone = BDetailRelatedField(Customer, representation="user.phone")
-    dob_type = BDetailRelatedField(Customer, representation="user.dob_type")
-    auth_provider = BDetailRelatedField(Customer, representation="user.auth_provider")
-    dob = BDetailRelatedField(Customer, representation="user.dob")
-    is_verified = BDetailRelatedField(Customer, representation="user.is_verified")
-    is_email_verified = BDetailRelatedField(
-        Customer, representation="user.is_email_verified"
-    )
-    is_phone_verified = BDetailRelatedField(
-        Customer, representation="user.is_phone_verified"
-    )
-    image = BDetailRelatedField(Customer, representation="user.get_image_url")
+    name = DetailRelatedField(representation="user.name")
+    email = DetailRelatedField(representation="user.email")
+    phone = DetailRelatedField(representation="user.phone")
+    dob_type = DetailRelatedField(representation="user.dob_type")
+    auth_provider = DetailRelatedField(representation="user.auth_provider")
+    dob = DetailRelatedField(representation="user.dob")
+    is_verified = DetailRelatedField(representation="user.is_verified")
+    is_email_verified = DetailRelatedField(representation="user.is_email_verified")
+    is_phone_verified = DetailRelatedField(representation="user.is_phone_verified")
+    image = DetailRelatedField(representation="user.get_image_url")
     primary_role = serializers.SerializerMethodField()
-    roles = BDetailRelatedField(
-        Customer, representation="get_roles", is_method=True, source="user"
+    roles = DetailRelatedField(
+        representation="get_roles", is_method=True, source="user"
     )
-    additional_attributes = BDetailRelatedField(
-        Customer, representation="get_additional_attributes", is_method=True
+    additional_attributes = DetailRelatedField(
+        representation="get_additional_attributes", is_method=True
     )
 
     class Meta:
