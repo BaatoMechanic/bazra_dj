@@ -5,6 +5,7 @@ VEHICLE_REPAIR_REQUEST_READ_API = [
     ("repair_requests-user-repair-requests", "get"),
     ("repair_requests-user-recent-repair-requests", "get"),
     ("repair_requests-user-active-repair-requests", "get"),
+    ("repair_requests-mechanic-active-repair", "get"),
 ]
 
 
@@ -16,6 +17,11 @@ VEHICLE_REPAIR_REQUEST_WRITE_API = [
 
 VEHICLE_REPAIR_REQUEST_PATCH_API = [
     ("repair_requests-detail", "patch"),
+]
+
+
+VEHICLE_REPAIR_REQUEST_ADVANCE_PAYMENT_API = [
+    ("repair_requests-advance-payment", "post"),
 ]
 
 
@@ -48,7 +54,6 @@ VEHICLE_REPAIR_REQUEST_REVIEWS_WRITE_API = [
 VEHICLE_REPAIR_REQUEST_VIDEOS_READ_API = [
     ("repair_request-videos-list", "get"),
     ("repair_request-videos-detail", "get"),
-
 ]
 
 
@@ -68,7 +73,6 @@ SERVICE_WRITE_API = [
     ("services-list", "post"),
     ("services-detail", "put"),
     ("services-detail", "patch"),
-
 ]
 
 
@@ -125,7 +129,6 @@ CUSTOMER_API = [
     ("customers-detail", "get"),
     ("customers-me", "get"),
     ("customers-customer-by-useridx", "get"),
-
 ]
 
 

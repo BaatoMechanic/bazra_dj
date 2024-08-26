@@ -1,7 +1,7 @@
 from permission.app_permissions_list.autho_permissions import (
     AUTH_API,
+    CHECK_N_VERIFY_OTP_API,
     FCM_DEVICE_REGISTER_API,
-    IDENTIFIER_VERIFICATION_TOKEN_API,
     MECHANIC_TIPS_READ_API,
     MECHANIC_TIPS_WRITE_API,
     RECOVERY_API,
@@ -10,10 +10,11 @@ from permission.app_permissions_list.autho_permissions import (
     USER_CHANGE_PASSWORD_API,
     USER_PUBLIC_API,
     USER_UPDATE_LOCATION_API,
-    VERIFICATION_API,
+    VERIFICATION_CODE_API,
     VERIFY_TOKEN_API,
     USER_DELETE_API,
 )
+from permission.app_permissions_list.feedback_permissions import FEEDBACK_READ_API, FEEDBACK_WRITE_API
 from permission.app_permissions_list.gis_permissions import GIS_API
 from permission.app_permissions_list.social_auth_permissions import SOCIAL_AUTH_API
 from permission.app_permissions_list.vehicle_repair_permissions import (
@@ -30,6 +31,7 @@ from permission.app_permissions_list.vehicle_repair_permissions import (
     SERVICE_WRITE_API,
     VEHICLE_CATEOGRY_READ_API,
     VEHICLE_CATEOGRY_WRITE_API,
+    VEHICLE_REPAIR_REQUEST_ADVANCE_PAYMENT_API,
     VEHICLE_REPAIR_REQUEST_IMAGES_READ_API,
     VEHICLE_REPAIR_REQUEST_IMAGES_WRITE_API,
     VEHICLE_REPAIR_REQUEST_PATCH_API,
@@ -45,13 +47,15 @@ from permission.app_permissions_list.vehicle_repair_permissions import (
 def get_general_permission_map():
     return [
         RECOVERY_API,
-        VERIFICATION_API,
+        VERIFICATION_CODE_API,
         MECHANIC_API,
         CUSTOMER_API,
         CUSTOMER_CREATE_API,
         SERVICE_READ_API,
         VEHICLE_REPAIR_REQUEST_REVIEWS_READ_API,
         SOCIAL_AUTH_API,
+        CHECK_N_VERIFY_OTP_API,
+        FEEDBACK_WRITE_API,
     ]
 
 
@@ -106,7 +110,7 @@ def get_superuser_permission_map():
         MECHANIC_TIPS_WRITE_API,
         VEHICLE_CATEOGRY_READ_API,
         VEHICLE_CATEOGRY_WRITE_API,
-        IDENTIFIER_VERIFICATION_TOKEN_API,
+        FEEDBACK_READ_API,
     ]
 
 
@@ -115,6 +119,7 @@ def get_consumer_permission_map():
         AUTH_API,
         VEHICLE_REPAIR_REQUEST_READ_API,
         VEHICLE_REPAIR_REQUEST_WRITE_API,
+        VEHICLE_REPAIR_REQUEST_PATCH_API,
         VEHICLE_REPAIR_REQUEST_IMAGES_READ_API,
         VEHICLE_REPAIR_REQUEST_IMAGES_WRITE_API,
         VEHICLE_REPAIR_REQUEST_VIDEOS_READ_API,
@@ -129,7 +134,6 @@ def get_consumer_permission_map():
         USER_UPDATE_LOCATION_API,
         VEHICLE_REPAIR_REQUEST_REVIEWS_WRITE_API,
         USER_CHANGE_PASSWORD_API,
-        IDENTIFIER_VERIFICATION_TOKEN_API,
         REPAIR_STEP_REPORT_READ_API,
     ]
 
@@ -143,6 +147,7 @@ def get_mechanic_permission_map():
         VEHICLE_REPAIR_REQUEST_IMAGES_WRITE_API,
         VEHICLE_REPAIR_REQUEST_VIDEOS_READ_API,
         VEHICLE_REPAIR_REQUEST_VIDEOS_WRITE_API,
+        VEHICLE_REPAIR_REQUEST_ADVANCE_PAYMENT_API,
         REPAIR_STEP_READ_API,
         REPAIR_STEP_WRITE_API,
         USER_API,

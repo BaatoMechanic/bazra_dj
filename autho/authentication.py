@@ -90,9 +90,7 @@ class CustomJWTAuthentication(authentication.BaseAuthentication):
     @classmethod
     def create_access_jwt(cls, user: User):
         user_identifier: str = user.email if user.email else user.phone
-        expiration_time: datetime = (
-            datetime.now() + settings.JWT_CONF["ACCESS_TOKEN_LIFETIME"]
-        )
+        expiration_time: datetime = datetime.now() + settings.JWT_CONF["ACCESS_TOKEN_LIFETIME"]
         payload = {
             "user_identifier": user_identifier,
             "exp": int(expiration_time.timestamp()),
@@ -106,9 +104,7 @@ class CustomJWTAuthentication(authentication.BaseAuthentication):
     def create_refresh_jwt(cls, user: User):
         user_identifier: str = user.email if user.email else user.phone
         # expiration_time = datetime.now() + timedelta(minutes=settings.JWT_CONF['ACCESS_TOKEN_LIFETIME'])
-        expiration_time: datetime = (
-            datetime.now() + settings.JWT_CONF["REFRESH_TOKEN_LIFETIME"]
-        )
+        expiration_time: datetime = datetime.now() + settings.JWT_CONF["REFRESH_TOKEN_LIFETIME"]
         payload = {
             "user_identifier": user_identifier,
             "exp": int(expiration_time.timestamp()),
@@ -126,9 +122,7 @@ class CustomSimpleJWTAuthentication(JWTAuthentication):
         # token = request.META.get('HTTP_AUTHORIZATION')
         # using or beacuse user_identifier can be in username if login from admin panel and user_identifier
         # if login from api endpoints
-        user_identifier = credentials.get("user_identifier") or credentials.get(
-            "username"
-        )
+        user_identifier = credentials.get("user_identifier") or credentials.get("username")
         password = credentials.get("password")
 
         if user_identifier is None or password is None:
@@ -137,21 +131,15 @@ class CustomSimpleJWTAuthentication(JWTAuthentication):
                 return self.get_user_from_token(header)
             return None
 
-        user = User.objects.filter(
-            Q(email=user_identifier) | Q(phone=user_identifier), is_obsolete=False
-        ).first()
+        user = User.objects.filter(Q(email=user_identifier) | Q(phone=user_identifier), is_obsolete=False).first()
 
         if user is None or not user.check_password(password):
             # If user is trying to login from admin panel then show the error message inside the form
-            if request.path == "/admin/login/":
-                raise ValidationError(
-                    "No active account found with the given credentials"
-                )
+            if request and request.path == "/admin/login/":
+                raise ValidationError("No active account found with the given credentials")
 
             else:
-                raise AuthenticationFailed(
-                    "No active account found with the given credentials"
-                )
+                raise AuthenticationFailed("No active account found with the given credentials")
 
         return user
 
@@ -166,9 +154,7 @@ class CustomSimpleJWTAuthentication(JWTAuthentication):
         return super().get_user(validated_token), validated_token
 
     def get_user_from_identifier(self, identifier):
-        return User.objects.filter(
-            Q(email=identifier) | Q(phone=identifier), is_obsolete=False
-        ).first()
+        return User.objects.filter(Q(email=identifier) | Q(phone=identifier), is_obsolete=False).first()
 
     def get_user(self, id):
         try:

@@ -22,7 +22,6 @@ class BaseOTPCode(BaseModelMixin):
         abstract = True
 
     def lock(self):
-
         self.update(locked_at=timezone.now())
 
     def mark_inactive(self) -> None:

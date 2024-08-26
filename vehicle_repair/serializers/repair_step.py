@@ -1,3 +1,4 @@
+from django.db.models.signals import post_save
 from rest_framework import serializers
 
 from utils.mixins.serializer_model_mixins import BaseModelSerializerMixin
@@ -30,23 +31,18 @@ class RepairStepReportSerializer(BaseModelSerializerMixin):
 
 class CreateRepairStepReportSerializer(BaseModelSerializerMixin):
 
-    bill_images = serializers.ListField(
-        child=serializers.ImageField(), required=False, write_only=True
-    )
+    bill_images = serializers.ListField(child=serializers.ImageField(), required=False, write_only=True)
 
     class Meta:
         model = RepairStepReport
         fields = ["idx", "bill_images"]
 
     def create(self, validated_data):
+
         repair_request_idx = self.context.get("repair_request_idx")
-        repair_request = VehicleRepairRequest.objects.filter(
-            idx=repair_request_idx
-        ).first()
+        repair_request = VehicleRepairRequest.objects.filter(idx=repair_request_idx).first()
         if not repair_request:
-            raise serializers.ValidationError(
-                {"detail": "Repair request does not exist."}
-            )
+            raise serializers.ValidationError({"detail": "Repair request does not exist."})
         repair_step_idx = self.context.get("repair_step_idx")
         repair_step = RepairStep.objects.filter(idx=repair_step_idx).first()
         if not repair_step:
@@ -61,6 +57,8 @@ class CreateRepairStepReportSerializer(BaseModelSerializerMixin):
                 image = RepairStepBillImage(report=instance, image=bill_image)
                 images.append(image)
         RepairStepBillImage.objects.bulk_create(images)
+        # since bulk_create does not trigger post_save signals so triggering it here manually
+        post_save.send(sender=RepairStepReport, instance=instance, created=True)
         return instance
 
 
@@ -82,12 +80,8 @@ class RepairStepSerializer(BaseModelSerializerMixin):
 
     def create(self, validated_data):
         repair_request_idx = self.context.get("repair_request_idx")
-        repair_request = VehicleRepairRequest.objects.filter(
-            idx=repair_request_idx
-        ).first()
+        repair_request = VehicleRepairRequest.objects.filter(idx=repair_request_idx).first()
         if not repair_request:
-            raise serializers.ValidationError(
-                {"detail": "Repair request does not exist."}
-            )
+            raise serializers.ValidationError({"detail": "Repair request does not exist."})
         validated_data["repair_request"] = repair_request
         return super().create(validated_data)

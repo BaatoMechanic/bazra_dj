@@ -19,9 +19,7 @@ class IdxRelatedField(serializers.PrimaryKeyRelatedField):
     default_error_messages = {
         "required": _("This field is required."),
         "does_not_exist": _('Invalid idx "{pk_value}" - object does not exist.'),
-        "incorrect_type": _(
-            "Incorrect type. Expected idx value, received {data_type}."
-        ),
+        "incorrect_type": _("Incorrect type. Expected idx value, received {data_type}."),
     }
 
     def get_attribute(self, instance):
@@ -72,19 +70,17 @@ class BaseModelSerializerMixin(serializers.ModelSerializer):
                 related_instance = getattr(instance, field_name, None)
                 if not related_instance:
                     continue
-                if hasattr(self.Meta, "serializers") and self.Meta.serializers.get(
-                    field_name
-                ):
+                if hasattr(self.Meta, "serializers") and self.Meta.serializers.get(field_name):
                     serializer = self.Meta.serializers.get(field_name)
                     representation[field_name] = serializer(related_instance).data
                 else:
-                    representation[field_name] = getattr(
-                        related_instance, "idx", related_instance.id
-                    )
+                    representation[field_name] = getattr(related_instance, "idx", related_instance.id)
             elif isinstance(field, serializers.ManyRelatedField):
                 related_instances = getattr(instance, field_name).all()
                 representation[field_name] = [
-                    getattr(related_instance, "idx", related_instance.id)
-                    for related_instance in related_instances
+                    getattr(related_instance, "idx", related_instance.id) for related_instance in related_instances
                 ]
+            elif isinstance(field, serializers.DecimalField):
+                if representation.get(field_name) is not None:
+                    representation[field_name] = float(representation[field_name])
         return representation

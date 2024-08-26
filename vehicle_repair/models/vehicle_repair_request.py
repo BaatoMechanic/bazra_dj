@@ -18,9 +18,7 @@ VEHICLE_REPAIR_STATUS_WAITING_FRO_ADVANCE_PAYMENT = "waiting_for_advance_payment
 VEHICLE_REPAIR_STATUS_WAITING_FRO_MECHANIC = "waiting_for_mechanic"
 VEHICLE_REPAIR_STATUS_IN_PROGRESS = "in_progress"
 VEHICLE_REPAIR_STATUS_IN_HALT = "halt"
-VEHICLE_REPAIR_STATUS_WAITING_COMPLETION_ACCEPTANCE = (
-    "waiting_for_completion_acceptance"
-)
+VEHICLE_REPAIR_STATUS_WAITING_COMPLETION_ACCEPTANCE = "waiting_for_completion_acceptance"
 VEHICLE_REPAIR_STATUS_COMPLETE = "complete"
 VEHICLE_REPAIR_STATUS_CANCELLED = "cancelled"
 
@@ -77,15 +75,9 @@ class VehicleRepairRequest(BaseModelMixin):
         default=ADVANCE_PAYMENT_STATUS_PENDING,
         choices=ADVANCE_PAYMENT_STATUS_CHOICES,
     )
-    user = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name="vehicle_repair_requests"
-    )
-    advance_charge = models.DecimalField(
-        max_digits=7, decimal_places=2, null=True, blank=True
-    )
-    service_charge = models.DecimalField(
-        max_digits=7, decimal_places=2, null=True, blank=True
-    )
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="vehicle_repair_requests")
+    advance_charge = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
+    service_charge = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     preferred_mechanic = models.ForeignKey(
         Mechanic,
         on_delete=models.SET_NULL,
@@ -93,17 +85,10 @@ class VehicleRepairRequest(BaseModelMixin):
         null=True,
     )
     assigned_mechanic = models.ForeignKey(
-        Mechanic,
-        on_delete=models.PROTECT,
-        related_name="vehicle_repairs_assigned_mechanic",
-        null=True,
+        Mechanic, on_delete=models.PROTECT, related_name="vehicle_repairs_assigned_mechanic", null=True, blank=True
     )
-    vehicle_category = models.ForeignKey(
-        VehicleCategory, on_delete=models.PROTECT, related_name="vehicle_repair"
-    )
-    service = models.ForeignKey(
-        Service, on_delete=models.PROTECT, related_name="vehicle_repair"
-    )
+    vehicle_category = models.ForeignKey(VehicleCategory, on_delete=models.PROTECT, related_name="vehicle_repair")
+    service = models.ForeignKey(Service, on_delete=models.PROTECT, related_name="vehicle_repair")
     # vehicle_part = models.ForeignKey(VehiclePart, on_delete=models.PROTECT, related_name="vehicle_repair")
     # lat, long, location_name and timestamp are most. Accuracy, altitude and other attributes are optional
     location = models.JSONField(default=dict)
@@ -166,9 +151,7 @@ class VehicleRepairRequest(BaseModelMixin):
 
 
 class VehicleRepairRequestImage(BaseModelMixin):
-    repair_request = models.ForeignKey(
-        VehicleRepairRequest, on_delete=models.CASCADE, related_name="images"
-    )
+    repair_request = models.ForeignKey(VehicleRepairRequest, on_delete=models.CASCADE, related_name="images")
     image = models.ImageField(upload_to="vehicle_repair_request/images")
     # image = models.ImageField(upload_to="vehicle_repair_request/images", validators=[validate_file_size])
 
@@ -196,17 +179,11 @@ class VehicleRepairRequestImage(BaseModelMixin):
 
 
 class VehicleRepairRequestVideo(BaseModelMixin):
-    repair_request = models.ForeignKey(
-        VehicleRepairRequest, on_delete=models.CASCADE, related_name="videos"
-    )
+    repair_request = models.ForeignKey(VehicleRepairRequest, on_delete=models.CASCADE, related_name="videos")
     video = models.FileField(
         upload_to="vehicle_repair_request/videos",
         null=True,
-        validators=[
-            FileExtensionValidator(
-                allowed_extensions=["MOV", "avi", "mp4", "webm", "mkv"]
-            )
-        ],
+        validators=[FileExtensionValidator(allowed_extensions=["MOV", "avi", "mp4", "webm", "mkv"])],
     )
 
     def __str__(self) -> str:

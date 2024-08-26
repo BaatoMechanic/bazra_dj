@@ -19,7 +19,6 @@ User = get_user_model()
 class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
     user = DetailRelatedField(representation="user.idx")
     advance_charge = serializers.SerializerMethodField()
-    service_charge = serializers.SerializerMethodField()
     display_image = serializers.SerializerMethodField()
     contact_number = DetailRelatedField(representation="user.phone")
 
@@ -48,10 +47,6 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
         # using method to return advance charge to fix couldn't serialize decimal object error
         return float(obj.advance_charge) if obj.advance_charge else None
 
-    def get_service_charge(self, obj):
-        # using method to return advance charge to fix couldn't serialize decimal object error
-        return float(obj.service_charge) if obj.service_charge else None
-
     def get_display_image(self, obj) -> str | None:
         image = obj.images.first()
         if not image:
@@ -63,9 +58,7 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
         validated_data["user"] = user
         user_mobile_number = user.phone
         if not user_mobile_number:
-            raise serializers.ValidationError(
-                {"detail": "User mobile number is required."}
-            )
+            raise serializers.ValidationError({"detail": "User mobile number is required."})
         instance = super().create(validated_data)
         send_notification.delay(
             user.id,
@@ -74,11 +67,20 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
         )
         return instance
 
+    def update(self, instance, validated_data):
+        assigned_mechanic = validated_data.get("assigned_mechanic")
+        if assigned_mechanic and assigned_mechanic.is_engaged_in_repair():
+            raise serializers.ValidationError(
+                {
+                    "detail": "Cannot work on multiple repair requests at the same"
+                    "time. Please complete the previous repair first."
+                }
+            )
+        return super().update(instance, validated_data)
+
 
 class VehicleRepairRequestImageSerializer(serializers.ModelSerializer):
-    images = serializers.ListField(
-        child=serializers.ImageField(), required=False, write_only=True
-    )
+    images = serializers.ListField(child=serializers.ImageField(), required=False, write_only=True)
     image = serializers.ImageField(required=False)
 
     class Meta:
@@ -106,9 +108,7 @@ class VehicleRepairRequestImageSerializer(serializers.ModelSerializer):
 
         images.extend(
             [
-                VehicleRepairRequestImage(
-                    repair_request=validated_data["repair_request"], image=image
-                )
+                VehicleRepairRequestImage(repair_request=validated_data["repair_request"], image=image)
                 for image in validated_data["images"]
             ]
         )
@@ -116,23 +116,15 @@ class VehicleRepairRequestImageSerializer(serializers.ModelSerializer):
         return VehicleRepairRequestImage.objects.bulk_create(images)
 
     def save(self, **kwargs):
-        if not self.validated_data.get("image") and not self.validated_data.get(
-            "images"
-        ):
-            raise serializers.ValidationError(
-                {"detail": "At least one image is required."}
-            )
+        if not self.validated_data.get("image") and not self.validated_data.get("images"):
+            raise serializers.ValidationError({"detail": "At least one image is required."})
 
         repair_request_idx = self.context.get("repair_request")
         try:
-            kwargs["repair_request"] = VehicleRepairRequest.objects.get(
-                idx=repair_request_idx
-            )
+            kwargs["repair_request"] = VehicleRepairRequest.objects.get(idx=repair_request_idx)
             return super().save(**kwargs)
         except VehicleRepairRequest.DoesNotExist:
-            raise serializers.ValidationError(
-                {"detail": "Repair request does not exist."}
-            )
+            raise serializers.ValidationError({"detail": "Repair request does not exist."})
 
 
 class VehicleRepairRequestVideoSerializer(serializers.ModelSerializer):
@@ -144,11 +136,7 @@ class VehicleRepairRequestVideoSerializer(serializers.ModelSerializer):
     def save(self, **kwargs):
         repair_request_idx = self.context.get("repair_request")
         try:
-            kwargs["repair_request"] = VehicleRepairRequest.objects.get(
-                idx=repair_request_idx
-            )
+            kwargs["repair_request"] = VehicleRepairRequest.objects.get(idx=repair_request_idx)
             return super().save(**kwargs)
         except VehicleRepairRequest.DoesNotExist:
-            raise serializers.ValidationError(
-                {"detail": "Repair request does not exist."}
-            )
+            raise serializers.ValidationError({"detail": "Repair request does not exist."})

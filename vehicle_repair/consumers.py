@@ -28,186 +28,6 @@ coordinates = [
         27.703433,
         "Kohalpur",
     ],
-    [
-        85.331427,
-        27.703345,
-        "Kohalpur",
-    ],
-    [
-        85.331973,
-        27.7033,
-        "Kohalpur",
-    ],
-    [
-        85.332081,
-        27.70331,
-        "Kohalpur",
-    ],
-    [
-        85.332267,
-        27.703411,
-        "Kohalpur",
-    ],
-    [
-        85.332441,
-        27.703528,
-        "Kohalpur",
-    ],
-    [
-        85.332502,
-        27.703606,
-        "Kohalpur",
-    ],
-    [
-        85.332652,
-        27.703818,
-        "Kohalpur",
-    ],
-    [
-        85.332654,
-        27.703918,
-        "Kohalpur",
-    ],
-    [
-        85.332944,
-        27.703817,
-        "Kohalpur",
-    ],
-    [
-        85.333931,
-        27.703525,
-        "Kohalpur",
-    ],
-    [
-        85.334216,
-        27.703437,
-        "Kohalpur",
-    ],
-    [
-        85.334465,
-        27.703365,
-        "Kohalpur",
-    ],
-    [
-        85.33565,
-        27.703,
-        "Kohalpur",
-    ],
-    [
-        85.335815,
-        27.70294,
-        "Kohalpur",
-    ],
-    [
-        85.336285,
-        27.702783,
-        "Kohalpur",
-    ],
-    [
-        85.336324,
-        27.702876,
-        "Kohalpur",
-    ],
-    [
-        85.336223,
-        27.703198,
-        "Kohalpur",
-    ],
-    [
-        85.33621,
-        27.70327,
-        "Kohalpur",
-    ],
-    [
-        85.33624,
-        27.703666,
-        "Kohalpur",
-    ],
-    [
-        85.336335,
-        27.704733,
-        "Kohalpur",
-    ],
-    [
-        85.336383,
-        27.705381,
-        "Kohalpur",
-    ],
-    [
-        85.33646,
-        27.70561,
-        "Kohalpur",
-    ],
-    [
-        85.336602,
-        27.705891,
-        "Kohalpur",
-    ],
-    [
-        85.336633,
-        27.706071,
-        "Kohalpur",
-    ],
-    [
-        85.336646,
-        27.706264,
-        "Kohalpur",
-    ],
-    [
-        85.336702,
-        27.706534,
-        "Kohalpur",
-    ],
-    [
-        85.336714,
-        27.706775,
-        "Kohalpur",
-    ],
-    [
-        85.336791,
-        27.707216,
-        "Kohalpur",
-    ],
-    [
-        85.336921,
-        27.707803,
-        "Kohalpur",
-    ],
-    [
-        85.337012,
-        27.707917,
-        "Kohalpur",
-    ],
-    [
-        85.337105,
-        27.707961,
-        "Kohalpur",
-    ],
-    [
-        85.337248,
-        27.707985,
-        "Kohalpur",
-    ],
-    [
-        85.337371,
-        27.708052,
-        "Kohalpur",
-    ],
-    [
-        85.338019,
-        27.708024,
-        "Kohalpur",
-    ],
-    [
-        85.33802,
-        27.707937,
-        "Kohalpur",
-    ],
-    [
-        85.338164,
-        27.707612,
-        "Kohalpur",
-    ],
 ]
 
 
@@ -216,17 +36,13 @@ class VehicleRepairRequestConsumer(WebsocketConsumer):
         self.room_name = self.scope["url_route"]["kwargs"]["idx"]
         self.room_group_name = "repair_request_%s" % self.room_name
 
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name, self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
 
         self.accept()
 
         repair_request = VehicleRepairRequest.objects.get(idx=self.room_name)
 
-        self.send(
-            text_data=json.dumps(VehicleRepairRequestSerializer(repair_request).data)
-        )
+        self.send(text_data=json.dumps(VehicleRepairRequestSerializer(repair_request).data))
 
         # for coordinate in coordinates:
         #     self.send(text_data=json.dumps({
@@ -239,9 +55,7 @@ class VehicleRepairRequestConsumer(WebsocketConsumer):
         print(text_data)
 
     def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name, self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
         raise StopConsumer()
 
     def repair_request_update(self, event):
@@ -253,25 +67,19 @@ class RepairStepsConsumer(WebsocketConsumer):
         self.room_name = self.scope["url_route"]["kwargs"]["repair_idx"]
         self.room_group_name = "repair_steps_%s" % self.room_name
 
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name, self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
 
         self.accept()
 
         repair_steps = RepairStep.objects.filter(repair_request__idx=self.room_name)
 
-        self.send(
-            text_data=json.dumps(RepairStepSerializer(repair_steps, many=True).data)
-        )
+        self.send(text_data=json.dumps(RepairStepSerializer(repair_steps, many=True).data))
 
     def receive(self, text_data=None, bytes_data=None):
         print(text_data)
 
     def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name, self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
         raise StopConsumer()
 
     def repair_step_update(self, event):
@@ -283,18 +91,14 @@ class RepairRequestMechanicLocationConsumer(WebsocketConsumer):
         self.room_name = self.scope["url_route"]["kwargs"]["idx"]
         self.room_group_name = "repair_request_mechanic_location_%s" % self.room_name
 
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name, self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
 
         self.accept()
 
         repair_request = VehicleRepairRequest.objects.get(idx=self.room_name)
 
         mechanic_location = (
-            UserLocation.objects.filter(user=repair_request.assigned_mechanic.user)
-            .order_by("-created_at")
-            .first()
+            UserLocation.objects.filter(user=repair_request.assigned_mechanic.user).order_by("-created_at").first()
         )
 
         location = UserLocationSerializer(mechanic_location).data
@@ -304,20 +108,28 @@ class RepairRequestMechanicLocationConsumer(WebsocketConsumer):
 
         self.send(text_data=json.dumps({"mechanic_location": location}))
 
-        # for coordinate in coordinates:
-        #     self.send(text_data=json.dumps({
-        #         'location': coordinate
-        #     }))
-
-        # time.sleep(3)
-
+    # def receive(self, text_data=None, bytes_data=None):
+    # print(text_data)
+    # self.send(text_data=json.dumps({"mechanic_location": text_data}))
+    #
+    #
     def receive(self, text_data=None, bytes_data=None):
+        # Directly broadcast the message to all clients in the group
         print(text_data)
+        async_to_sync(self.channel_layer.group_send)(
+            self.room_group_name,
+            {
+                "type": "broadcast_mechanic_location",
+                "message": text_data,
+            },
+        )
+
+    def broadcast_mechanic_location(self, event):
+        message = event["message"]
+        self.send(text_data=json.dumps({"mechanic_location": message}))
 
     def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name, self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
         raise StopConsumer()
 
     def notify_location_update(self, event):

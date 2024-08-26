@@ -1,4 +1,3 @@
-import os
 from typing import Any
 
 from django.contrib.auth import authenticate, get_user_model
@@ -6,6 +5,7 @@ from django.contrib.auth import authenticate, get_user_model
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken, Token
 
+from permission.models import Role
 from vehicle_repair.models import Customer
 from vehicle_repair.serializers import CustomerSerializer
 
@@ -30,23 +30,22 @@ def register_social_user(
     User = get_user_model()
 
     try:
-        user = User.objects.get(email=email)
+        user = User.objects.get(email=email, is_obsolete=False)
         if user.auth_provider != provider:
-            raise AuthenticationFailed(
-                "Please continue your login using " + user.auth_provider
-            )
+            raise AuthenticationFailed("Please continue your login using " + user.auth_provider)
     except User.DoesNotExist:
         user = User.objects.create_user(
             email=email,
-            password=os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET"),
+            password=user_id,
             auth_provider=provider,
             name=name,
+            primary_role=Role.objects.get(name="Consumer"),
             image=picture,
         )
 
     registered_user = authenticate(
         user_identifier=email,
-        password=os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET"),
+        password=user_id,
     )
 
     refresh: Token = RefreshToken.for_user(registered_user)

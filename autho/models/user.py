@@ -1,4 +1,5 @@
 import re
+from typing import Type
 
 from django.db import models
 from django.db.models import Sum
@@ -27,9 +28,7 @@ class UserManager(BaseUserManager):
         phone = fields.pop("phone", None)
         password = fields.pop("password", None)
         if not email and not phone:
-            raise ValueError(
-                "Either of both of 'email and mobile' is required to create an user."
-            )
+            raise ValueError("Either or both of 'email and mobile' is required to create an user.")
 
         if not password and not set_unusable_password:
             raise ValueError("Password is required to create an user.")
@@ -122,8 +121,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         ("active"),
         default=True,
         help_text=(
-            "Designates whether this user should be treated as active. "
-            "Unselect this instead of deleting accounts."
+            "Designates whether this user should be treated as active. " "Unselect this instead of deleting accounts."
         ),
     )
 
@@ -136,9 +134,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     )
     roles = models.ManyToManyField("permission.Role", related_name="users", blank=True)
     # additional_attributes = models.JSONField(default=dict, blank=True, null=True)
-    dob_type = models.CharField(
-        max_length=2, choices=DATE_TYPE_CHOICES, default=DATE_TYPE_AD
-    )
+    dob_type = models.CharField(max_length=2, choices=DATE_TYPE_CHOICES, default=DATE_TYPE_AD)
     dob = models.DateField(null=True, blank=True)
 
     verified_on = models.DateTimeField(null=True, blank=True)
@@ -170,9 +166,9 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         if not isinstance(role, list):
             role = [role]
 
-        return (
-            self.primary_role is not None and self.primary_role.name in role
-        ) or self.roles.filter(name__in=role).exists()
+        return (self.primary_role is not None and self.primary_role.name in role) or self.roles.filter(
+            name__in=role
+        ).exists()
 
     def get_roles(self) -> list:
         roles = [role.name for role in self.roles.all()]
@@ -186,9 +182,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         self.roles.add(*roles)
 
     def delete(self) -> None:
-        self.__class__.objects.filter(id=self.id).update(
-            is_active=False, is_obsolete=True
-        )
+        self.__class__.objects.filter(id=self.id).update(is_active=False, is_obsolete=True)
 
     def get_image_url(self):
         if self.image:
@@ -199,9 +193,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     def ratings(self) -> int:
         from vehicle_repair.models.rating_review import RatingAndReview
 
-        return RatingAndReview.objects.filter(user=self).aggregate(Sum("rating"))[
-            "rating__sum"
-        ]
+        return RatingAndReview.objects.filter(user=self).aggregate(Sum("rating"))["rating__sum"]
 
     @property
     def total_rating(self):
@@ -210,10 +202,14 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         return RatingAndReview.objects.filter(user=self).count()
 
     def gen_verification_code(self, is_account_verification=False):
-        """Generate a verification code for the user.
+        """
+        Generate a verification code for the user.
+
+        Args:
+            is_account_verification (bool) : Whether the verification code is for account verification.
 
         Returns:
-            The generated verification code, or None if the user is already verified.
+            VerificationCode : Generated verification code.
         """
         from .verification_code import VerificationCode
 
@@ -264,7 +260,20 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
             raise InvalidVerificationCodeError
 
     @classmethod
-    def get_user_by_identifier(cls, id):
+    @classmethod
+    def get_user_by_identifier(cls, id: str) -> Type["User"] | None:
+        """
+        Get a user by identifier.
+
+        Args:
+            id : The identifier to search for. It can be an email or phone number.
+
+        Returns:
+            User | None : The user object if found, or None if not found.
+        """
+        if not id:
+            return None
+
         try:
             if re.match(r"^\d{10}$", str(id)):
                 return cls.objects.get(phone=id)
@@ -275,6 +284,9 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
             return None
 
     def get_basic_attributes(self) -> dict:
+        """
+        Get the basic attributes of the user like is_phone_verified, is_email_verified, is_verified, etc.
+        """
         return {
             "is_phone_verified": self.is_phone_verified,
             "is_email_verified": self.is_email_verified,

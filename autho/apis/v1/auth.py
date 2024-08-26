@@ -1,5 +1,8 @@
-
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
 
 
 from permission.permissions import BazraPermission
@@ -10,14 +13,12 @@ from permission.permissions import BazraPermission
 
 
 class TokenObtainPairView(TokenObtainPairView):
-    permission_classes = ([BazraPermission])
+    permission_classes = [BazraPermission]
 
 
 class TokenRefreshView(TokenRefreshView):
-    permission_classes = ([BazraPermission])
+    permission_classes = [BazraPermission]
 
 
 class TokenVerifyView(TokenVerifyView):
-    permission_classes = ([BazraPermission])
-
-
+    permission_classes = [BazraPermission]

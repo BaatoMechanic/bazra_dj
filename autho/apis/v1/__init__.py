@@ -5,4 +5,4 @@ from .user_management import UserManagementViewSet
 from .user_info import UserInfoViewSet
 
 from .recovery import AccountRecoveryViewSet
-from .verification import AccountVerificationViewSet
+from .verification import VerificationCodeViewSet

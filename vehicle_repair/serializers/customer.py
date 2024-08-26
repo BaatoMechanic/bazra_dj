@@ -16,17 +16,14 @@ class CustomerSerializer(BaseModelSerializerMixin):
     dob_type = DetailRelatedField(representation="user.dob_type")
     auth_provider = DetailRelatedField(representation="user.auth_provider")
     dob = DetailRelatedField(representation="user.dob")
+    gender = DetailRelatedField(representation="user.gender")
     is_verified = DetailRelatedField(representation="user.is_verified")
     is_email_verified = DetailRelatedField(representation="user.is_email_verified")
     is_phone_verified = DetailRelatedField(representation="user.is_phone_verified")
     image = DetailRelatedField(representation="user.get_image_url")
     primary_role = serializers.SerializerMethodField()
-    roles = DetailRelatedField(
-        representation="get_roles", is_method=True, source="user"
-    )
-    additional_attributes = DetailRelatedField(
-        representation="get_additional_attributes", is_method=True
-    )
+    roles = DetailRelatedField(representation="get_roles", is_method=True, source="user")
+    additional_attributes = DetailRelatedField(representation="get_additional_attributes", is_method=True)
 
     class Meta:
         model = Customer
@@ -38,6 +35,7 @@ class CustomerSerializer(BaseModelSerializerMixin):
             "phone",
             "dob_type",
             "dob",
+            "gender",
             "primary_role",
             "auth_provider",
             "image",
@@ -55,5 +53,5 @@ class CustomerSerializer(BaseModelSerializerMixin):
 
     def get_primary_role(self, obj):
         if obj.user.primary_role:
-            obj.user.primary_role.name
+            return obj.user.primary_role.name.lower()
         return None

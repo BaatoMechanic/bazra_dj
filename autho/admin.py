@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 from django.contrib import admin
@@ -16,6 +16,17 @@ User = get_user_model()
 
 class UserCreationForm(BaseUserCreationForm):
 
+    def save(self, commit: bool = ...) -> Any:
+        email = self.cleaned_data.get("email")
+        phone = self.cleaned_data.get("phone")
+        if not email and not phone:
+            self.add_error(
+                "phone",
+                "Either or both of 'email and mobile' is required to create an user.",
+            )
+
+        return super().save(commit)
+
     def clean_email(self) -> Optional[str]:
         """
         Clean the email field and perform validations.
@@ -27,16 +38,9 @@ class UserCreationForm(BaseUserCreationForm):
             forms.ValidationError: If the email is already taken or if neither email nor phone is provided.
         """
         email: Optional[str] = self.cleaned_data.get("email")
-        phone: Optional[str] = self.cleaned_data.get("phone")
 
-        # Check if either email or phone is provided
-        if not email and not phone:
-            self.add_error(
-                "phone",
-                "Either of both of 'email and mobile' is required to create an user.",
-            )
         # Check if email is already taken
-        elif email and User.objects.filter(email=email).exists():
+        if email and User.objects.filter(email=email).exists():
             raise forms.ValidationError("User with this email already exists.")
 
         return email
@@ -51,17 +55,10 @@ class UserCreationForm(BaseUserCreationForm):
         Raises:
             forms.ValidationError: If the phone is already taken or if neither email nor phone is provided.
         """
-        email: Optional[str] = self.cleaned_data.get("email")
         phone: Optional[str] = self.cleaned_data.get("phone")
 
-        # Check if either email or phone is provided
-        if not email and not phone:
-            self.add_error(
-                "email",
-                "Either of both of 'email and mobile' is required to create an user.",
-            )
         # Check if phone is already taken
-        elif phone and User.objects.filter(phone=phone).exists():
+        if phone and User.objects.filter(phone=phone).exists():
             raise forms.ValidationError("User with this mobile already exists.")
 
         return phone
