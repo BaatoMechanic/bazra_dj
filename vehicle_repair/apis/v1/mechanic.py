@@ -10,8 +10,6 @@ from vehicle_repair.models.service import Service
 from vehicle_repair.models.vehicle_category import VehicleCategory
 from vehicle_repair.serializers import MechanicSerializer
 
-# Create your views here.
-
 
 class MechanicViewSet(BaseAPIMixin, ModelViewSet):
 
@@ -20,22 +18,16 @@ class MechanicViewSet(BaseAPIMixin, ModelViewSet):
 
     @action(detail=False, methods=["GET"])
     def recommended_mechanics(self, request):
-        vehicle_speciality_idx = request.query_params.get(
-            "vehicle_category_speciality", None
-        )
+        vehicle_speciality_idx = request.query_params.get("vehicle_category_speciality", None)
         service_speciality_idx = request.query_params.get("service_speciality", None)
 
         vehicle_speciality = None
         if vehicle_speciality_idx:
-            vehicle_speciality = VehicleCategory.objects.filter(
-                idx=vehicle_speciality_idx
-            ).first()
+            vehicle_speciality = VehicleCategory.objects.filter(idx=vehicle_speciality_idx).first()
 
         service_speciality = None
         if service_speciality_idx:
-            service_speciality = Service.objects.filter(
-                idx=service_speciality_idx
-            ).first()
+            service_speciality = Service.objects.filter(idx=service_speciality_idx).first()
 
         mechanics = Mechanic.objects.filter(
             vehicle_speciality=vehicle_speciality, service_speciality=service_speciality

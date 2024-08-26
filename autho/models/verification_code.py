@@ -30,6 +30,9 @@ class VerificationCode(BaseOTPCode):
     )
     meta = models.JSONField(default=dict)
 
+    def can_check_otp(self, request: HttpRequest):
+        return True
+
     def can_verify_otp(self, request: HttpRequest):
         return True
 
@@ -53,9 +56,8 @@ class VerificationCode(BaseOTPCode):
         """
         self.retries += 1
         if self.retries > settings.VERIFICATION_CODE["MAX_RETRIES"]:
-            self.lock()
             self.save(update_fields=["retries"])
-            raise VerificationCodeLockedError()
+            self.lock()
 
     def increment_sents(self) -> None:
         """
@@ -84,9 +86,7 @@ class VerificationCode(BaseOTPCode):
         self.token = generate_random_string(64)
         self.tries = 0
         self.sents = 0
-        self.expired_on = timezone.now() + datetime.timedelta(
-            minutes=settings.VERIFICATION_CODE["OTP_TTL"]
-        )
+        self.expired_on = timezone.now() + datetime.timedelta(minutes=settings.VERIFICATION_CODE["OTP_TTL"])
         self.save()
         return self
 
@@ -110,10 +110,7 @@ class VerificationCode(BaseOTPCode):
             None
         """
         if settings.STAGING:
-            logger.info(
-                f"[Sending verification code]: User Identifier: {self.user.phone}, code: {self.code}"
-            )
-            # return self
+            logger.info(f"[Sending verification code]: User Identifier: {self.user.phone}, code: {self.code}")
 
         self.increment_sents()
         if self.sents > settings.VERIFICATION_CODE["MAX_SENDS"]:

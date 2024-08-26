@@ -10,9 +10,9 @@ class BazraPermission(BasePermission):
     def has_object_permission(self, request: Request, view, obj):
         try:
             model = (
-                (view.serializer_class.Meta.model if view.serializer_class else None)
-                or view.queryset.model
-                or view.model
+                view.queryset.model
+                if view.queryset
+                else None or (view.serializer_class.Meta.model if view.serializer_class else None) or view.model
             )
         except AttributeError:
             raise Exception(

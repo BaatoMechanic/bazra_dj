@@ -1,6 +1,8 @@
 import re
 from rest_framework import serializers
 
+from utils.helpers import is_valid_email, is_valid_mobile_number
+
 
 class PhoneNumberField(serializers.CharField):
 
@@ -44,20 +46,18 @@ class UserIdentifierField(serializers.CharField):
     def to_internal_value(self, identifier):
         if not self.validate_id_for_phone(identifier) and not self.validate_id_for_email(identifier):
             raise serializers.ValidationError(
-                "The identifier should be either a valid phone number (e.g. 98xxxxxxxx) "
-                "or a valid email address"
+                "The identifier should be either a valid phone number (e.g. 98xxxxxxxx) " "or a valid email address"
             )
         return identifier
 
     def validate_id_for_phone(self, identifier: str) -> bool:
         num = str(identifier)
-        pattern = r"(9[678][0124568]\d{7})|(0\d{8,9})"
 
-        if not re.match(pattern, num):
+        if not is_valid_mobile_number(num):
             return False
         return True
 
     def validate_id_for_email(self, identifier: str) -> bool:
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", identifier):
+        if not is_valid_email(identifier):
             return False
         return True

@@ -17,13 +17,14 @@ RECOVERY_API = [
     ("account_recovery-check-otp", "post"),
 ]
 
-VERIFICATION_API = [
-    ("account_verification-send-otp-uid", "post"),
-    ("account_verification-resend", "post"),
-    ("account_verification-verify-otp", "post"),
-    ("account_verification-verify-account-otp", "post"),
-    ("account_verification-check-otp", "post"),
+VERIFICATION_CODE_API = [
+    ("verification_code-send-otp-uid", "post"),
+    ("verification_code-resend", "post"),
 ]
+
+# Since we are using the same api for both account verification and identifier verification, user is not authenticated
+# when doing account verification otp check so putting it separately in annonymous permissions
+CHECK_N_VERIFY_OTP_API = [("verification_code-check-otp", "post"), ("verification_code-verify-otp", "post")]
 
 FCM_DEVICE_REGISTER_API = [
     ("fcmdevice-list", "post"),
@@ -46,10 +47,6 @@ REGISTER_API = [
 ]
 USER_DELETE_API = [
     ("users_management-delete-user", "delete"),
-]
-IDENTIFIER_VERIFICATION_TOKEN_API = [
-    ("users_management-identifier-verification-token", "post"),
-    ("users_management-verify-identifier", "post"),
 ]
 
 USER_UPDATE_LOCATION_API = [

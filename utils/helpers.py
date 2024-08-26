@@ -7,13 +7,11 @@ def generate_6digit_number() -> int:
     return random.randint(100000, 999999)
 
 
-def generate_random_string(
-    size: int = 6, chars: str = string.ascii_uppercase + string.digits
-) -> str:
+def generate_random_string(size: int = 6, chars: str = string.ascii_uppercase + string.digits) -> str:
     return "".join(random.choice(chars) for x in range(size))
 
 
-def check_identifier_is_email(identifier: str) -> bool:
+def is_valid_email(identifier: str) -> bool:
     """
     Check if the given identifier is a valid email.
 
@@ -24,6 +22,19 @@ def check_identifier_is_email(identifier: str) -> bool:
         bool: True if the identifier is a valid email, False otherwise.
     """
     return re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", identifier) is not None
+
+
+def is_valid_mobile_number(identifier: str) -> bool:
+    """
+    Check if the given identifier is a valid mobile number.
+
+    Args:
+        identifier (str): The identifier to check.
+
+    Returns:
+        bool: True if the identifier is a valid phone number, False otherwise.
+    """
+    return re.match(r"^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$", identifier) is not None
 
 
 def normalize_email(email: str) -> str:
@@ -46,10 +57,6 @@ def normalize_phone_number(phone_number: int) -> int:
     """
 
     normalized_phone_number = (
-        phone_number.replace(" ", "")
-        .replace("-", "")
-        .replace("(", "")
-        .replace(")", "")
-        .replace("+", "")
+        phone_number.replace(" ", "").replace("-", "").replace("(", "").replace(")", "").replace("+", "")
     )
     return normalized_phone_number

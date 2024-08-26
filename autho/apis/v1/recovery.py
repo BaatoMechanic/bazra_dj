@@ -8,7 +8,7 @@ from autho.models import User
 from autho.models.recovery_code import RecoveryCode
 from autho.serializers.recovery import (
     SendRecoveryCodeSerializer,
-    VerfiyRecoveryOtpCodeSerializer,
+    VerfiyRecoveryOtpSerializer,
 )
 from utils.api_response import api_response_error, api_response_success
 from utils.mixins.base_api_mixin import BaseAPIMixin
@@ -21,7 +21,7 @@ class AccountRecoveryViewSet(BaseAPIMixin, GenericViewSet):
         if self.action == "send_otp_uid":
             return SendRecoveryCodeSerializer
         if self.action == "verify_otp":
-            return VerfiyRecoveryOtpCodeSerializer
+            return VerfiyRecoveryOtpSerializer
 
     @action(detail=False, methods=["POST"])
     def send_otp_uid(self, request, *args, **kwargs):
@@ -92,9 +92,7 @@ class AccountRecoveryViewSet(BaseAPIMixin, GenericViewSet):
 
         code = self.get_object()
         try:
-            user = User.verify_recovery_code(
-                code.user.phone or code.user.email, code.code
-            )
+            user = User.verify_recovery_code(code.user.phone or code.user.email, code.code)
         except InvalidRecoveryCodeError as exp:
             return api_response_error({"detail": exp.message})
         except RecoveryCodeLockedError as exp:
@@ -107,6 +105,4 @@ class AccountRecoveryViewSet(BaseAPIMixin, GenericViewSet):
         user.set_password(new_password)
         user.save()
 
-        return api_response_success(
-            {"detail": "Password changed successfully. Please login to continue"}
-        )
+        return api_response_success({"detail": "Password changed successfully. Please login to continue"})

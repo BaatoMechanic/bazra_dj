@@ -18,6 +18,10 @@ class RepairStepViewSet(BaseAPIMixin, ModelViewSet):
     def get_serializer_context(self):
         return {"repair_request_idx": self.kwargs["repair_request_idx"]}
 
+    def list(self, request, *args, **kwargs):
+        self.queryset = self.queryset.filter(repair_request__idx=self.kwargs["repair_request_idx"])
+        return super().list(request, *args, **kwargs)
+
 
 class RepairStepReportViewSet(BaseAPIMixin, ModelViewSet):
     queryset = RepairStepReport.objects.all().order_by("created_at")
@@ -31,5 +35,5 @@ class RepairStepReportViewSet(BaseAPIMixin, ModelViewSet):
     def get_serializer_context(self):
         return {
             "repair_request_idx": self.kwargs["repair_request_idx"],
-            "repair_step_idx": self.kwargs["repair_step_idx"]
+            "repair_step_idx": self.kwargs["repair_step_idx"],
         }

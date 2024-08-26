@@ -57,6 +57,7 @@ THIRD_PARTY_APPS = [
     "djoser",
     "django_filters",
     "fcm_django",
+    "feedback",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + NATIVE_APPS + THIRD_PARTY_APPS
@@ -210,11 +211,7 @@ RECOVERY_CODE = {
     "OTP_TTL": 2,
 }
 
-VERIFICATION_CODE = {
-    "MAX_RETRIES": 5,
-    "MAX_SENDS": 5,
-    "OTP_TTL": 2
-}
+VERIFICATION_CODE = {"MAX_RETRIES": 5, "MAX_SENDS": 5, "OTP_TTL": 2}
 
 
 CELERY_BROKER_URL = "redis://redis:6379/1"
