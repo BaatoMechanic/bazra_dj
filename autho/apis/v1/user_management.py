@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+from rest_framework.permissions import AllowAny
 
 from autho.models import User
 from autho.serializers import UserLocationSerializer, UserRegistrationSerializer
@@ -18,7 +19,7 @@ class UserManagementViewSet(BaseAPIMixin, GenericViewSet):
     Any user info modification logic should be added here.
     """
 
-    @action(detail=False, methods=["POST"])
+    @action(detail=False, methods=["POST"], permission_classes=[AllowAny])
     def register(self, request: HttpRequest) -> Response:
         """
         Register the user.
