@@ -1,4 +1,5 @@
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.request import HttpRequest
 from rest_framework.viewsets import GenericViewSet
 from django.conf import settings
@@ -73,7 +74,7 @@ class VerificationCodeViewSet(BaseAPIMixin, GenericViewSet):
         code.update_code()
         return api_response_success({"detail": "Verification otp resent successfully."})
 
-    @action(detail=True, methods=["POST"])
+    @action(detail=True, methods=["POST"], permission_classes=[AllowAny])
     def check_otp(self, request, *args, **kwargs):
         """
         Account Verification ~ Check OTP
