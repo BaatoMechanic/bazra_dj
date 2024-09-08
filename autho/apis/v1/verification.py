@@ -62,15 +62,10 @@ class VerificationCodeViewSet(BaseAPIMixin, GenericViewSet):
             }
         )
 
-    @action(detail=False, methods=["POST"])
+    @action(detail=True, methods=["POST"], permission_classes=[AllowAny])
     def resend(self, request, *args, **kwargs):
-        verification_idx = request.data.get("idx")
-        try:
-            code = VerificationCode.objects.get(idx=verification_idx)
-
-        except VerificationCode.DoesNotExist:
-            return api_response_error({"detail": "Resend the verification otp again."})
-
+        code: VerificationCode = self.get_object()
+        code.send()
         code.update_code()
         return api_response_success({"detail": "Verification otp resent successfully."})
 
@@ -94,7 +89,7 @@ class VerificationCodeViewSet(BaseAPIMixin, GenericViewSet):
 
         return api_response_error({"detail": "Invalid otp"})
 
-    @action(detail=True, methods=["POST"])
+    @action(detail=True, methods=["POST"], permission_classes=[AllowAny])
     def verify_otp(self, request: HttpRequest, *args, **kwargs):
 
         def verify_account_creation(request: HttpRequest):

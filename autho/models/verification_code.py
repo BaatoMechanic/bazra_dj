@@ -33,6 +33,9 @@ class VerificationCode(BaseOTPCode):
     def can_check_otp(self, request: HttpRequest):
         return True
 
+    def can_resend(self, request: HttpRequest):
+        return True
+
     def can_verify_otp(self, request: HttpRequest):
         return True
 
