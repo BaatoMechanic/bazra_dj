@@ -147,7 +147,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         verbose_name_plural = "users"
 
     def __str__(self):
-        return self.idx
+        return self.name if self.name else self.idx
 
     def can_retrieve(self, request: HttpRequest) -> bool:
         return True

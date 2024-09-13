@@ -19,7 +19,8 @@ class Mechanic(BaseModelMixin):
     description = models.CharField(max_length=500, null=True, blank=True)
 
     def __str__(self) -> str:
-        return f"Mechanic: {self.user.name}"
+        # return f"Mechanic: {self.user.name}"
+        return self.user.name
 
     def can_retrieve(self, request: HttpRequest) -> bool:
         return True

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+import sentry_sdk
 
 from datetime import timedelta
 from dotenv import load_dotenv
@@ -234,6 +235,18 @@ FCM_DJANGO_SETTINGS = {
     # default: False
     "UPDATE_ON_DUPLICATE_REG_ID": True,
 }
+
+
+sentry_sdk.init(
+    dsn=os.environ.get("SENTRY_DSN"),
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for tracing.
+    traces_sample_rate=1.0,
+    # Set profiles_sample_rate to 1.0 to profile 100%
+    # of sampled transactions.
+    # We recommend adjusting this value in production.
+    profiles_sample_rate=1.0,
+)
 
 
 try:
