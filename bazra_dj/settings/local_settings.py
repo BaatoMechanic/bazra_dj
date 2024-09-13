@@ -25,6 +25,8 @@ ALLOWED_HOSTS = [
     "debug.krishna-rimal.com.np",
 ]
 
+CORS_ALLOWED_ORIGINS = ["https://api.krishna-rimal.com.np"]
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",

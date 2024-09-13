@@ -51,20 +51,21 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-NATIVE_APPS = ["autho", "social_auth", "permission", "utils", "vehicle_repair", "gis"]
+NATIVE_APPS = ["autho", "social_auth", "permission", "utils", "vehicle_repair", "gis", "feedback"]
 
 THIRD_PARTY_APPS = [
     "rest_framework",
     "djoser",
     "django_filters",
     "fcm_django",
-    "feedback",
+    "corsheaders",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + NATIVE_APPS + THIRD_PARTY_APPS
 
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
