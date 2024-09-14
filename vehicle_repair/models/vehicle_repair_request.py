@@ -91,7 +91,7 @@ class VehicleRepairRequest(BaseModelMixin):
     service = models.ForeignKey(Service, on_delete=models.PROTECT, related_name="vehicle_repair")
     # vehicle_part = models.ForeignKey(VehiclePart, on_delete=models.PROTECT, related_name="vehicle_repair")
     # lat, long, location_name and timestamp are most. Accuracy, altitude and other attributes are optional
-    location = models.JSONField(default=dict)
+    location = models.JSONField(default=dict, null=False)
 
     def __str__(self) -> str:
         return self.title
