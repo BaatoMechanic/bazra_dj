@@ -66,7 +66,7 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
             raise serializers.ValidationError({"detail": "User mobile number is required."})
         instance = super().create(validated_data)
         send_bulk_notifications.delay(
-            User.objects.filter(primary_role__name="Mechanic").values_list("id", flat=True),
+            list(User.objects.filter(primary_role__name="Mechanic").values_list("id", flat=True)),
             "New vehicle repair request",
             "There is a new vehicle repair request, you might like",
         )
