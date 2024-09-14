@@ -18,8 +18,8 @@ User = get_user_model()
 
 @shared_task
 def send_email(
-    subject,
-    message,
+    subject: str,
+    message: str,
     email,
     cc=[],
     bcc=[],
@@ -30,7 +30,7 @@ def send_email(
     html_data=None,
     template=None,
     template_context=None,
-):
+) -> bool:
 
     if settings.STAGING:
         print("Skipping email being sent to ", email)
@@ -71,9 +71,9 @@ def custom_mail_admins(subject: str, message: str) -> bool:
 
 
 @shared_task
-def send_notification(user, title, body, image=None, **kwargs) -> bool:
+def send_notification(user_id: int, title: str, body: str, image: str | None = None, **kwargs) -> bool:
     try:
-        user_device = FCMDevice.objects.get(user=user, active=True)
+        user_device = FCMDevice.objects.get(user_id=user_id, active=True)
         user_device.send_message(
             Message(
                 notification=Notification(
@@ -91,8 +91,8 @@ def send_notification(user, title, body, image=None, **kwargs) -> bool:
 
 
 @shared_task
-def send_bulk_notifications(users, title, body, image=None, **kwargs) -> bool:
-    devices = FCMDevice.objects.filter(user__in=users, active=True)
+def send_bulk_notifications(user_ids: list[int], title: str, body: str, image: str | None = None, **kwargs) -> bool:
+    devices = FCMDevice.objects.filter(user_id__in=user_ids, active=True)
     devices.send_message(
         Message(
             notification=Notification(
