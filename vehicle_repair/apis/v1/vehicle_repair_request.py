@@ -101,8 +101,8 @@ class VehicleRepairRequestViewSet(BaseAPIMixin, ModelViewSet):
         if distance > 50000:
             lunch_charge = 500
 
-        # Charge will be 1 rupee per 1000 meter
-        repair_request.advance_charge = round(distance / 1000 + lunch_charge, 2)
+        # Charge will be 5 rupee per 1000 meter
+        repair_request.advance_charge = round((distance / 1000) * 5 + lunch_charge, 2)
 
         repair_request.save(update_fields=["advance_charge"])
         serializer = VehicleRepairRequestSerializer(repair_request)

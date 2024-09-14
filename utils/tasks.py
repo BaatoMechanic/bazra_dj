@@ -35,8 +35,7 @@ def send_email(
     if settings.STAGING:
         print("Skipping email being sent to ", email)
         logger.info(
-            f"[Enqueue email] Subject: {subject},\nMessage: {message},\n"
-            f"Emails: {email}\ncc: {cc}, bcc{bcc}"
+            f"[Enqueue email] Subject: {subject},\nMessage: {message},\n" f"Emails: {email}\ncc: {cc}, bcc{bcc}"
         )
         # return None
     try:
@@ -53,9 +52,7 @@ def send_email(
         mail_admins("Got bad header", "Got bad header")
 
     except Exception:
-        admin_msg = "Subject: {}\nTo: {}\nFrom: {}\n{}".format(
-            subject, email, from_email, traceback.format_exc()
-        )
+        admin_msg = "Subject: {}\nTo: {}\nFrom: {}\n{}".format(subject, email, from_email, traceback.format_exc())
         custom_mail_admins.delay("Error Email Enqueue", admin_msg)
         logger.error(f"Error email enqueue {admin_msg}")
     return True
@@ -74,9 +71,8 @@ def custom_mail_admins(subject: str, message: str) -> bool:
 
 
 @shared_task
-def send_notification(user_id, title, body, image=None, **kwargs) -> bool:
+def send_notification(user, title, body, image=None, **kwargs) -> bool:
     try:
-        user = User.objects.get(id=user_id)
         user_device = FCMDevice.objects.get(user=user, active=True)
         user_device.send_message(
             Message(
@@ -91,4 +87,20 @@ def send_notification(user_id, title, body, image=None, **kwargs) -> bool:
     except FCMDevice.DoesNotExist:
         logger.error("No device found")
         return False
+    return True
+
+
+@shared_task
+def send_bulk_notifications(users, title, body, image=None, **kwargs) -> bool:
+    devices = FCMDevice.objects.filter(user__in=users, active=True)
+    devices.send_message(
+        Message(
+            notification=Notification(
+                title=title,
+                body=body,
+                image=image,
+            ),
+            data=kwargs,
+        )
+    )
     return True

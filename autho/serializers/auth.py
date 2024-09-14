@@ -37,7 +37,7 @@ class LoginSerializer(serializers.Serializer):
         # update_last_login.delay(None, user)
         # TODO: send sms about the login
         send_notification.delay(
-            user.id, "New Login", "New login has been detected", image=user.image.url if user.image else None
+            user, "New Login", "New login has been detected", image=user.image.url if user.image else None
         )
 
         return {

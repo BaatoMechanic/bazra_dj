@@ -6,7 +6,7 @@ from rest_framework import serializers
 
 from utils.mixins.serializer_field_mixins import DetailRelatedField
 from utils.mixins.serializer_model_mixins import BaseModelSerializerMixin
-from utils.tasks import send_notification
+from utils.tasks import send_bulk_notifications, send_notification
 from vehicle_repair.models import (
     VehicleRepairRequest,
     VehicleRepairRequestImage,
@@ -43,6 +43,11 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
             "contact_number",
         ]
 
+    def validate_location(self, value):
+        if not value:
+            raise serializers.ValidationError("Location is required.")
+        return value
+
     def get_advance_charge(self, obj):
         # using method to return advance charge to fix couldn't serialize decimal object error
         return float(obj.advance_charge) if obj.advance_charge else None
@@ -60,8 +65,13 @@ class VehicleRepairRequestSerializer(BaseModelSerializerMixin):
         if not user_mobile_number:
             raise serializers.ValidationError({"detail": "User mobile number is required."})
         instance = super().create(validated_data)
+        send_bulk_notifications.delay(
+            User.objects.filter(primary_role__name="Mechanic").only("id"),
+            "New vehicle repair request",
+            "There is a new vehicle repair request, you might like",
+        )
         send_notification.delay(
-            user.id,
+            user,
             "Repair request sent successfully",
             "Your vehicle repair request has been sent. You'll be notified sortly",
         )
