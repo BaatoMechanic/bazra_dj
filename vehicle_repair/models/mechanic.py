@@ -1,5 +1,6 @@
+from functools import cached_property
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Avg
 from django.http import HttpRequest
 
 from utils.mixins.base_model_mixin import BaseModelMixin
@@ -37,11 +38,21 @@ class Mechanic(BaseModelMixin):
 
         return RatingAndReview.objects.filter(user=self.user).count()
 
+    @cached_property
+    def average_rating(self):
+        from vehicle_repair.models.rating_review import RatingAndReview
+
+        return round(
+            RatingAndReview.objects.filter(user=self.user).aggregate(Avg("rating"))["rating__avg"],
+            2,
+        )
+
     def get_additional_attributes(self) -> dict:
         return {
             **self.user.get_basic_attributes(),
             "total_repairs": self.total_repairs,
             "total_reviews": self.total_reviews,
+            "average_rating": self.average_rating,
         }
 
     def is_engaged_in_repair(self) -> bool:
