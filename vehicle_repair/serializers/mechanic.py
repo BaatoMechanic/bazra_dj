@@ -8,7 +8,7 @@ class MechanicSerializer(BaseModelSerializerMixin):
     name = DetailRelatedField(representation="user.name")
     dob_type = DetailRelatedField(representation="user.dob_type")
     dob = DetailRelatedField(representation="user.dob")
-    additional_attributes = serializers.SerializerMethodField()
+    additional_attributes = DetailRelatedField(representation="get_additional_attributes", is_method=True)
     roles = DetailRelatedField(representation="get_roles", is_method=True, source="user")
     # image = DetailRelatedField(representation="user.image.url")
     image = serializers.SerializerMethodField()
@@ -33,12 +33,3 @@ class MechanicSerializer(BaseModelSerializerMixin):
         if obj.user.image:
             return obj.user.image.url
         return None
-
-    def get_additional_attributes(self, obj):
-        return {
-            "is_phone_verified": obj.user.is_phone_verified,
-            "is_email_verified": obj.user.is_email_verified,
-            "is_verified": obj.user.is_verified,
-            "total_repairs": obj.total_repairs,
-            "total_reviews": obj.total_reviews,
-        }
