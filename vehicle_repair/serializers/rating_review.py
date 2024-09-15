@@ -2,6 +2,7 @@ from typing import Any, Dict
 
 from rest_framework import serializers
 
+from utils.mixins.serializer_field_mixins import DetailRelatedField
 from vehicle_repair.models import RatingAndReview
 from utils.mixins.serializer_model_mixins import BaseModelSerializerMixin
 from vehicle_repair.models import VehicleRepairRequest
@@ -11,8 +12,8 @@ from vehicle_repair.models.mechanic import Mechanic
 
 
 class VehicleRepairReviewSerializer(BaseModelSerializerMixin):
-    reviewer = serializers.CharField(source="review_by", read_only=True)
-    reviewed = serializers.CharField(source="user", read_only=True)
+    reviewer = DetailRelatedField(representation="review_by.idx", read_only=True)
+    reviewed = DetailRelatedField(representation="user.idx", read_only=True)
     repair_request_idx = serializers.CharField(write_only=True)
     repair_request = serializers.SerializerMethodField()
 
@@ -33,8 +34,11 @@ class VehicleRepairReviewSerializer(BaseModelSerializerMixin):
         ]
 
     def get_repair_request(self, obj):
-        request = VehicleRepairRequest.objects.get(id=obj.object_id)
-        return request.idx
+        try:
+            request = VehicleRepairRequest.objects.get(id=obj.object_id)
+            return request.idx
+        except VehicleRepairRequest.DoesNotExist:
+            return None
 
     def create(self, validated_data):
         reviewer = self.context.get("request").user
@@ -50,9 +54,7 @@ class VehicleRepairReviewSerializer(BaseModelSerializerMixin):
             content_type=type,
             object_id=repair_request.id,
         ).exists():
-            raise serializers.ValidationError(
-                {"details": ["You have already reviewed this repair request."]}
-            )
+            raise serializers.ValidationError({"details": ["You have already reviewed this repair request."]})
 
         validated_data["content_object"] = repair_request
         validated_data["user"] = mechanic.user
@@ -80,26 +82,18 @@ class VehicleRepairReviewSerializer(BaseModelSerializerMixin):
         try:
             mechanic = Mechanic.objects.get(idx=mechanic_idx)
         except Mechanic.DoesNotExist:
-            raise serializers.ValidationError(
-                {"mechanic": ["Mechanic does not exist."]}
-            )
+            raise serializers.ValidationError({"mechanic": ["Mechanic does not exist."]})
 
         if review_by == mechanic.user:
             raise serializers.ValidationError({"user": ["You can't rate yourself."]})
 
         repair_request_idx = attrs.pop("repair_request_idx", None)
         if not repair_request_idx:
-            raise serializers.ValidationError(
-                {"details": ["Repair request must be provided."]}
-            )
+            raise serializers.ValidationError({"details": ["Repair request must be provided."]})
 
-        repair_request = VehicleRepairRequest.objects.filter(
-            idx=repair_request_idx
-        ).first()
+        repair_request = VehicleRepairRequest.objects.filter(idx=repair_request_idx).first()
         if not repair_request:
-            raise serializers.ValidationError(
-                {"repair_request": ["Repair request does not exist."]}
-            )
+            raise serializers.ValidationError({"repair_request": ["Repair request does not exist."]})
         attrs["repair_request"] = repair_request
 
         attrs["mechanic"] = mechanic
