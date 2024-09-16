@@ -15,7 +15,7 @@ from utils.helpers import generate_6digit_number, generate_random_string
 from django.conf import settings
 
 from utils.mixins.base_exception_mixin import BMException
-from utils.tasks import send_email
+from utils.tasks import send_email, send_staging_email
 
 
 def get_otp_expires_on():
@@ -132,7 +132,7 @@ class VerificationCode(BaseOTPCode):
     def sms_code(self):
         if settings.STAGING:
             logger.info(f"[Skipping SMS]: Skipping sms being sent to {self.user.phone}")
-            send_email(
+            send_staging_email(
                 "Verification Code SMS",
                 f"Your account verification code is {self.code}",
                 "temp@mail.com",

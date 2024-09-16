@@ -1,7 +1,7 @@
 import traceback
 
 from django.conf import settings
-from django.core.mail import BadHeaderError, mail_admins
+from django.core.mail import BadHeaderError, mail_admins, send_mail
 from django.contrib.auth import get_user_model
 
 from celery.utils.log import get_task_logger
@@ -31,7 +31,6 @@ def send_email(
     template=None,
     template_context=None,
 ) -> bool:
-
     if settings.STAGING:
         print("Skipping email being sent to ", email)
         logger.info(
@@ -56,6 +55,22 @@ def send_email(
         custom_mail_admins.delay("Error Email Enqueue", admin_msg)
         logger.error(f"Error email enqueue {admin_msg}")
     return True
+
+
+@shared_task(queue="utils")
+def send_staging_email(
+    subject: str,
+    message: str,
+) -> bool:
+    if not settings.STAGING:
+        return False
+
+    try:
+        send_mail(subject, message, "temp@mail.staging")
+        return True
+    except Exception as exp:
+        logger.error(exp)
+        return False
 
 
 @shared_task(queue="utils")
