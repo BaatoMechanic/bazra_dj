@@ -135,7 +135,6 @@ class VerificationCode(BaseOTPCode):
             send_staging_email(
                 "Verification Code SMS",
                 f"Your account verification code is {self.code}",
-                "temp@mail.com",
             )
 
         # TODO:: Add SMS functionality here
