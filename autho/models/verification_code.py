@@ -135,12 +135,12 @@ class VerificationCode(BaseOTPCode):
             send_email(
                 "Verification Code SMS",
                 f"Your account verification code is {self.code}",
+                "temp@mail.com",
             )
 
         # TODO:: Add SMS functionality here
 
     def email_code(self):
-
         subject = "Account verification code"
         message = f"Your account verification code is: {self.code}"
         from_email = settings.EMAIL_HOST_USER
