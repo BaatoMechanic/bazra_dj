@@ -113,7 +113,10 @@ class VerificationCode(BaseOTPCode):
             None
         """
         if settings.STAGING:
-            logger.info(f"[Sending verification code]: User Identifier: {self.user.phone}, code: {self.code}")
+            logger.info(
+                f"[Sending verification code]: "
+                f"User Identifier: {self.user.phone if self.user.phone else self.user.email}, code: {self.code}"
+            )
 
         self.increment_sents()
         if self.sents > settings.VERIFICATION_CODE["MAX_SENDS"]:
@@ -127,7 +130,14 @@ class VerificationCode(BaseOTPCode):
             self.email_code()
 
     def sms_code(self):
-        pass
+        if settings.STAGING:
+            logger.info(f"[Skipping SMS]: Skipping sms being sent to {self.user.phone}")
+            send_email(
+                "Verification Code SMS",
+                f"Your account verification code is {self.code}",
+            )
+
+        # TODO:: Add SMS functionality here
 
     def email_code(self):
 

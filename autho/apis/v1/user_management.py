@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import AllowAny
 
-from autho.models import User
+from autho.models import User, VerificationCode
 from autho.serializers import UserLocationSerializer, UserRegistrationSerializer
 
 from utils.api_response import api_response_error, api_response_success
@@ -34,7 +34,7 @@ class UserManagementViewSet(BaseAPIMixin, GenericViewSet):
         try:
             serializer.is_valid(raise_exception=True)
             user: User = serializer.save()
-            code = user.gen_verification_code()
+            code: VerificationCode = user.gen_verification_code()
             code.meta.update(
                 {
                     # saving identifier to meta becaus user can't be compared in case of account verification so to
