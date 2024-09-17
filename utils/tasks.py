@@ -61,12 +61,14 @@ def send_email(
 def send_staging_email(
     subject: str,
     message: str,
+    email: str = settings.EMAIL_HOST_USER,
+    recipients: list[str] = ["temp@mail.staging"],
 ) -> bool:
     if not settings.STAGING:
         return False
 
     try:
-        send_mail(subject, message, "temp@mail.staging")
+        send_mail(subject, message, email, recipient_list=recipients)
         return True
     except Exception as exp:
         logger.error(exp)

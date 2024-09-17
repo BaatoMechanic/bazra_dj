@@ -45,12 +45,12 @@ class UserManager(BaseUserManager):
 
         user.set_password(password)
         user.save(using=self._db)
-        if not donot_send_code:
-            try:
-                user.gen_verification_code().send()
-            except Exception:
-                pass
-
+        if donot_send_code:
+            return user
+        try:
+            user.gen_verification_code().send()
+        except Exception:
+            pass
         return user
 
     def create_superuser(self, email=None, phone=None, password=None, **extra_fields):
@@ -218,6 +218,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         if hasattr(self, "verification_code"):
             return self.verification_code.update_code()
         verification_code, _ = VerificationCode.objects.get_or_create(user=self)
+        verification_code.update_code()
         return verification_code
 
     def gen_recovery_code(self):

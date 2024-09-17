@@ -34,18 +34,17 @@ class UserManagementViewSet(BaseAPIMixin, GenericViewSet):
         try:
             serializer.is_valid(raise_exception=True)
             user: User = serializer.save()
-            code: VerificationCode = user.gen_verification_code()
-            code.meta.update(
-                {
-                    # saving identifier to meta becaus user can't be compared in case of account verification so to
-                    # to make sure the code was generated specifically for the user with this identifier, we are
-                    # adding it to meta
-                    "identifier": serializer.validated_data["user_identifier"],
-                    "is_account_verification": True,
-                }
-            )
-            code.save()
-            code.send()
+            # No need to generate verification code here as it will be generated during the user object creation by
+            # the manager and will also be sent to the user. So just updating the meta here
+            code: VerificationCode = user.verification_code
+            code.meta = {
+                # saving identifier to meta becaus user can't be compared in case of account verification so to
+                # to make sure the code was generated specifically for the user with this identifier, we are
+                # adding it to meta
+                "identifier": serializer.validated_data["user_identifier"],
+                "is_account_verification": True,
+            }
+            code.save(update_fields=["meta"])
             return api_response_success(
                 {
                     "verification": {
