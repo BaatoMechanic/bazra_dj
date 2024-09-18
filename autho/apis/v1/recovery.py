@@ -30,7 +30,7 @@ class AccountRecoveryViewSet(BaseAPIMixin, GenericViewSet):
 
         user = serializer.validated_data.get("user_identifier")
         code: RecoveryCode = user.gen_recovery_code()
-        code.send()
+        code.send(request.data.get("user_identifier"))
 
         return api_response_success(
             {

@@ -131,7 +131,7 @@ class VerificationCode(BaseOTPCode):
 
     def sms_code(self):
         if settings.STAGING:
-            logger.info(f"[Skipping SMS]: Skipping sms being sent to {self.user.phone}")
+            logger.info(f"[Skipping Account Verification Code  SMS]: Skipping sms being sent to {self.user.phone}")
             send_staging_email(
                 "Verification Code SMS",
                 f"Your account verification code is {self.code}",
@@ -147,8 +147,6 @@ class VerificationCode(BaseOTPCode):
         template_name: str = "email/account_verification.html"
         context = {
             "user_name": self.user.name,
-            # "recovery_link": f"http://localhost:8000/autho/account_recovery/
-            # verify_otp_email/?token={self.token}&user={self.user.id}",
             "verification_code": self.code,
         }
 
