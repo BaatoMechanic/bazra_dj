@@ -11,6 +11,7 @@ from autho.serializers.recovery import (
     VerfiyRecoveryOtpSerializer,
 )
 from utils.api_response import api_response_error, api_response_success
+from utils.helpers import is_valid_mobile_number
 from utils.mixins.base_api_mixin import BaseAPIMixin
 
 
@@ -30,14 +31,17 @@ class AccountRecoveryViewSet(BaseAPIMixin, GenericViewSet):
 
         user = serializer.validated_data.get("user_identifier")
         code: RecoveryCode = user.gen_recovery_code()
-        code.send(request.data.get("user_identifier"))
+        id = request.data.get("user_identifier")
+        code.send(id)
 
         return api_response_success(
             {
                 "recovery": {
                     "idx": code.idx,
                 },
-                "message": "Please check your mobile and email for otp code ",
+                "message": (
+                    f"Please check your " f"{'mobile' if is_valid_mobile_number(id) else 'email'} " f"for the otp code"
+                ),
             }
         )
 
