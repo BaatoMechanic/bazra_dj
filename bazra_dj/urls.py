@@ -20,7 +20,6 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("autho/", include("autho.urls")),
@@ -28,6 +27,7 @@ urlpatterns = [
     path("gis/", include("gis.urls")),
     path("social-auth/", include("social_auth.urls")),
     path("feedback/", include("feedback.urls")),
+    path("", include("django_prometheus.urls")),
 ]
 
 

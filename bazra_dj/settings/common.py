@@ -11,12 +11,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
-import sentry_sdk
-
 from datetime import timedelta
-from dotenv import load_dotenv
 from pathlib import Path
 
+import sentry_sdk
+from dotenv import load_dotenv
 from firebase_admin import initialize_app
 
 load_dotenv()
@@ -51,7 +50,15 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-NATIVE_APPS = ["autho", "social_auth", "permission", "utils", "vehicle_repair", "gis", "feedback"]
+NATIVE_APPS = [
+    "autho",
+    "social_auth",
+    "permission",
+    "utils",
+    "vehicle_repair",
+    "gis",
+    "feedback",
+]
 
 THIRD_PARTY_APPS = [
     "rest_framework",
@@ -59,12 +66,14 @@ THIRD_PARTY_APPS = [
     "django_filters",
     "fcm_django",
     "corsheaders",
+    "django_prometheus",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + NATIVE_APPS + THIRD_PARTY_APPS
 
 
 MIDDLEWARE = [
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -73,6 +82,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 ROOT_URLCONF = "bazra_dj.urls"
