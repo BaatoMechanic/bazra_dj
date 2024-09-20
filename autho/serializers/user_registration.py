@@ -33,6 +33,6 @@ class UserRegistrationSerializer(serializers.Serializer):
             validated_data["phone"] = user_identifier
             validated_data.pop("email", None)  # Remove email field if present
 
-        validated_data["active"] = False
+        validated_data["is_active"] = False
 
         return User.objects.create_user(set_unusable_password=True, **validated_data)
