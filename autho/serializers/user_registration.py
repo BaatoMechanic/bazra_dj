@@ -1,10 +1,10 @@
 from typing import Any, Dict
-from rest_framework import serializers
-from utils.helpers import is_valid_email
 
-from utils.serializer_fields import UserIdentifierField
+from rest_framework import serializers
 
 from autho.models import User
+from utils.helpers import is_valid_email
+from utils.serializer_fields import UserIdentifierField
 
 
 class UserRegistrationSerializer(serializers.Serializer):
@@ -17,9 +17,12 @@ class UserRegistrationSerializer(serializers.Serializer):
         if not user_identifier:
             raise ValueError("Either or both of 'email and phone' is required to create a user.")
 
-        user = User.get_user_by_identifier(user_identifier)
+        user: User = User.get_user_by_identifier(user_identifier)
         if user:
-            raise ValueError("User already registered.")
+            if not user.active:
+                return user
+            if user.active:
+                raise ValueError("User already registered.")
 
         is_identifier_email = is_valid_email(user_identifier)
 
@@ -29,5 +32,7 @@ class UserRegistrationSerializer(serializers.Serializer):
         else:
             validated_data["phone"] = user_identifier
             validated_data.pop("email", None)  # Remove email field if present
+
+        validated_data["active"] = False
 
         return User.objects.create_user(set_unusable_password=True, **validated_data)
