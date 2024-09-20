@@ -19,13 +19,11 @@ class UserRegistrationSerializer(serializers.Serializer):
 
         user: User = User.get_user_by_identifier(user_identifier)
         if user:
-            if not user.active:
+            if not user.is_active:
                 return user
-            if user.active:
-                raise ValueError("User already registered.")
+            raise ValueError("User already registered.")
 
         is_identifier_email = is_valid_email(user_identifier)
-
         if is_identifier_email:
             validated_data["email"] = user_identifier
             validated_data.pop("phone", None)  # Remove phone field if present
