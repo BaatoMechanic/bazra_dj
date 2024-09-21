@@ -105,6 +105,7 @@ class VerificationCodeViewSet(BaseAPIMixin, GenericViewSet):
             user.set_password(new_password)
             setattr(user, f"{'email' if is_email else 'phone'}", identifier)
             user.is_verified = True
+            user.is_active = True
             if is_email:
                 user.is_email_verified = True
             else:
@@ -120,6 +121,7 @@ class VerificationCodeViewSet(BaseAPIMixin, GenericViewSet):
                     f"is_{'email' if is_email else 'phone'}_verified",
                     "primary_role",
                     "is_verified",
+                    "is_active",
                     "password",
                 ]
             )
