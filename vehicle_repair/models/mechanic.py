@@ -1,11 +1,11 @@
 from functools import cached_property
+
+from django.conf import settings
 from django.db import models
-from django.db.models import Q, Avg
+from django.db.models import Avg, Q
 from django.http import HttpRequest
 
 from utils.mixins.base_model_mixin import BaseModelMixin
-
-from django.conf import settings
 
 
 class Mechanic(BaseModelMixin):
@@ -42,10 +42,8 @@ class Mechanic(BaseModelMixin):
     def average_rating(self):
         from vehicle_repair.models.rating_review import RatingAndReview
 
-        return round(
-            RatingAndReview.objects.filter(user=self.user).aggregate(Avg("rating"))["rating__avg"],
-            2,
-        )
+        avg_rating = RatingAndReview.objects.filter(user=self.user).aggregate(Avg("rating"))["rating__avg"]
+        return round(avg_rating, 2) if avg_rating is not None else 0.0
 
     def get_additional_attributes(self) -> dict:
         return {
