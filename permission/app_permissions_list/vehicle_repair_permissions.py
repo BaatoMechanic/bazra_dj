@@ -5,7 +5,11 @@ VEHICLE_REPAIR_REQUEST_READ_API = [
     ("repair_requests-user-repair-requests", "get"),
     ("repair_requests-user-recent-repair-requests", "get"),
     ("repair_requests-user-active-repair-requests", "get"),
+]
+
+VEHICLE_REPAIR_REQUEST_MECHANIC_READ_API = [
     ("repair_requests-mechanic-active-repair", "get"),
+    ("repair_requests-mechanic-all-repairs", "get"),
 ]
 
 

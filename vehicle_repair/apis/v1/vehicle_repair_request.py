@@ -74,7 +74,9 @@ class VehicleRepairRequestViewSet(BaseAPIMixin, ModelViewSet):
 
     @action(detail=False, methods=["GET"])
     def user_active_repair_requests(self, request):
-        repair_requests = VehicleRepairRequest.objects.filter(user=request.user).exclude(status="complete")
+        repair_requests = (
+            VehicleRepairRequest.objects.filter(user=request.user).exclude(status="complete").order_by("-created_at")
+        )
         serializer = VehicleRepairRequestSerializer(repair_requests, many=True)
         return Response(serializer.data)
 
@@ -123,6 +125,16 @@ class VehicleRepairRequestViewSet(BaseAPIMixin, ModelViewSet):
         if not repair_request:
             return api_response_success({"detail": "No active repair request found"})
         serializer = VehicleRepairRequestSerializer(repair_request)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=["GET"])
+    def mechanic_all_repairs(self, request):
+        mechanic = get_object_or_404(Mechanic, user=request.user)
+
+        repair_requests = VehicleRepairRequest.objects.filter(
+            assigned_mechanic=mechanic, status=VEHICLE_REPAIR_STATUS_COMPLETE
+        )
+        serializer = VehicleRepairRequestSerializer(repair_requests, many=True)
         return Response(serializer.data)
 
 

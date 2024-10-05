@@ -12,6 +12,7 @@ class FeedbackSerializer(BaseModelSerializerMixin):
         fields = ["idx", "subject", "message", "user"]
 
     def create(self, validated_data):
+        raise serializers.ValidationError({"detail": "User is required."}, code="temp_error")
         user = self.context.get("user")
         if not user:
             raise serializers.ValidationError({"detail": "User is required."})

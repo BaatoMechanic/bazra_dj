@@ -9,7 +9,7 @@ from django.utils import timezone
 from autho.exceptions import InvalidRecoveryCodeError, RecoveryCodeLockedError
 from autho.models.base_models import BaseOTPCode
 from utils.helpers import generate_6digit_number, generate_random_string, is_valid_email, is_valid_mobile_number
-from utils.mixins.base_exception_mixin import BMException
+from utils.mixins.base_exception_mixin import BaseException
 from utils.tasks import send_email, send_staging_email
 
 logger = logging.getLogger(__name__)
@@ -99,13 +99,13 @@ class RecoveryCode(BaseOTPCode):
             self.mark_inactive()
 
         if not identifier:
-            raise BMException("User does not have phone or email")
+            raise BaseException("User does not have phone or email")
         if is_valid_mobile_number(identifier):
             self.sms_code()
         elif is_valid_email(identifier):
             self.email_code()
         else:
-            raise BMException("Not a valid user identifier")
+            raise BaseException("Not a valid user identifier")
 
     def sms_code(self):
         if settings.STAGING:

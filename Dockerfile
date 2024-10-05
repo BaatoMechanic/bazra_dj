@@ -35,6 +35,9 @@ RUN groupadd -f ${USER}
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
 
+# Copy application code to the Docker image
+COPY . ${PROJECT_DIR}
+
 WORKDIR ${PROJECT_DIR}
 
 # Chown all the files to the app user

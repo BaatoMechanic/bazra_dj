@@ -30,14 +30,10 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
 
         user_id: Optional[str] = user_data.pop("sub", None)
         if not user_id:
-            raise serializers.ValidationError(
-                "Invalid or expired token, please login again"
-            )
+            raise serializers.ValidationError("Invalid or expired token, please login again")
 
         aud: str = user_data.pop("aud")
         if aud != os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY"):
-            raise AuthenticationFailed(
-                "Couldn't confirm who you are, please try again later"
-            )
+            raise AuthenticationFailed("Couldn't confirm who you are, please try again later")
 
         return register_social_user(user_id=user_id, provider="google", **user_data)
