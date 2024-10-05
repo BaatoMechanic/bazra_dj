@@ -53,7 +53,7 @@ jobs:
           kubectl create secret generic bazra-k8s-prod-env --from-env-file=./.env.prod
       - name: Update Deployment image
         run: |
-          kubectl set image deployment/bazra-deployment bazra-k8s=registry.digitalocean.com/bazra/bazra-app:${GITHUB_SHA::7}-${GITHUB_RUN_ID::5}
+          kubectl set image deployment/bazra-deployment bazra-app=registry.digitalocean.com/bazra/bazra-app:${GITHUB_SHA::7}-${GITHUB_RUN_ID::5}
       - name: Wait for rollout to finish
         run: |
           kubectl rollout status deployment/bazra-deployment
