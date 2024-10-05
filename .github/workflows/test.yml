@@ -10,6 +10,14 @@ jobs:
   bazra_test:
     runs-on: ubuntu-latest
 
+    env:
+      DJANGO_SECRET_KEY: test-secret-key
+      DB_HOST: localhost
+      DB_NAME: bazra
+      DB_USER: bazra
+      DB_PASSWORD: bazra
+      DB_PORT: 5432
+
     services:
       postgres_main:
         image: postgres:16
@@ -29,14 +37,7 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.11]
-    env:
-      SECRET_KEY: test-secret-key
-      DB_HOST: localhost
-      DB_NAME: bazra
-      DB_USER: bazra
-      DB_PASSWORD: bazra
-      DB_PORT: 5432
-
+    
     steps:
       - uses: actions/checkout@v3
       
@@ -60,3 +61,11 @@ jobs:
       - name: Run Tests
         run: |
           python manage.py test
+
+      # Ensure PostgreSQL is ready before running tests
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432; do
+            echo "Waiting for PostgreSQL...";
+            sleep 3;
+          done
