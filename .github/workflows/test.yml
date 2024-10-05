@@ -9,16 +9,7 @@ on:
 jobs:
   bazra_test:
     runs-on: ubuntu-latest
-    # defaults:
-      # run:
-        # working-directory: ./
-    env:
-      DJANGO_SECRET_KEY: test-secret-key
-      DB_HOST: localhost
-      DB_NAME: bazra
-      DB_USER: bazra
-      DB_PASSWORD: bazra
-      DB_PORT: 5432
+
     services:
       postgres_main:
         image: postgres:16
@@ -29,24 +20,36 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready 
-          --health-interval 10s 
-          --health-timeout 5s 
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
           --health-retries 5
+
     strategy:
       max-parallel: 4
       matrix:
         python-version: [3.10]
+    env:
+      DJANGO_SECRET_KEY: test-secret-key
+      DB_HOST: localhost
+      DB_NAME: bazra
+      DB_USER: bazra
+      DB_PASSWORD: bazra
+      DB_PORT: 5432
+
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
       - name: Run Tests
         run: |
           python manage.py test
