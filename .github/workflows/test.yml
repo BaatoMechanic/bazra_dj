@@ -9,7 +9,7 @@ on:
 jobs:
   bazra_test:
     runs-on: ubuntu-latest
-    defaults:
+    # defaults:
       # run:
         # working-directory: ./
     env:
