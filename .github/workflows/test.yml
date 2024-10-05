@@ -3,8 +3,6 @@ name: Bazra CI and Test
 on:
   workflow_call:
   workflow_dispatch:
-  push:
-    branches: [develop]
 
 jobs:
   bazra_test:
