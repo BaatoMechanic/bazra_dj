@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DJANGO_SECRET_KEY: test-secret-key
+      SECRET_KEY: test-secret-key
       DB_HOST: localhost
       DB_NAME: bazra
       DB_USER: bazra
