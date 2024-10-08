@@ -50,7 +50,7 @@ jobs:
       - name: Create Firebase credentials secret
         run: |
           echo "${{ secrets.FIREBASE_CREDENTIALS_JSON }}" > ./firebase-credentials.json
-          kubectl delete secret firebase-credentials || true
+          kubectl delete secret firebase-credentials --ignore-not-found || true
           kubectl create secret generic firebase-credentials --from-file=./firebase-credentials.json
       
       - name: Update deployment secrets
