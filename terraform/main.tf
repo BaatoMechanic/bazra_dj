@@ -17,14 +17,13 @@ resource "digitalocean_project" "bazra_project" {
   description = "Project for Bazra application"
   environment = "Development"
   purpose     = "Application"
-  # tags = ["bazra", "k8s"]
 }
 
 # Create Kubernetes cluster on DigitalOcean
 resource "digitalocean_kubernetes_cluster" "bazra_cluster" {
   name    = "bazra-cluster"
   region  = var.region
-  version = "1.31.1-do.1"
+  version = "1.31.1-do.2"
 
   node_pool {
     name       = "default"
@@ -39,9 +38,8 @@ output "kubernetes_cluster_id" {
 
 # Save the kubeconfig file locally after cluster creation
 resource "local_file" "kubeconfig" {
-  filename = "${path.module}/../.kube/config"
-
-  content = digitalocean_kubernetes_cluster.bazra_cluster.kube_config.0.raw_config
+  filename = "${path.module}/../.kube/kubeconfig.yaml"
+  content  = digitalocean_kubernetes_cluster.bazra_cluster.kube_config.0.raw_config
 }
 
 # Configure the Kubernetes provider using the kubeconfig file we just saved
@@ -52,8 +50,8 @@ provider "kubernetes" {
 # Create a container registry to store Docker images
 resource "digitalocean_container_registry" "bazra_registry" {
   name                    = "bazra"
-  subscription_tier_slug = "basic"
-  region                 = var.region
+  subscription_tier_slug  = "basic"
+  region                  = var.region
 }
 
 output "container_registry_id" {
@@ -64,19 +62,26 @@ output "container_registry_id" {
 resource "digitalocean_container_registry_docker_credentials" "bazra_registry_creds" {
   registry_name = digitalocean_container_registry.bazra_registry.name
   write         = true
-  depends_on    = [digitalocean_container_registry.bazra_registry]
 }
+
+# Create Kubernetes secret for DigitalOcean Container Registry authentication
+# resource "kubernetes_secret" "bazra_registry_secret" {
+#   metadata {
+#     name      = "bazra-registry-secret"
+#     namespace = "default"
+#   }
+
+#   data = {
+#     ".dockerconfigjson" = digitalocean_container_registry_docker_credentials.bazra_registry_creds.docker_credentials
+#   }
+
+#   type = "kubernetes.io/dockerconfigjson"
+# }
 
 # Associate resources with the project
 resource "digitalocean_project_resources" "project_resources" {
-
   project = digitalocean_project.bazra_project.id
-
   resources = [
     digitalocean_kubernetes_cluster.bazra_cluster.urn
-  ]
-
-  depends_on = [
-    digitalocean_kubernetes_cluster.bazra_cluster
   ]
 }

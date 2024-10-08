@@ -12,6 +12,7 @@ baato-mechanic-firebase-*
 
 variables.tf
 *.tfstate
+*.tfstate.*
 *.lock.hcl
 .terraform/
 
