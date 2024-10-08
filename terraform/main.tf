@@ -21,7 +21,7 @@ resource "digitalocean_project" "bazra_project" {
 
 # Create Kubernetes cluster on DigitalOcean
 resource "digitalocean_kubernetes_cluster" "bazra_cluster" {
-  name    = "bazra-cluster"
+  name    = "bazra-k8s"
   region  = var.region
   version = "1.31.1-do.2"
 

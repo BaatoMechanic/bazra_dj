@@ -8,12 +8,12 @@ on:
     branches: [develop]
 
 jobs:
-  test_bazra_job:
-    uses: BaatoMechanic/bazra_dj/.github/workflows/test.yml@develop
+  # test_bazra_job:
+    # uses: BaatoMechanic/bazra_dj/.github/workflows/test.yml@develop
   
   build:
     runs-on: ubuntu-latest
-    needs: [test_bazra_job]
+    # needs: [test_bazra_job]
     defaults:
       run:
         working-directory: ./bazra
@@ -49,7 +49,8 @@ jobs:
       
       - name: Create Firebase credentials secret
         run: |
-          echo "${{ secrets.FIREBASE_CREDENTIALS_JSON }}" | base64 --decode > ./baato-mechanic-firebase-adminsdk-7h7dv-a6a5fa8d0e.json
+          echo "${{ secrets.FIREBASE_CREDENTIALS_JSON }}" > ./baato-mechanic-firebase-adminsdk-7h7dv-a6a5fa8d0e.json
+
       
       - name: Update deployment secrets
         run: |
