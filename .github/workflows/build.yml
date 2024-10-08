@@ -75,7 +75,41 @@ jobs:
         run: |
           kubectl rollout status deployment/bazra-deployment
           
+      # - name: Post-build Django Commands - Migrate / Collectstatic
+        # run: |
+          # export SINGLE_POD_NAME=$(kubectl get pod -l app=bazra-deployment -o jsonpath="{.items[0].metadata.name}")
+          # kubectl exec -it $SINGLE_POD_NAME -- bash -c "python manage.py migrate && python manage.py collectstatic --noinput"
+
       - name: Post-build Django Commands - Migrate / Collectstatic
         run: |
-          export SINGLE_POD_NAME=$(kubectl get pod -l app=bazra-deployment -o jsonpath="{.items[0].metadata.name}")
-          kubectl exec -it $SINGLE_POD_NAME -- bash -c "python manage.py migrate && python manage.py collectstatic --noinput"
+          MAX_RETRIES=5
+          RETRY_INTERVAL=10
+          SINGLE_POD_NAME=""
+
+          for ((i=0; i<MAX_RETRIES; i++)); do
+            SINGLE_POD_NAME=$(kubectl get pod -l app=bazra-deployment -o jsonpath="{.items[0].metadata.name}" 2>/dev/null)
+
+            if [ -n "$SINGLE_POD_NAME" ]; then
+              echo "Found pod: $SINGLE_POD_NAME"
+              break
+            else
+              echo "Pod not found, retrying in $RETRY_INTERVAL seconds..."
+              sleep $RETRY_INTERVAL
+            fi
+          done
+
+          if [ -z "$SINGLE_POD_NAME" ]; then
+            echo "Failed to find a pod after $MAX_RETRIES attempts."
+            exit 1
+          fi
+          
+          # Now check if the pod is running before executing the command
+          POD_STATUS=$(kubectl get pod $SINGLE_POD_NAME -o jsonpath="{.status.phase}")
+
+          if [ "$POD_STATUS" == "Running" ]; then
+            kubectl exec -it $SINGLE_POD_NAME -- bash -c "python manage.py migrate && python manage.py collectstatic --noinput"
+          else
+            echo "Pod $SINGLE_POD_NAME is not running, current status: $POD_STATUS."
+            exit 1
+          fi
+
