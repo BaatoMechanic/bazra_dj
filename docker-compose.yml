@@ -1,0 +1,70 @@
+version: "3"
+services:
+  api:
+    restart: always
+    build: ./bazra
+    image: ${API_IMAGE}
+    env_file:
+      - ./.env
+    command: python manage.py runserver 0.0.0.0:8000
+    container_name: ${API_CONTAINER_NAME}
+    volumes:
+      - ./bazra:/app/
+      - ~/.ssh:/home/app/.ssh:ro
+      - ./.git:/app/.git
+    ports:
+      - ${EXPOSED_API_PORT}:8000
+      - ${EXPOSED_API_DEBUG_PORT}:8006
+    depends_on:
+      - db
+      - redis
+    networks:
+      - bhumi_open_bazra_network
+
+  db:
+    restart: always
+    image: postgres:16.1
+    container_name: ${DB_CONTAINER_NAME}
+    ports:
+      - ${EXPOSED_DB_PORT}:5432
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=${CONTAINER_DATABASE_NAME}
+      - POSTGRES_USER=${CONTAINER_DATABASE_USER}
+      - POSTGRES_PASSWORD=${CONTAINER_DATABASE_PASSWORD}
+      - POSTGRES_PORT=5432
+    networks:
+      - bhumi_open_bazra_network
+
+  redis:
+    restart: always
+    image: redis:6.2.6-alpine
+    env_file:
+      - ./.env
+    ports:
+      - ${EXPOSED_REDIS_PORT}:6379
+    container_name: ${REDIS_CONTAINER_NAME}
+
+    networks:
+      - bhumi_open_bazra_network
+
+  celery:
+    restart: always
+    image: ${API_IMAGE}
+    env_file:
+      - ./.env
+    command: celery -A bazra_dj worker -l info
+    container_name: ${CELERY_CONATINER_NAME}
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./bazra/:/app/
+    networks:
+      - bhumi_open_bazra_network
+
+networks:
+  bhumi_open_bazra_network:
+    external: true

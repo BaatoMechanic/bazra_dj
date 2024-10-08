@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bazra-deployment
+  labels:
+    app: bazra-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bazra-deployment
+  template:
+    metadata:
+      labels:
+        app: bazra-deployment
+    spec:
+      containers:
+      - name: bazra-app
+        image: registry.digitalocean.com/bazra/bazra-app:latest
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: bazra-k8s-prod-env
+        env:
+        - name: PORT
+          value: "8000"
+        ports:
+        - containerPort: 8000
+        command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+      imagePullSecrets:
+      - name: bazra
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bazra-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 8000
+  selector:
+    app: bazra-deployment

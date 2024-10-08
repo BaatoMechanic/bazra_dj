@@ -1,0 +1,17 @@
+site_name: Baato Mechanic Technical Documentation
+
+theme:
+  name: readthedocs
+
+nav:
+  - Home: index.md
+  - Autho: autho.md
+  - Vehicle Repair Request: vehicle_repair_request.md
+
+
+plugins:
+  - mermaid2
+
+extra_css:
+  - css/readthedocs.css
+

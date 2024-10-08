@@ -1,0 +1,62 @@
+name: Build Docker Container & Push to DO Registry
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  test_bazra_job:
+    uses: BaatoMechanic/bazra_dj/.github/workflows/test.yml@develop
+  build:
+    runs-on: ubuntu-latest
+    needs: [test_bazra_job]
+    env:
+      CLUSTER_NAME: bazra-k8s
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Insall doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_API_TOKEN_KEY }}
+      - name: Login to DO Container Registry with short-lived creds
+        run: doctl registry login --expiry-seconds 1200
+      - name: Build container image
+        # working-directory: ./web
+        run: |
+          docker build -f Dockerfile \
+            -t registry.digitalocean.com/bazra/bazra-app:latest \
+            -t registry.digitalocean.com/bazra/bazra-app:${GITHUB_SHA::7}-${GITHUB_RUN_ID::5} \
+            .
+      - name: Push image
+        run: |
+          docker push registry.digitalocean.com/bazra/bazra-app --all-tags
+      - name: K8s cluster kubeconfig file with/ short-lived creds
+        run: |
+          doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ env.CLUSTER_NAME }}
+      - name: Update deployment secrets
+        run: |
+          cat << EOF >> ./.env.prod
+          SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
+          ALLOWED_HOST=${{ secrets.DJANGO_ALLOWED_HOST }}
+          DB_HOST=${{ secrets.DJANGO_DB_HOST }}
+          DB_NAME=${{ secrets.DJANGO_DB_NAME }}
+          DB_USER=${{ secrets.DJANGO_DB_USER }}
+          DB_PASSWORD=${{ secrets.DJANGO_DB_PASSWORD }}
+          DB_PORT=${{ secrets.DJANGO_DB_PORT }}
+          EOF
+          kubectl delete secret bazra-k8s-prod-env
+          kubectl create secret generic bazra-k8s-prod-env --from-env-file=./.env.prod
+      - name: Update Deployment image
+        run: |
+          kubectl set image deployment/bazra-deployment bazra-app=registry.digitalocean.com/bazra/bazra-app:${GITHUB_SHA::7}-${GITHUB_RUN_ID::5}
+      - name: Wait for rollout to finish
+        run: |
+          kubectl rollout status deployment/bazra-deployment
+      - name: Post-build Django Commands - Migrate / Collectstatic
+        run: |
+          export SINGLE_POD_NAME=$(kubectl get pod -l app=bazra-deployment -o jsonpath="{.items[0].metadata.name}")
+          kubectl exec -it $SINGLE_POD_NAME -- bash -c "python manage.py migrate"
