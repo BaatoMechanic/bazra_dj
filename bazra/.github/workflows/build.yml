@@ -25,7 +25,6 @@ jobs:
       - name: Login to DO Container Registry with short-lived creds
         run: doctl registry login --expiry-seconds 1200
       - name: Build container image
-        # working-directory: ./web
         run: |
           docker build -f Dockerfile \
             -t registry.digitalocean.com/bazra/bazra-app:latest \
@@ -37,6 +36,10 @@ jobs:
       - name: K8s cluster kubeconfig file with/ short-lived creds
         run: |
           doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ env.CLUSTER_NAME }}
+      - name: Create Firebase credentials secret
+        run: |
+          echo "${{ secrets.FIREBASE_CREDENTIALS_JSON }}" | base64 --decode > ./baato-mechanic-firebase-adminsdk-7h7dv-a6a5fa8d0e.json
+
       - name: Update deployment secrets
         run: |
           cat << EOF >> ./.env.prod
@@ -48,15 +51,17 @@ jobs:
           DB_PASSWORD=${{ secrets.DJANGO_DB_PASSWORD }}
           DB_PORT=${{ secrets.DJANGO_DB_PORT }}
           EOF
-          kubectl delete secret bazra-k8s-prod-env
+          kubectl delete secret bazra-k8s-prod-env || true
           kubectl create secret generic bazra-k8s-prod-env --from-env-file=./.env.prod
       - name: Update Deployment image
         run: |
           kubectl set image deployment/bazra-deployment bazra-app=registry.digitalocean.com/bazra/bazra-app:${GITHUB_SHA::7}-${GITHUB_RUN_ID::5}
+
       - name: Wait for rollout to finish
         run: |
           kubectl rollout status deployment/bazra-deployment
+
       - name: Post-build Django Commands - Migrate / Collectstatic
         run: |
           export SINGLE_POD_NAME=$(kubectl get pod -l app=bazra-deployment -o jsonpath="{.items[0].metadata.name}")
-          kubectl exec -it $SINGLE_POD_NAME -- bash -c "python manage.py migrate"
+          kubectl exec -it $SINGLE_POD_NAME -- bash -c "python manage.py migrate && python manage.py collectstatic --noinput"
