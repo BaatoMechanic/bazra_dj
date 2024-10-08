@@ -49,8 +49,9 @@ jobs:
       
       - name: Create Firebase credentials secret
         run: |
-          echo "${{ secrets.FIREBASE_CREDENTIALS_JSON }}" > ./baato-mechanic-firebase-adminsdk-7h7dv-a6a5fa8d0e.json
-
+          echo "${{ secrets.FIREBASE_CREDENTIALS_JSON }}" > ./firebase-credentials.json
+          kubectl delete secret firebase-credentials || true
+          kubectl create secret generic firebase-credentials --from-file=./firebase-credentials.json
       
       - name: Update deployment secrets
         run: |

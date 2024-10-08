@@ -24,9 +24,19 @@ spec:
         env:
         - name: PORT
           value: "8000"
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /app/secrets/firebase-credentials.json
         ports:
         - containerPort: 8000
         command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+        volumeMounts:
+        - name: firebase-credentials-volume
+          mountPath: /app/secrets/firebase-credentials.json
+          subPath: firebase-credentials.json
+      volumes:
+      - name: firebase-credentials-volume
+        secret:
+          secretName: firebase-credentials
       imagePullSecrets:
       - name: bazra
 ---
