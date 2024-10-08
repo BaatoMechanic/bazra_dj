@@ -1,10 +1,21 @@
 __pycache__
 *.pyc
 media/
+static/
 .vscode
 
-
-.venv
+venv/
 .env
+.env.*
 local_settings.py
 baato-mechanic-firebase-*
+
+variables.tf
+*.tfstate
+*.lock.hcl
+.terraform/
+
+*.sqlite3
+
+.pytest_cache/
+.kube/

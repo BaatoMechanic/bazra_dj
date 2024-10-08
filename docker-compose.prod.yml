@@ -1,0 +1,48 @@
+version: "3"
+services:
+  api:
+    restart: always
+    build: ./bazra
+    image: ${API_IMAGE}
+    env_file:
+      - ./.env.prod
+    command: python manage.py runserver 0.0.0.0:8000
+    container_name: ${API_CONTAINER_NAME}
+    volumes:
+      - ./bazra:/app/
+    ports:
+      - ${EXPOSED_API_PORT}:8000
+    depends_on:
+      - redis
+    networks:
+      - bhumi_open_bazra_network
+
+  redis:
+    restart: always
+    image: redis:6.2.6-alpine
+    env_file:
+      - ./.env.prod
+    ports:
+      - ${EXPOSED_REDIS_PORT}:6379
+    container_name: ${REDIS_CONTAINER_NAME}
+
+    networks:
+      - bhumi_open_bazra_network
+
+  celery:
+    env_file:
+      - ./.env.prod
+    restart: always
+    image: ${API_IMAGE}
+    command: celery -A bazra_dj worker -l info
+    container_name: ${CELERY_CONATINER_NAME}
+    depends_on:
+      - redis
+    volumes:
+      - ./bazra/:/app/
+    networks:
+      - bhumi_open_bazra_network
+
+networks:
+  bhumi_open_bazra_network:
+    external: true
