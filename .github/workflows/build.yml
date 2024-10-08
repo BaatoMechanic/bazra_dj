@@ -75,10 +75,6 @@ jobs:
         run: |
           kubectl rollout status deployment/bazra-deployment
           
-      - name: Wait for pod to be ready
-        run: |
-          kubectl wait --for=condition=ready pod -l app=bazra-deployment --timeout=300s
-      
       - name: Post-build Django Commands - Migrate / Collectstatic
         run: |
           export SINGLE_POD_NAME=$(kubectl get pod -l app=bazra-deployment -o jsonpath="{.items[0].metadata.name}")
