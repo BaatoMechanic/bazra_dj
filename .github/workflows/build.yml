@@ -14,6 +14,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: [test_bazra_job]
+    defaults:
+      run:
+        working-directory: ./bazra
     env:
       CLUSTER_NAME: bazra-k8s
     

@@ -7,6 +7,9 @@ on:
 jobs:
   bazra_test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./bazra
 
     env:
       SECRET_KEY: test-secret-key
@@ -48,7 +51,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r ./bazra/requirements.txt
+          pip install -r requirements.txt
 
       - name: Run Tests
         run: |
