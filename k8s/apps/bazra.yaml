@@ -44,7 +44,7 @@ spec:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /app/secrets/firebase-credentials.json
         ports:
-        - containerPort: 8004
+        - containerPort: 8001
         command: ["daphne", "-b", "0.0.0.0", "-p", "8001", "bazra_dj.asgi:application"]
         volumeMounts:
         - name: firebase-credentials-volume
