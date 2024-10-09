@@ -15,7 +15,7 @@ spec:
         app: bazra-deployment
     spec:
       containers:
-      - name: gunicorn-app
+      - name: bazra-app
         image: registry.digitalocean.com/bazra/bazra-app:latest
         imagePullPolicy: Always
         envFrom:
@@ -34,7 +34,7 @@ spec:
         - name: static-files
           mountPath: /app/static
 
-      - name: daphne-app
+      - name: bazra-app-daphne
         image: registry.digitalocean.com/bazra/bazra-app:latest
         imagePullPolicy: Always
         envFrom:
