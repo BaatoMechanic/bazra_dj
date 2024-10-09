@@ -15,15 +15,13 @@ spec:
         app: bazra-deployment
     spec:
       containers:
-      - name: bazra-app
+      - name: gunicorn-app
         image: registry.digitalocean.com/bazra/bazra-app:latest
         imagePullPolicy: Always
         envFrom:
         - secretRef:
             name: bazra-k8s-prod-env
         env:
-        - name: PORT
-          value: "8000"
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /app/secrets/firebase-credentials.json
         ports:
@@ -35,6 +33,26 @@ spec:
           subPath: firebase-credentials.json
         - name: static-files
           mountPath: /app/static
+
+      - name: daphne-app
+        image: registry.digitalocean.com/bazra/bazra-app:latest
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: bazra-k8s-prod-env
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /app/secrets/firebase-credentials.json
+        ports:
+        - containerPort: 8004
+        command: ["daphne", "-b", "0.0.0.0", "-p", "8001", "bazra_dj.asgi:application"]
+        volumeMounts:
+        - name: firebase-credentials-volume
+          mountPath: /app/secrets/firebase-credentials.json
+          subPath: firebase-credentials.json
+        - name: static-files
+          mountPath: /app/static
+
       - name: nginx
         image: nginx:alpine
         ports:
@@ -44,6 +62,7 @@ spec:
           mountPath: /usr/share/nginx/html/static
         - name: nginx-config
           mountPath: /etc/nginx/conf.d
+
       volumes:
       - name: firebase-credentials-volume
         secret:
@@ -53,6 +72,7 @@ spec:
       - name: nginx-config
         configMap:
           name: nginx-config
+
       imagePullSecrets:
       - name: bazra
 ---

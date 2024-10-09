@@ -13,12 +13,15 @@ import django
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
-from .routing import ws_patterns
 
+
+# Set the default Django settings module
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bazra_dj.settings")
 
-# Ensure the app registry is loaded
+# Ensure the app registry is loaded before importing other modules
 django.setup()
+
+from .routing import ws_patterns  # noqa
 
 application = ProtocolTypeRouter(
     {

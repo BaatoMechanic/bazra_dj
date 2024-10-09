@@ -38,6 +38,7 @@ if ALLOWED_HOST:
 
 
 DJANGO_APPS = [
+    "daphne",
     "channels",
     "django.contrib.admin",
     "django.contrib.auth",
