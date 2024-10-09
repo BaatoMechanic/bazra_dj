@@ -28,7 +28,7 @@ spec:
           value: /app/secrets/firebase-credentials.json
         ports:
         - containerPort: 8000
-        command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+        command: ["gunicorn", "-b", "0.0.0.0:8000", "bazra_dj.wsgi"]
         volumeMounts:
         - name: firebase-credentials-volume
           mountPath: /app/secrets/firebase-credentials.json

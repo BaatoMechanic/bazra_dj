@@ -59,6 +59,7 @@ googleapis-common-protos==1.65.0
 greenlet==3.1.1
 grpcio==1.66.2
 grpcio-status==1.66.2
+gunicorn==23.0.0
 httplib2==0.22.0
 hyperlink==21.0.0
 identify==2.6.1
