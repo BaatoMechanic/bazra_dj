@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 
 from utils.api_response import api_response_success
 from vehicle_repair.models import RatingAndReview
-from utils.mixins.base_api_mixin import BaseAPIMixin
+from utils.mixins.api_mixins import BaseAPIMixin
 from vehicle_repair.models.mechanic import Mechanic
 from vehicle_repair.serializers.rating_review import VehicleRepairReviewSerializer
 

@@ -16,7 +16,7 @@ from autho.serializers.recovery import VerifyOtpSerializer
 from permission.models import Role
 from utils.api_response import api_response_error, api_response_success
 from utils.helpers import is_valid_email
-from utils.mixins.base_api_mixin import BaseAPIMixin
+from utils.mixins.api_mixins import BaseAPIMixin
 
 
 class VerificationCodeViewSet(BaseAPIMixin, GenericViewSet):

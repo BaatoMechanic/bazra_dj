@@ -10,7 +10,7 @@ from rest_framework.response import Response
 
 from utils.api_response import api_response_success
 from utils.app_helpers.gis import send_request
-from utils.mixins.base_api_mixin import BaseAPIMixin
+from utils.mixins.api_mixins import BaseAPIMixin
 from vehicle_repair.models import VehicleRepairRequest
 from vehicle_repair.models.mechanic import Mechanic
 from vehicle_repair.models.vehicle_repair_request import (

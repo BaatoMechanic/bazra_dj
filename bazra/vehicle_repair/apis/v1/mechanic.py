@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 
-from utils.mixins.base_api_mixin import BaseAPIMixin
+from utils.mixins.api_mixins import BaseAPIMixin
 from vehicle_repair.models.mechanic import Mechanic
 from vehicle_repair.models.service import Service
 from vehicle_repair.models.vehicle_category import VehicleCategory

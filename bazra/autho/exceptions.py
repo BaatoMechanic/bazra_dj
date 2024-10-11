@@ -1,4 +1,4 @@
-from utils.mixins.base_exception_mixin import BaseException
+from utils.mixins.exception_mixins import BaseException
 
 
 class UserAlreadyVerifiedError(BaseException):

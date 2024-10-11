@@ -9,7 +9,7 @@ from django.utils import timezone
 from autho.exceptions import InvalidRecoveryCodeError, RecoveryCodeLockedError
 from autho.models.base_models import BaseOTPCode
 from utils.helpers import generate_6digit_number, generate_random_string, is_valid_email, is_valid_mobile_number
-from utils.mixins.base_exception_mixin import BaseException
+from utils.mixins.exception_mixins import BaseException
 from utils.tasks import send_email, send_staging_email
 
 logger = logging.getLogger(__name__)

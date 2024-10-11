@@ -130,6 +130,42 @@ if os.environ.get("DB_SSL_MODE_REQUIRED") == "true":
     DATABASES["default"]["OPTIONS"] = {"sslmode": "require"}
 
 
+if not DEBUG or STAGING:
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+            "OPTIONS": {
+                "access_key": os.environ.get("PRIVATE_BUCKET_ACCESS_KEY"),
+                "secret_key": os.environ.get("PRIVATE_BUCKET_SECRET_KEY"),
+                "bucket_name": os.environ.get("PRIVATE_BUCKET_NAME"),
+                "endpoint_url": os.environ.get("PRIVATE_BUCKET_ENDPOINT_URL"),
+                "region_name": os.environ.get("PRIVATE_BUCKET_REGION_NAME"),
+                "default_acl": "private",
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+            # "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+            # "OPTIONS": {
+            # "access_key": os.environ.get("PUBLIC_BUCKET_ACCESS_KEY"),
+            # "secret_key": os.environ.get("PUBLIC_BUCKET_SECRET_KEY"),
+            # "bucket_name": os.environ.get("PUBLIC_BUCKET_NAME"),
+            # "endpoint_url": os.environ.get("PUBLIC_BUCKET_ENDPOINT_URL"),
+            # "region_name": os.environ.get("PUBLIC_BUCKET_REGION_NAME"),
+            # "default_acl": "public-read",
+            # "location": "static",
+            # },
+        },
+    }
+
+    MEDIA_URL = "https://68f46573d779cfa4a27301966c9f0eae.r2.cloudflarestorage.com/bazra-public/"
+
+    STATIC_URL = "static/"
+    STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+    # STATIC_URL = "https://68f46573d779cfa4a27301966c9f0eae.r2.cloudflarestorage.com/bazra-public/static/"
+
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -155,13 +191,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 APPEND_SLASH = True
@@ -180,7 +209,7 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("BM",),
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=365) if DEBUG else timedelta(days=1),
     "TOKEN_OBTAIN_SERIALIZER": "autho.serializers.LoginSerializer",
 }
 
@@ -259,8 +288,13 @@ logging.config.dictConfig(LOGGING)
 
 
 if STAGING:
+    STATIC_URL = "static/"
+    STATIC_ROOT = os.path.join(BASE_DIR, "static")
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
     try:
         from bazra_dj.settings.local_settings import *  # noqa: F403, F401
+
     except ImportError as e:
         print(e)
         pass

@@ -8,7 +8,7 @@ from rest_framework.decorators import action
 from autho.models import User
 from autho.serializers import RatingAndReviewSerializer
 from vehicle_repair.models import RatingAndReview
-from utils.mixins.base_api_mixin import BaseAPIMixin
+from utils.mixins.api_mixins import BaseAPIMixin
 
 
 class RatingAndReviewViewSet(BaseAPIMixin, ModelViewSet):

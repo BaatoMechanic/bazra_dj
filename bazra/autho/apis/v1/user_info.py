@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from autho.serializers.location import UserLocationSerializer
 
-from utils.mixins.base_api_mixin import BaseAPIMixin
+from utils.mixins.api_mixins import BaseAPIMixin
 
 from rest_framework.viewsets import ModelViewSet
 

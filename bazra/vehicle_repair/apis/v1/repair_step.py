@@ -1,6 +1,6 @@
 from rest_framework.viewsets import ModelViewSet
 
-from utils.mixins.base_api_mixin import BaseAPIMixin
+from utils.mixins.api_mixins import BaseAPIMixin
 from vehicle_repair.models import RepairStep
 from vehicle_repair.models.repair_step import RepairStepReport
 from vehicle_repair.serializers.repair_step import (

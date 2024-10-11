@@ -1,4 +1,4 @@
-from utils.mixins.base_api_mixin import BaseAPIMixin
+from utils.mixins.api_mixins import BaseAPIMixin
 
 from rest_framework.viewsets import ModelViewSet
 

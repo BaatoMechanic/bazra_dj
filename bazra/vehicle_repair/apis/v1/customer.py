@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.decorators import action
-from utils.mixins.base_api_mixin import BaseAPIMixin
+from utils.mixins.api_mixins import BaseAPIMixin
 from rest_framework.mixins import RetrieveModelMixin, CreateModelMixin
 from vehicle_repair.models.customer import Customer
 from rest_framework.response import Response

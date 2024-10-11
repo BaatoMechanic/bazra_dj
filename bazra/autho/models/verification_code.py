@@ -14,7 +14,7 @@ from utils.helpers import generate_6digit_number, generate_random_string
 
 from django.conf import settings
 
-from utils.mixins.base_exception_mixin import BaseException
+from utils.mixins.exception_mixins import BaseException
 from utils.tasks import send_email, send_staging_email
 
 

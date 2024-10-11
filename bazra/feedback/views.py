@@ -2,7 +2,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from feedback.models import Feedback
 from feedback.serializers import FeedbackSerializer
-from utils.mixins.base_api_mixin import BaseAPIMixin
+from utils.mixins.api_mixins import BaseAPIMixin
 
 
 class FeedbackViewSet(BaseAPIMixin, ModelViewSet):

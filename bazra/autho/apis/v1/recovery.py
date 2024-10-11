@@ -12,7 +12,7 @@ from autho.serializers.recovery import (
 )
 from utils.api_response import api_response_error, api_response_success
 from utils.helpers import is_valid_mobile_number
-from utils.mixins.base_api_mixin import BaseAPIMixin
+from utils.mixins.api_mixins import BaseAPIMixin
 
 
 class AccountRecoveryViewSet(BaseAPIMixin, GenericViewSet):
