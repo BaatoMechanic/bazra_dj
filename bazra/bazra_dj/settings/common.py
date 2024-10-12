@@ -135,6 +135,17 @@ if not DEBUG or STAGING:
         "default": {
             "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
             "OPTIONS": {
+                "access_key": os.environ.get("PUBLIC_BUCKET_ACCESS_KEY"),
+                "secret_key": os.environ.get("PUBLIC_BUCKET_SECRET_KEY"),
+                "bucket_name": os.environ.get("PUBLIC_BUCKET_NAME"),
+                "endpoint_url": os.environ.get("PUBLIC_BUCKET_ENDPOINT_URL"),
+                "region_name": os.environ.get("PUBLIC_BUCKET_REGION_NAME"),
+                "default_acl": "public-read",
+            },
+        },
+        "private_media": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+            "OPTIONS": {
                 "access_key": os.environ.get("PRIVATE_BUCKET_ACCESS_KEY"),
                 "secret_key": os.environ.get("PRIVATE_BUCKET_SECRET_KEY"),
                 "bucket_name": os.environ.get("PRIVATE_BUCKET_NAME"),
@@ -147,23 +158,21 @@ if not DEBUG or STAGING:
             "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
             # "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
             # "OPTIONS": {
-            # "access_key": os.environ.get("PUBLIC_BUCKET_ACCESS_KEY"),
-            # "secret_key": os.environ.get("PUBLIC_BUCKET_SECRET_KEY"),
-            # "bucket_name": os.environ.get("PUBLIC_BUCKET_NAME"),
-            # "endpoint_url": os.environ.get("PUBLIC_BUCKET_ENDPOINT_URL"),
-            # "region_name": os.environ.get("PUBLIC_BUCKET_REGION_NAME"),
-            # "default_acl": "public-read",
-            # "location": "static",
+            #     "access_key": os.environ.get("PUBLIC_BUCKET_ACCESS_KEY"),
+            #     "secret_key": os.environ.get("PUBLIC_BUCKET_SECRET_KEY"),
+            #     "bucket_name": os.environ.get("PUBLIC_BUCKET_NAME"),
+            #     "endpoint_url": os.environ.get("PUBLIC_BUCKET_ENDPOINT_URL"),
+            #     "region_name": os.environ.get("PUBLIC_BUCKET_REGION_NAME"),
+            #     "default_acl": "public-read",
+            #     "location": "static",
             # },
         },
     }
 
-    MEDIA_URL = "https://68f46573d779cfa4a27301966c9f0eae.r2.cloudflarestorage.com/bazra-public/"
+    MEDIA_URL = f'{os.environ.get("PUBLIC_BUCKET_ENDPOINT_URL")}/{os.environ.get("PUBLIC_BUCKET_NAME")}/'
 
     STATIC_URL = "static/"
     STATIC_ROOT = os.path.join(BASE_DIR, "static")
-
-    # STATIC_URL = "https://68f46573d779cfa4a27301966c9f0eae.r2.cloudflarestorage.com/bazra-public/static/"
 
 
 AUTH_PASSWORD_VALIDATORS = [

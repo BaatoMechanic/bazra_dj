@@ -4,6 +4,7 @@ from django.db import models
 from django.http import HttpRequest
 
 from utils.mixins.base_model_mixin import BaseModelMixin
+from utils.storage import PrivateMediaStorage
 from vehicle_repair.models.mechanic import Mechanic
 from vehicle_repair.models.service import Service
 from vehicle_repair.models.vehicle_category import VehicleCategory
@@ -157,7 +158,7 @@ class VehicleRepairRequest(BaseModelMixin):
 
 class VehicleRepairRequestImage(BaseModelMixin):
     repair_request = models.ForeignKey(VehicleRepairRequest, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to="vehicle_repair_request/images")
+    image = models.ImageField(upload_to="vehicle_repair_request/images", storage=PrivateMediaStorage())
     # image = models.ImageField(upload_to="vehicle_repair_request/images", validators=[validate_file_size])
 
     def __str__(self) -> str:

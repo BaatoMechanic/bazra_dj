@@ -17,6 +17,7 @@ from autho.exceptions import (
 )
 from utils.helpers import normalize_phone_number
 from utils.mixins.base_model_mixin import BaseModelMixin
+from utils.storage import PrivateMediaStorage
 
 
 class UserManager(BaseUserManager):
@@ -106,7 +107,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         choices=AUTH_PROVIDER_CHOICES,
         default=AUTH_PROVIDER_BAZRA,
     )
-    image = models.ImageField(upload_to="users/profile", null=True, blank=True)
+    image = models.ImageField(upload_to="users/profile", storage=PrivateMediaStorage(), null=True, blank=True)
 
     is_phone_verified = models.BooleanField(default=False)
     is_email_verified = models.BooleanField(default=False)

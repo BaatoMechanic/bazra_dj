@@ -2,6 +2,7 @@ from django.db import models
 from django.http import HttpRequest
 
 from utils.mixins.base_model_mixin import BaseModelMixin
+from utils.storage import PrivateMediaStorage
 
 
 REPAIR_STEP_STATUS_PENDING = "pending"
@@ -54,7 +55,7 @@ class RepairStepReport(BaseModelMixin):
 
 class RepairStepBillImage(BaseModelMixin):
     report = models.ForeignKey(RepairStepReport, on_delete=models.PROTECT, related_name="bill_images")
-    image = models.ImageField(upload_to="repair_steps/bill_images")
+    image = models.ImageField(upload_to="repair_steps/bill_images", storage=PrivateMediaStorage())
 
     def __str__(self) -> str:
         return self.idx
