@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: osm-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi  # Size of the OSM data volume
+  storageClassName: do-block-storage  # Using DigitalOcean's block storage
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: osm-tiles-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi  # Size of the tiles cache volume
+  storageClassName: do-block-storage  # Using DigitalOcean's block storage
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: osm-tile-server
+spec:
+  replicas: 1  # Number of pod replicas
+  selector:
+    matchLabels:
+      app: osm-tile-server  # Label selector for the deployment
+  template:
+    metadata:
+      labels:
+        app: osm-tile-server  # Pod label
+    spec:
+      initContainers:
+        # Init container to restore OSM data from a tar file
+        - name: restore-data
+          image: alpine  # Using Alpine instead of BusyBox
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              apk add --no-cache wget tar && \
+              if [ ! -f /data/database/osm-data-restored ]; then
+                wget -O /backup/osm-data.tar https://pub-e9121650803c44f5a3ed847ef1fdc060.r2.dev/osm-data.tar && \
+                tar xvf /backup/osm-data.tar -C /data/database && \
+                touch /data/database/osm-data-restored
+              fi
+          volumeMounts:
+            - name: osm-data
+              mountPath: /data/database  # Mount the OSM data volume
+            - name: backup
+              mountPath: /backup  # Temporary storage for downloaded tar
+
+        # Init container to restore tile cache from a tar file
+        - name: restore-tiles
+          image: alpine  # Using Alpine instead of BusyBox
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              apk add --no-cache wget tar && \
+              if [ ! -f /data/tiles/osm-tiles-restored ]; then
+                wget -O /backup/osm-tiles.tar https://pub-e9121650803c44f5a3ed847ef1fdc060.r2.dev/osm-tiles.tar && \
+                tar xvf /backup/osm-tiles.tar -C /data/tiles && \
+                touch /data/tiles/osm-tiles-restored
+              fi
+          volumeMounts:
+            - name: osm-tiles
+              mountPath: /data/tiles  # Mount the tiles cache volume
+            - name: backup
+              mountPath: /backup  # Temporary storage for downloaded tar
+
+      containers:
+        - name: osm-tile-server
+          image: overv/openstreetmap-tile-server  # The OSM tile server image
+          args: ["run"]  # Command to run the tile server
+          ports:
+            - containerPort: 80  # Port to expose
+          volumeMounts:
+            - name: osm-data
+              mountPath: /data/database  # Mount the OSM data volume
+            - name: osm-tiles
+              mountPath: /data/tiles  # Mount the tiles cache vzolume
+
+      volumes:
+        - name: osm-data
+          persistentVolumeClaim:
+            claimName: osm-data-pvc  # PVC for OSM data
+        - name: osm-tiles
+          persistentVolumeClaim:
+            claimName: osm-tiles-pvc  # PVC for tile cache
+        - name: backup
+          emptyDir: {}  # Temporary storage for downloads
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: map-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    app: osm-tile-server
