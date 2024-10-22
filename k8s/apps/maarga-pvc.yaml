@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: osrm-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi  # Size of the OSM data volume
+  storageClassName: do-block-storage  # Using DigitalOcean's block storage
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: osrm-backend
+spec:
+  replicas: 1  # Number of pod replicas
+  selector:
+    matchLabels:
+      app: bazra-deployment
+  template:
+    metadata:
+      labels:
+        app: bazra-deployment
+    spec:
+      initContainers:
+        - name: load-osrm-data
+          image: alpine  # Using Alpine for simplicity
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              apk add --no-cache curl && \
+              mkdir -p /data && \
+              # Loop through the required files and download them
+              for file in \
+                nepal-latest.osrm.cell_metrics \
+                nepal-latest.osrm.edges \
+                nepal-latest.osrm.names \
+                nepal-latest.osrm.tld \
+                nepal-latest.osrm.cells \
+                nepal-latest.osrm.enw \
+                nepal-latest.osrm.nbg_nodes \
+                nepal-latest.osrm.tls \
+                nepal-latest.osrm.cnbg \
+                nepal-latest.osrm.fileIndex \
+                nepal-latest.osrm.partition \
+                nepal-latest.osrm.turn_duration_penalties \
+                nepal-latest.osrm.cnbg_to_ebg \
+                nepal-latest.osrm.geometry \
+                nepal-latest.osrm.properties \
+                nepal-latest.osrm.turn_penalties_index \
+                nepal-latest.osrm.datasource_names \
+                nepal-latest.osrm.icd \
+                nepal-latest.osrm.ramIndex \
+                nepal-latest.osrm.turn_weight_penalties \
+                nepal-latest.osrm.ebg \
+                nepal-latest.osrm.maneuver_overrides \
+                nepal-latest.osrm.restrictions \
+                nepal-latest.osrm.ebg_nodes \
+                nepal-latest.osrm.mldgr \
+                nepal-latest.osrm.timestamp; do
+                  echo "Downloading $file..." && \
+                  curl -o /data/$file https://pub-e9121650803c44f5a3ed847ef1fdc060.r2.dev/osrm-data/$file || echo "Failed to download $file"
+              done
+          volumeMounts:
+            - name: osrm-data
+              mountPath: /data  # Mount the OSRM data volume
+
+      containers:
+        - name: osrm-backend
+          image: ghcr.io/project-osrm/osrm-backend  # Using the official OSRM image
+          ports:
+            - containerPort: 5000  # Port to expose
+          args: ["osrm-routed", "--algorithm", "mld", "/data/nepal-latest.osrm"]  # Command to run the OSRM service
+          volumeMounts:
+            - name: osrm-data
+              mountPath: /data  # Mount the OSRM data volume
+
+      volumes:
+        - name: osrm-data
+          persistentVolumeClaim:
+            claimName: osrm-data-pvc  # PVC for OSRM data

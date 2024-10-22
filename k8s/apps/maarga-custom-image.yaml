@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: osrm-backend
+spec:
+  replicas: 1  # Number of pod replicas
+  selector:
+    matchLabels:
+      app: bazra-deployment
+  template:
+    metadata:
+      labels:
+        app: bazra-deployment
+    spec:
+      containers:
+        - name: osrm-backend
+          image: registry.digitalocean.com/bazra/maarga:latest
+          ports:
+            - containerPort: 5000  # Port to expose
+          args: ["osrm-routed", "--algorithm", "mld", "nepal-latest.osrm"]

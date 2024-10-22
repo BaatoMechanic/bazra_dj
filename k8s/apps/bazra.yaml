@@ -93,5 +93,9 @@ spec:
     protocol: TCP
     port: 8080
     targetPort: 80
+  - name: osrm
+    protocol: TCP
+    port: 5000
+    targetPort: 5000
   selector:
     app: bazra-deployment
