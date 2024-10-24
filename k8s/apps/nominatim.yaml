@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nominatim-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: do-block-storage
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nominatim-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bazra-deployment
+  template:
+    metadata:
+      labels:
+        app: bazra-deployment
+    spec:
+      initContainers:
+        - name: download-and-extract-db
+          image: alpine
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              apk add --no-cache curl unzip && \
+              mkdir -p /var/lib/postgresql/14/main && \
+              curl -o /var/lib/postgresql/nominatim-db.zip https://pub-e9121650803c44f5a3ed847ef1fdc060.r2.dev/nominatim-data/nominatim_data.zip && \
+              # Create a temporary directory to extract the contents
+              unzip /var/lib/postgresql/nominatim-db.zip -d /tmp && \
+              # Move the contents of nominatim_data to the main PostgreSQL data directory
+              mv /tmp/nominatim_data/* /var/lib/postgresql/14/main && \
+              # Set permissions for the data directory to 0700
+              chmod -R 0700 /var/lib/postgresql/14/main && \
+              # Set ownership for the data directory to postgres user (commonly used by Nominatim)
+              chown -R 101:101 /var/lib/postgresql/14/main && \
+              # Clean up
+              rm -rf /tmp/nominatim_data /var/lib/postgresql/nominatim-db.zip
+          volumeMounts:
+            - name: nominatim-data
+              mountPath: /var/lib/postgresql/14/main
+
+      containers:
+        - name: nominatim
+          image: mediagis/nominatim:4.3
+          env:
+            - name: PBF_URL
+              value: https://download.geofabrik.de/asia/nepal-latest.osm.pbf
+            - name: NOMINATIM_PASSWORD
+              value: very_secure_password
+            - name: POSTGRES_HOST
+              value: localhost
+            - name: POSTGRES_DB
+              value: nominatim  # Allow Nominatim to create its own database
+            - name: POSTGRES_USER
+              value: nominatim  # Optional: use a different user if needed
+            - name: POSTGRES_PASSWORD
+              value: postgres  # Use the same password for PostgreSQL
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: nominatim-data
+              mountPath: /var/lib/postgresql/14/main  # Custom directory for Nominatim data
+          resources:
+            requests:
+              memory: "1Gi"
+
+      volumes:
+        - name: nominatim-data
+          persistentVolumeClaim:
+            claimName: nominatim-data-pvc
+        - name: shm-volume
+          emptyDir:
+            medium: Memory  # Shared memory volume for Nominatim
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: nominatim-service
+# spec:
+#   type: LoadBalancer
+#   ports:
+#     - port: 80
+#       targetPort: 8080  # Nominatim runs on port 8080 internally
+#       protocol: TCP
+#   selector:
+#     app: bhumi-nominatim

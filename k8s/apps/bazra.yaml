@@ -56,7 +56,7 @@ spec:
       - name: nginx
         image: nginx:alpine
         ports:
-        - containerPort: 8080
+        - containerPort: 8082
         volumeMounts:
         - name: static-files
           mountPath: /usr/share/nginx/html/static
@@ -86,16 +86,20 @@ spec:
   - name: http
     protocol: TCP
     port: 80
-    targetPort: 8080
-    # Here setting nginx container's port to 8080 instead of 80 and map service's container port to 80 instead of 8080, because
+    targetPort: 8082
+    # Here setting nginx container's port to 8082 instead of 80 and map service's container port to 80 instead of 8080, because
     # overv/openstreetmap-tile-server has hardcoded container to expose service on 80
   - name: map
     protocol: TCP
     port: 8080
-    targetPort: 80
+    targetPort: 80 #(swith2 has hardcoded this port)
   - name: osrm
     protocol: TCP
     port: 5000
     targetPort: 5000
+  - name: nominatim
+    protocol: TCP
+    port: 8090
+    targetPort: 8080 #(nominatim has hardcoded this port)
   selector:
     app: bazra-deployment
